@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "invoices" ADD COLUMN     "paid" DOUBLE PRECISION DEFAULT 0;

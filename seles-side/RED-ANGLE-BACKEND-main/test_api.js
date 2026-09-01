@@ -1,0 +1,1 @@
+fetch('http://localhost:9000/api/reports/lead-summary').then(res => res.json()).then(data => { const leads = data.data || data; console.log(JSON.stringify(leads.slice(0, 3), null, 2)); }).catch(console.error);

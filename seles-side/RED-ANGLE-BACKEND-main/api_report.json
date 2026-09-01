@@ -1,0 +1,495 @@
+[
+  {
+    "id": 1,
+    "leadSerialNumber": "LD-1",
+    "leadName": "mukilan b",
+    "phone": "6369194095",
+    "email": "mukilanbalakrishnan7@gmail.com",
+    "eventType": "Wedding",
+    "eventDate": "2026-02-15T00:00:00.000Z",
+    "location": null,
+    "priority": "High",
+    "isDeleted": false,
+    "currentStage": "Finalised",
+    "status": "quotationapproved",
+    "createdAt": "2026-02-18T13:39:37.104Z",
+    "quotationCount": 1,
+    "totalQuotationValue": 180000,
+    "invoiceCount": 1,
+    "totalInvoiceValue": 178000,
+    "totalPayments": 0,
+    "balance": 178000,
+    "followUpCount": 3,
+    "followUps": [
+      {
+        "callTime": "2026-02-18T00:00:00.000Z",
+        "notes": "the first",
+        "isTaken": false
+      },
+      {
+        "callTime": "2026-02-18T00:00:00.000Z",
+        "notes": "the second",
+        "isTaken": false
+      },
+      {
+        "callTime": "2026-02-18T00:00:00.000Z",
+        "notes": "the third",
+        "isTaken": false
+      }
+    ],
+    "invoiceDetails": [
+      {
+        "invoiceId": 1,
+        "billingDate": "2026-02-18T00:00:00.000Z",
+        "plan": "Standard",
+        "status": "Sent",
+        "discount": 20000,
+        "totalAmount": 178000,
+        "packageTotal": 180000,
+        "addonTotal": 18000,
+        "balance": 178000,
+        "eventName": "Wedding",
+        "engagement": "",
+        "wedding": "",
+        "reception": "",
+        "location": "",
+        "itemsByCategory": {
+          "SHOOT": [
+            {
+              "name": "Cinematic Photography",
+              "quantity": 1
+            },
+            {
+              "name": "Cinematic Videography",
+              "quantity": 1
+            }
+          ],
+          "ADD-ONS": [
+            {
+              "name": "360° Video Booth",
+              "quantity": 1
+            }
+          ],
+          "WEDDING": [
+            {
+              "name": "Traditional Photography",
+              "quantity": 1
+            },
+            {
+              "name": "Traditional Videography",
+              "quantity": 1
+            },
+            {
+              "name": "Candid Photography",
+              "quantity": 1
+            },
+            {
+              "name": "Candid Videography",
+              "quantity": 1
+            },
+            {
+              "name": "Drone",
+              "quantity": 1
+            }
+          ],
+          "PACKAGES": [
+            {
+              "name": "RedAngle Elite Premium - Wedding & Reception",
+              "quantity": 1
+            }
+          ],
+          "DELIVERABLE": [
+            {
+              "name": "Premium Canvera Album",
+              "quantity": 2
+            },
+            {
+              "name": "250 Selected Photos (50 Sheets)",
+              "quantity": 1
+            },
+            {
+              "name": "Traditional Video Output",
+              "quantity": 2
+            },
+            {
+              "name": "Cinematic Highlights (3–5 min)",
+              "quantity": 1
+            },
+            {
+              "name": "E-Album",
+              "quantity": 2
+            },
+            {
+              "name": "Miniature Album",
+              "quantity": 2
+            }
+          ],
+          "COMPLEMENTARY": [
+            {
+              "name": "Outdoor Canvera Magazine Album",
+              "quantity": 1
+            },
+            {
+              "name": "Save The Date Video (1–2 min)",
+              "quantity": 1
+            },
+            {
+              "name": "AI Photo Frame",
+              "quantity": 1
+            },
+            {
+              "name": "WhatsApp Photo Booth",
+              "quantity": 1
+            },
+            {
+              "name": "Retouched Photos",
+              "quantity": 20
+            },
+            {
+              "name": "Raw Footage",
+              "quantity": 1
+            },
+            {
+              "name": "Google Drive Access",
+              "quantity": 1
+            },
+            {
+              "name": "Pixs Office Support",
+              "quantity": 1
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "leadSerialNumber": "LD-2",
+    "leadName": "mukilan b",
+    "phone": "6369194095",
+    "email": "mukilanbalakrishnan7@gmail.com",
+    "eventType": "Wedding",
+    "eventDate": "2026-02-15T00:00:00.000Z",
+    "location": null,
+    "priority": "High",
+    "isDeleted": false,
+    "currentStage": "Finalised",
+    "status": "completed",
+    "createdAt": "2026-02-18T15:01:24.906Z",
+    "quotationCount": 1,
+    "totalQuotationValue": 180000,
+    "invoiceCount": 1,
+    "totalInvoiceValue": 0,
+    "totalPayments": 0,
+    "balance": 0,
+    "followUpCount": 2,
+    "followUps": [
+      {
+        "callTime": "2026-03-23T00:00:00.000Z",
+        "notes": "et",
+        "isTaken": false
+      },
+      {
+        "callTime": "2026-03-23T00:00:00.000Z",
+        "notes": "dCs",
+        "isTaken": false
+      }
+    ],
+    "invoiceDetails": [
+      {
+        "invoiceId": 11,
+        "billingDate": "2026-03-23T00:00:00.000Z",
+        "status": "Pending",
+        "discount": 0,
+        "balance": null,
+        "eventName": "",
+        "engagement": "",
+        "wedding": "",
+        "reception": "",
+        "location": "",
+        "itemsByCategory": {}
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "leadSerialNumber": "LD-4",
+    "leadName": "demo n",
+    "phone": "6369194095",
+    "email": "mukilanbalakrishnan7@gmail.com",
+    "eventType": "Wedding",
+    "eventDate": "2026-02-15T00:00:00.000Z",
+    "location": null,
+    "priority": "High",
+    "isDeleted": false,
+    "currentStage": "Finalised",
+    "status": "assigned",
+    "createdAt": "2026-02-20T11:38:52.069Z",
+    "quotationCount": 1,
+    "totalQuotationValue": 106000,
+    "invoiceCount": 1,
+    "totalInvoiceValue": 100000,
+    "totalPayments": 124000,
+    "balance": -24000,
+    "followUpCount": 2,
+    "followUps": [
+      {
+        "callTime": "2026-02-20T00:00:00.000Z",
+        "notes": "demo testing",
+        "isTaken": false
+      },
+      {
+        "callTime": "2026-02-20T00:00:00.000Z",
+        "notes": "final",
+        "isTaken": false
+      }
+    ],
+    "invoiceDetails": [
+      {
+        "invoiceId": 2,
+        "billingDate": "2026-02-20T00:00:00.000Z",
+        "plan": "Standard",
+        "status": "Partial",
+        "discount": 24000,
+        "totalAmount": 100000,
+        "packageTotal": 106000,
+        "addonTotal": 18000,
+        "paid": 0,
+        "balance": 100000,
+        "eventName": "",
+        "engagement": "",
+        "wedding": "",
+        "reception": "",
+        "location": "",
+        "itemsByCategory": {
+          "SHOOT": [
+            {
+              "name": "Cinematic Photography",
+              "quantity": 1
+            }
+          ],
+          "ADD-ONS": [
+            {
+              "name": "360° Video Booth",
+              "quantity": 1
+            }
+          ],
+          "WEDDING": [
+            {
+              "name": "Traditional Photography",
+              "quantity": 1
+            },
+            {
+              "name": "Traditional Videography",
+              "quantity": 1
+            },
+            {
+              "name": "Candid Photography",
+              "quantity": 1
+            }
+          ],
+          "PACKAGES": [
+            {
+              "name": "RedAngle Elite Standard - Wedding & Reception",
+              "quantity": 1
+            }
+          ],
+          "DELIVERABLE": [
+            {
+              "name": "Premium Canvera Album",
+              "quantity": 2
+            },
+            {
+              "name": "200 Selected Photos (40 Sheets)",
+              "quantity": 1
+            },
+            {
+              "name": "Traditional Video Output",
+              "quantity": 2
+            },
+            {
+              "name": "E-Album",
+              "quantity": 2
+            },
+            {
+              "name": "Miniature Album",
+              "quantity": 2
+            }
+          ],
+          "COMPLEMENTARY": [
+            {
+              "name": "A2 Photo Frame",
+              "quantity": 1
+            },
+            {
+              "name": "Retouched Photos",
+              "quantity": 15
+            },
+            {
+              "name": "Raw Footage",
+              "quantity": 1
+            },
+            {
+              "name": "Google Drive Access",
+              "quantity": 1
+            },
+            {
+              "name": "Pixs Office Support",
+              "quantity": 1
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "leadSerialNumber": "LD-3",
+    "leadName": "testing t",
+    "phone": "6369194095",
+    "email": "mukilanbalakrishnan7@gmail.com",
+    "eventType": "Wedding",
+    "eventDate": "2026-02-15T00:00:00.000Z",
+    "location": null,
+    "priority": "Medium",
+    "isDeleted": false,
+    "currentStage": "Finalised",
+    "status": "invoiceapproved",
+    "createdAt": "2026-02-20T09:32:09.801Z",
+    "quotationCount": 1,
+    "totalQuotationValue": 106000,
+    "invoiceCount": 1,
+    "totalInvoiceValue": 100000,
+    "totalPayments": 0,
+    "balance": 100000,
+    "followUpCount": 1,
+    "followUps": [
+      {
+        "callTime": "2026-02-21T00:00:00.000Z",
+        "notes": "dpwj",
+        "isTaken": false
+      }
+    ],
+    "invoiceDetails": [
+      {
+        "invoiceId": 3,
+        "billingDate": "2026-02-21T00:00:00.000Z",
+        "plan": "Standard",
+        "status": "Sent",
+        "discount": 18000,
+        "totalAmount": 100000,
+        "packageTotal": 106000,
+        "addonTotal": 12000,
+        "paid": 0,
+        "balance": 100000,
+        "eventName": "",
+        "engagement": "",
+        "wedding": "",
+        "reception": "",
+        "location": "",
+        "itemsByCategory": {
+          "SHOOT": [
+            {
+              "name": "Cinematic Photography",
+              "quantity": 1
+            }
+          ],
+          "ADD-ONS": [
+            {
+              "name": "Traditional Video",
+              "quantity": 1
+            }
+          ],
+          "WEDDING": [
+            {
+              "name": "Traditional Photography",
+              "quantity": 1
+            },
+            {
+              "name": "Traditional Videography",
+              "quantity": 1
+            },
+            {
+              "name": "Candid Photography",
+              "quantity": 1
+            }
+          ],
+          "PACKAGES": [
+            {
+              "name": "RedAngle Elite Standard - Wedding & Reception",
+              "quantity": 1
+            }
+          ],
+          "DELIVERABLE": [
+            {
+              "name": "Premium Canvera Album",
+              "quantity": 2
+            },
+            {
+              "name": "200 Selected Photos (40 Sheets)",
+              "quantity": 1
+            },
+            {
+              "name": "Traditional Video Output",
+              "quantity": 2
+            },
+            {
+              "name": "E-Album",
+              "quantity": 2
+            },
+            {
+              "name": "Miniature Album",
+              "quantity": 2
+            }
+          ],
+          "COMPLEMENTARY": [
+            {
+              "name": "A2 Photo Frame",
+              "quantity": 1
+            },
+            {
+              "name": "Retouched Photos",
+              "quantity": 15
+            },
+            {
+              "name": "Raw Footage",
+              "quantity": 1
+            },
+            {
+              "name": "Google Drive Access",
+              "quantity": 1
+            },
+            {
+              "name": "Pixs Office Support",
+              "quantity": 1
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "leadSerialNumber": "LD-5",
+    "leadName": "Sakthivel D",
+    "phone": "919150734169",
+    "email": "sgposhith@gmail.com",
+    "eventType": "hindhu_wedding",
+    "eventDate": null,
+    "location": "Chennai",
+    "priority": null,
+    "isDeleted": false,
+    "currentStage": "Lead",
+    "status": "To Do",
+    "createdAt": "2026-02-21T10:13:08.243Z",
+    "quotationCount": 0,
+    "totalQuotationValue": 0,
+    "invoiceCount": 0,
+    "totalInvoiceValue": 0,
+    "totalPayments": 0,
+    "balance": 0,
+    "followUpCount": 0,
+    "followUps": [],
+    "invoiceDetails": []
+  }
+]

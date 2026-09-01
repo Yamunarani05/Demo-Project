@@ -1,0 +1,355 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import { api } from "../../api/axios";
+
+import redAngleLogo from "../../assets/red_angle_logo.svg";
+import loginIllustration from "../../assets/focus-animate.svg";
+
+import { HexagonBackground } from "../../components/animate-ui/components/backgrounds/hexagon";
+
+const Login = () => {
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotMessage, setForgotMessage] = useState("");
+  const [forgotError, setForgotError] = useState("");
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
+
+  const validateEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const newErrors: typeof errors = {};
+    setAuthError(null); // clear previous auth error
+
+    if (!email) newErrors.email = "Email is required";
+    else if (!validateEmail(email))
+      newErrors.email = "Enter a valid email";
+
+    if (!password) newErrors.password = "Password is required";
+    else if (password.length < 6)
+      newErrors.password = "Password must be at least 6 characters";
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
+    try {
+      setLoading(true);
+
+      const res = await api.post("/login", {
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+ const { token, role, userId, id, employeeId, adminId, partnerId, fullName } = res.data;
+
+if (!token || !role) throw new Error();
+
+// resolve whatever ID backend sends
+const resolvedUserId = String(
+  userId ?? id ?? employeeId ?? adminId ?? partnerId
+);
+
+if (!resolvedUserId) {
+  throw new Error("User ID not returned from login API");
+}
+
+localStorage.setItem("token", token);
+localStorage.setItem("role", role);
+localStorage.setItem("userId", resolvedUserId);
+
+// optional but recommended
+if (fullName) {
+  localStorage.setItem("fullName", fullName);
+}
+
+      if (role === "admin") navigate("/admin/dashboard", { replace: true });
+      else if (role === "employee")
+        navigate("/employee/employee-profile", { replace: true });
+      else if (role === "partner")
+        navigate("/partner/dashboard", { replace: true });
+      else navigate("/", { replace: true });
+
+    } catch (err: any) {
+      setAuthError(
+        err?.response?.data?.message || "Incorrect email or password"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setForgotError("");
+  setForgotMessage("");
+
+  if (!forgotEmail) {
+    setForgotError("Email is required");
+    return;
+  }
+
+  if (!validateEmail(forgotEmail)) {
+    setForgotError("Enter a valid email");
+    return;
+  }
+
+  try {
+    setForgotLoading(true);
+
+    await api.post("/auth/forgot-password", {
+      email: forgotEmail.trim().toLowerCase(),
+    });
+
+    setForgotMessage(
+      "If the email exists, a password reset link has been sent."
+    );
+  } catch (err: any) {
+    setForgotError(
+      err?.response?.data?.message ||
+        "Failed to send reset email. Try again."
+    );
+  } finally {
+    setForgotLoading(false);
+  }
+};
+
+
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-purple-50 via-violet-100 to-purple-200">
+      {/* BACKGROUND */}
+      <HexagonBackground
+        hexagonSize={90}
+        hexagonMargin={6}
+        className="absolute inset-0 z-0"
+      />
+
+      {/* CONTENT WRAPPER — pass mouse events through */}
+      <div className="relative z-10 min-h-screen flex items-center pointer-events-none">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center py-12 md:py-20">
+
+            {/* LEFT — Illustration */}
+            <div className="hidden md:flex flex-col justify-center pointer-events-auto">
+              <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900 mb-4">
+                Red Angle Studio
+              </h2>
+
+              <p className="text-gray-600 max-w-sm mb-10 leading-relaxed">
+                Manage your workspace and collaborate with your team seamlessly
+                with our intuitive platform.
+              </p>
+
+              <img
+                src={loginIllustration}
+                alt="Login illustration"
+                className="w-full max-w-sm lg:max-w-md opacity-80 grayscale-[20%]"
+              />
+            </div>
+
+            {/* RIGHT — LOGIN CARD (CRITICAL FIX) */}
+            <div className="flex justify-center md:justify-end pointer-events-auto">
+              <div className="w-full max-w-md rounded-2xl bg-white/95 backdrop-blur-md border border-gray-200 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.15)] px-6 sm:px-7 pt-10 sm:pt-12 pb-6">
+
+                {/* LOGO */}
+                <div className="flex justify-center mb-4">
+                  <div className="h-[56px] overflow-hidden">
+                    <img
+                      src={redAngleLogo}
+                      alt="Red Angle Studio"
+                      className="h-[140px] w-auto object-contain -translate-y-[38px]"
+                    />
+                  </div>
+                </div>
+
+                {/* TITLE */}
+                <div className="mb-8 text-center sm:text-left">
+                  <h1 className="text-2xl font-semibold text-gray-900">
+                    Sign in
+                  </h1>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Enter your credentials to continue
+                  </p>
+                </div>
+
+              <form
+                onSubmit={handleSubmit}
+                className={`space-y-5 ${
+                  authError ? "animate-shake" : ""
+                }`}
+              >
+                {/* EMAIL FIELD */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errors.email)
+                        setErrors((prev) => ({ ...prev, email: undefined }));
+                      if (authError) setAuthError(null);
+                    }}
+                    className={`w-full px-4 py-3 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 ${
+                      errors.email ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="you@example.com"
+                  />
+                  {errors.email && (
+                    <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+                  )}
+                </div>
+
+                {/* PASSWORD FIELD */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (errors.password)
+                          setErrors((prev) => ({ ...prev, password: undefined }));
+                        if (authError) setAuthError(null);
+                      }}
+                      className={`w-full px-4 py-3 rounded-lg border pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 ${
+                        errors.password ? "border-red-500" : "border-gray-300"
+                      }`}
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="mt-1 text-xs text-red-600">{errors.password}</p>
+                  )}
+                </div>
+
+                {/* FORGOT PASSWORD */}
+                <div className="text-right">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForgot(true);
+                      setForgotEmail(email);
+                    }}
+                    className="text-sm text-violet-600 hover:text-violet-700 font-medium"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+
+                {/* AUTH ERROR (INCORRECT USERNAME/PASSWORD) */}
+                {authError && (
+                  <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-2 text-sm text-red-700">
+                    {authError}
+                  </div>
+                )}
+
+                {/* SUBMIT BUTTON */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-lg bg-violet-600 text-white py-3 text-sm font-medium hover:bg-violet-700 transition disabled:opacity-60"
+                >
+                  {loading ? "Signing in…" : "Continue"}
+                </button>
+              </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* FORGOT PASSWORD MODAL */}
+{showForgot && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 relative">
+      <button
+        onClick={() => {
+          setShowForgot(false);
+          setForgotMessage("");
+          setForgotError("");
+        }}
+        className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+      >
+        ✕
+      </button>
+
+      <h2 className="text-xl font-semibold text-gray-800 mb-2">
+        Forgot Password
+      </h2>
+
+      <p className="text-sm text-gray-500 mb-4">
+        Enter your email address and we’ll send you a password reset link.
+      </p>
+
+      {forgotError && (
+        <div className="mb-3 text-sm text-red-600 bg-red-50 p-3 rounded">
+          {forgotError}
+        </div>
+      )}
+
+      {forgotMessage && (
+        <div className="mb-3 text-sm text-green-600 bg-green-50 p-3 rounded">
+          {forgotMessage}
+        </div>
+      )}
+
+      <form onSubmit={handleForgotPassword} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            value={forgotEmail}
+            onChange={(e) => setForgotEmail(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-violet-500"
+            placeholder="you@example.com"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={forgotLoading}
+          className="w-full bg-violet-600 hover:bg-violet-700 text-white py-2 rounded-lg transition disabled:opacity-60"
+        >
+          {forgotLoading ? "Sending..." : "Send Reset Link"}
+        </button>
+      </form>
+    </div>
+  </div>
+)}
+
+    </div>
+  );
+};
+
+export default Login;
