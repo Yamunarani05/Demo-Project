@@ -1,8 +1,11 @@
 // Centralized high-definition photography asset catalog matching each prototype video scene
 
 export const IMAGES = {
-  // 1. Hero Section
-  heroStudio: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&w=2000&q=85", // Studio photography lights & camera
+  // 1. Hero Section & Cinematic Storyboard Experience
+  heroStudioBg: "/images/hero-studio-bg.jpg", // Sunlit Photography loft studio background
+  heroStudio: "/images/hero-studio-bg.jpg", // Photography loft studio with camera & lighting
+  cinematicWedding: "/images/wedding-cinematic-01.jpg", // 0-3s Cinematic Wedding Portrait
+  photographerCapture: "/images/wedding-capture-moment-02.jpg", // 3-6s Moment Capture Lens Flare
   
   // 2. AI-Powered Decisions Section
   aiTablet: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1600&q=85", // Tablet on wooden desk with creative tools

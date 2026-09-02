@@ -26,6 +26,7 @@ export default {
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
         display: ['"Plus Jakarta Sans"', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Georgia', 'serif'],
       },
       boxShadow: {
         'soft': '0 10px 30px -5px rgba(94, 53, 177, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.02)',
