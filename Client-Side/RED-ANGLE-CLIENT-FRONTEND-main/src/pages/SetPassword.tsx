@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle, CheckCircle2, Camera } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import gsap from 'gsap'
@@ -108,8 +108,18 @@ export default function SetPassword() {
                         ref={cardRef}
                         className="w-full bg-white rounded-[1.75rem] p-8 shadow-[0_20px_60px_-15px_rgba(109,40,217,0.15)] relative border border-white/60"
                     >
-                        <div className="flex items-center justify-center mb-8">
-                            <img src="/red_angle_logo.png" alt="RED ANGLE STUDIO" className="h-[40px] w-auto object-contain" />
+                        <div className="flex items-center justify-center gap-3 mb-8">
+                            <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center shadow-md">
+                                <Camera className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex flex-col text-left">
+                                <span className="font-extrabold text-lg tracking-wider uppercase font-display text-slate-900">
+                                    DEMO STUDIO
+                                </span>
+                                <span className="text-[9px] text-purple-600 tracking-widest uppercase font-semibold -mt-0.5">
+                                    Client Portal
+                                </span>
+                            </div>
                         </div>
 
                         {success ? (

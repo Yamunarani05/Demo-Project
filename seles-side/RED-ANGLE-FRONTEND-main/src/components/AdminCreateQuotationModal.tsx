@@ -33,7 +33,7 @@ const AdminCreateQuotationModal = ({
 
   /* ---------- IMAGE URL RESOLVER ---------- */
 
-  const [items, setItems] = useState<{name: string, category: string, quantity: number, price?: number | ""}[]>([
+  const [items, setItems] = useState<{ name: string, category: string, quantity: number, price?: number | "" }[]>([
     { name: "", category: "", quantity: 1, price: "" }
   ]);
 

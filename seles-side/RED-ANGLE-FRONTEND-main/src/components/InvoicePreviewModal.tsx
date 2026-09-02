@@ -798,12 +798,14 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
 
               {/* LOGO + ADDRESS */}
               <div className="inv-logo">
-                <div className="inv-logo-row">
-                  <img
-                    src={logoImage}
-                    alt="Red Angle Studio"
-                    style={{ width: "240px", objectFit: "contain", margin: "5px 0" }}
-                  />
+                <div className="inv-logo-row" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "10px", margin: "6px 0" }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                    <circle cx="12" cy="13" r="3"/>
+                  </svg>
+                  <span style={{ fontSize: "24px", fontWeight: "900", color: "#000000", letterSpacing: "2px", lineHeight: "1", fontFamily: "Arial, Helvetica, sans-serif" }}>
+                    DEMO STUDIO
+                  </span>
                 </div>
                 <div className="inv-address">
                   AP 742, G-Block, 2nd Street, 11th Main Rd, Anna Nagar, Chennai, Tamil Nadu 600040.
@@ -924,7 +926,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                             }
                           }
                         }
-                        return "RED ANGLE REGULAR PREMIUM PACKAGE DESCRIPTION";
+                        return "DEMO STUDIO REGULAR PREMIUM PACKAGE DESCRIPTION";
                       })()}
                     </th>
                     <th className="th-qty">QTY./Unit</th>

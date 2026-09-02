@@ -53,14 +53,14 @@ export default function Dashboard() {
         startDate: '-',
         status: 'Loading...'
     });
-    
+
     const [recentNotifications, setRecentNotifications] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
                 const token = localStorage.getItem('ra_token');
-                if(!token) return;
+                if (!token) return;
 
                 const meRes = await axios.get(`${API_URL}/client-auth/me`, {
                     headers: { Authorization: `Bearer ${token}` }

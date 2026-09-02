@@ -7,8 +7,8 @@ FileText,
 DollarSign,
 LogOut,
 User,
+Camera,
 } from "lucide-react";
-import redAngleLogo from "../../assets/red_angle_logo.png";
 
 // Define MenuItem interface
 interface MenuItem {
@@ -91,8 +91,15 @@ className="lg:hidden fixed top-4 left-4 z-50 p-3 bg-violet-600 text-white rounde
       {/* Top - Avatar & Role */}
       <div>
         <div className="flex flex-col items-center mb-6">
-          <img src={redAngleLogo} alt="Red Angle" className="h-10 mb-2" />
-          <span className="text-sm font-bold text-gray-700">{userRole}</span>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center shadow-sm">
+              <Camera className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-extrabold text-sm tracking-wider uppercase font-display text-gray-900">
+              DEMO STUDIO
+            </span>
+          </div>
+          <span className="text-xs font-bold text-violet-700 bg-violet-100/80 px-2.5 py-0.5 rounded-full">{userRole}</span>
         </div>
 
         {/* Menu */}

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Eye, EyeOff, AlertCircle, ArrowLeft, CheckCircle2, Mail, KeyRound, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle, ArrowLeft, CheckCircle2, Mail, KeyRound, ShieldCheck, Camera } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import gsap from 'gsap'
@@ -535,15 +535,24 @@ export default function Login() {
                 backgroundPosition: 'center'
             }}
         >
+            {/* BACK TO HOME NAVIGATION BUTTON */}
+            <a
+                href="http://localhost:5173"
+                className="absolute top-6 left-6 z-30 flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/90 hover:bg-white text-slate-800 hover:text-purple-700 font-semibold text-xs shadow-md backdrop-blur-md transition-all border border-purple-200 hover:scale-105 active:scale-95"
+            >
+                <ArrowLeft size={16} className="text-purple-600" />
+                <span>Back to Home</span>
+            </a>
+
             <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 relative z-10">
 
                 {/* --- LEFT DESCRIPTIVE SIDE --- */}
                 <div ref={leftContentRef} className="flex flex-col justify-center order-2 lg:order-1 text-center lg:text-left mt-10 lg:mt-0">
                     <h1 className="text-4xl lg:text-[2.75rem] font-bold text-slate-900 tracking-tight leading-tight mb-4">
-                        Red Angle Studio
+                        Demo Studio
                     </h1>
                     <p className="text-slate-500 text-base max-w-md mx-auto lg:mx-0 mb-12 leading-relaxed">
-                        Manage your workspace and collaborate with your team seamlessly with our intuitive platform.
+                        Manage your client portal, view project status, approve quotations, and download deliveries effortlessly.
                     </p>
 
                     <style>{`
@@ -586,8 +595,18 @@ export default function Login() {
                         className="w-full max-w-[400px] bg-white rounded-[1.75rem] p-8 shadow-[0_20px_60px_-15px_rgba(109,40,217,0.15)] relative border border-white/60"
                     >
                         {/* Logo header inside card */}
-                        <div className="flex items-center justify-center lg:justify-end gap-3 mb-10">
-                            <img src="/red_angle_logo.png" alt="RED ANGLE STUDIO" className="h-[40px] w-auto object-contain" />
+                        <div className="flex items-center justify-center lg:justify-end gap-3 mb-8">
+                            <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center shadow-md">
+                                <Camera className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex flex-col text-left">
+                                <span className="font-extrabold text-lg tracking-wider uppercase font-display text-slate-900">
+                                    DEMO STUDIO
+                                </span>
+                                <span className="text-[9px] text-purple-600 tracking-widest uppercase font-semibold -mt-0.5">
+                                    Client Portal
+                                </span>
+                            </div>
                         </div>
 
                         {showForgot ? (

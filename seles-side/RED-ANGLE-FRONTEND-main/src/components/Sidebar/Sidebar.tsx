@@ -17,6 +17,7 @@ import {
   User,
   Link as LinkIcon,
   DollarSign,
+  Camera,
 } from "lucide-react";
 
 import redAngleLogo from "../../assets/red_angle_logo.png";
@@ -203,14 +204,15 @@ const Sidebar: React.FC<{ forceOpen?: boolean }> = ({ forceOpen }) => {
         <div className="flex flex-col h-full px-3 pt-3 pb-4">
           {/* Logo + role */}
           <div className="mb-4 flex flex-col items-center">
-            <div className="w-full flex items-center justify-center">
-              <img
-                src={redAngleLogo}
-                alt="Red Angle Studio"
-                className="w-32 h-auto object-contain"
-              />
+            <div className="w-full flex items-center justify-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center shadow-sm">
+                <Camera className="w-4 h-4 text-white" />
+              </div>
+              <span className="font-extrabold text-sm tracking-wider uppercase font-display text-gray-900">
+                DEMO STUDIO
+              </span>
             </div>
-            <span className="mt-1 text-sm font-bold text-gray-700">
+            <span className="mt-1 text-xs font-bold text-violet-700 bg-violet-100/80 px-2.5 py-0.5 rounded-full">
               {roleLabel}
             </span>
           </div>

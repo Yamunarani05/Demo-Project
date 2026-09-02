@@ -72,13 +72,13 @@ const SendQuotationModal = ({
         <div>
           <h2 className="text-xl font-semibold">Send Quotation</h2>
           <p className="text-sm text-gray-500">
-            Package: {quotation.serviceName}
+            Package: {quotation.serviceName?.replace(/RedAngle/gi, "Demo").replace(/Red Angle/gi, "Demo")}
           </p>
         </div>
 
         <div className="border rounded-lg p-4 bg-gray-50">
           <div className="flex justify-between">
-            <h3 className="font-semibold">{quotation.serviceName}</h3>
+            <h3 className="font-semibold">{quotation.serviceName?.replace(/RedAngle/gi, "Demo").replace(/Red Angle/gi, "Demo")}</h3>
             <span className="text-purple-600 font-semibold">
               ₹ {quotation.price}
             </span>

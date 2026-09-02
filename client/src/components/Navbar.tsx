@@ -5,10 +5,11 @@ import { Camera, Menu, X, Sparkles, ArrowRight } from 'lucide-react';
 interface NavbarProps {
   onOpenDemo: () => void;
   onOpenContact: () => void;
+  onOpenLogin: () => void;
   onToggleCamera?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact, onToggleCamera }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact, onOpenLogin, onToggleCamera }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -74,7 +75,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact, onTog
           {/* Right Action CTA Buttons */}
           <div className="hidden sm:flex items-center gap-3">
             <button
-              onClick={onOpenContact}
+              onClick={onOpenLogin}
               className="px-5 py-2.5 rounded-full text-sm font-semibold text-white hover:bg-white/10 transition-all"
             >
               Login
@@ -140,7 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact, onTog
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    onOpenContact();
+                    onOpenLogin();
                   }}
                   className="w-full py-3 rounded-xl text-sm font-semibold border border-white/30 text-white hover:bg-white/10"
                 >

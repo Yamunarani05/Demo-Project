@@ -12,6 +12,7 @@ import { CTASection } from './components/CTASection';
 import { Footer } from './components/Footer';
 import { DemoModal } from './components/DemoModal';
 import { ContactModal } from './components/ContactModal';
+import { PortalSelectModal } from './components/PortalSelectModal';
 import { Toast, ToastMessage } from './components/Toast';
 import { CameraViewport } from './components/CameraViewport';
 import { AnimatedBackground } from './components/AnimatedBackground';
@@ -21,6 +22,7 @@ export function App() {
   const [isCameraView, setIsCameraView] = useState(false);
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('Studio');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
@@ -60,6 +62,7 @@ export function App() {
       <Navbar
         onOpenDemo={() => setIsDemoModalOpen(true)}
         onOpenContact={() => setIsContactModalOpen(true)}
+        onOpenLogin={() => setIsLoginModalOpen(true)}
         onToggleCamera={() => setIsCameraView(true)}
       />
 
@@ -118,6 +121,11 @@ export function App() {
         onClose={() => setIsContactModalOpen(false)}
         onSuccess={(msg: string) => showToast('success', 'Message Dispatched', msg)}
         onError={(err: string) => showToast('error', 'Message Failed', err)}
+      />
+
+      <PortalSelectModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
       />
     </div>
   );

@@ -26,7 +26,7 @@ export const CameraViewport: React.FC<CameraViewportProps> = ({ onEnterSite }) =
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#030304] font-sans selection:bg-purple-500 selection:text-white">
       {/* Background ambient lighting in camera studio */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-950/20 via-slate-950 to-black opacity-95 pointer-events-none" />
-      
+
       {/* Ambient background glow */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
@@ -70,9 +70,8 @@ export const CameraViewport: React.FC<CameraViewportProps> = ({ onEnterSite }) =
           onClick={handleClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className={`relative cursor-pointer transition-transform duration-500 transform ${
-            isHovered ? 'scale-[1.015]' : 'scale-100'
-          }`}
+          className={`relative cursor-pointer transition-transform duration-500 transform ${isHovered ? 'scale-[1.015]' : 'scale-100'
+            }`}
           title="Click to shoot & enter website"
         >
           {/* Outer Camera Body Housing */}
@@ -137,7 +136,7 @@ export const CameraViewport: React.FC<CameraViewportProps> = ({ onEnterSite }) =
               <div className="relative p-6 sm:p-10 md:p-12 bg-[#050508] min-h-[350px] sm:min-h-[400px] flex flex-col items-center justify-center text-center overflow-hidden border border-purple-900/40">
                 {/* Perspective 3D Grid Floor Inside Camera Screen */}
                 <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-25">
-                  <div 
+                  <div
                     className="w-[180%] h-[150%] origin-center"
                     style={{
                       transform: 'perspective(600px) rotateX(72deg) translateY(60px)',
@@ -160,7 +159,7 @@ export const CameraViewport: React.FC<CameraViewportProps> = ({ onEnterSite }) =
                     {[...reelPhotos, ...reelPhotos].map((img, i) => (
                       <div
                         key={`lcd-reel-${i}`}
-                        className="w-14 h-11 bg-white/95 p-1 rounded-sm shadow-md border border-white/40 transform rotate-[-6deg]"
+                        className="w-14 h-11 bg-white p-1 rounded-sm shadow-md border-2 border-white transform rotate-[-6deg]"
                         style={{
                           transform: `translateY(${Math.sin((i % 8) * 0.8) * 12}px) rotate(${((i % 5) - 2) * 4}deg)`,
                         }}

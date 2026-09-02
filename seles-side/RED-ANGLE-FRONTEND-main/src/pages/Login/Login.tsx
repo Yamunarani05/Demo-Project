@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Camera, ArrowLeft } from "lucide-react";
 import { api } from "../../api/axios";
 
-import redAngleLogo from "../../assets/red_angle_logo.svg";
 import loginIllustration from "../../assets/focus-animate.svg";
 
 import { HexagonBackground } from "../../components/animate-ui/components/backgrounds/hexagon";
@@ -132,6 +131,15 @@ if (fullName) {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-purple-50 via-violet-100 to-purple-200">
+      {/* BACK TO HOME NAVIGATION BUTTON */}
+      <a
+        href="http://localhost:5173"
+        className="absolute top-6 left-6 z-30 pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/90 hover:bg-white text-slate-800 hover:text-purple-700 font-semibold text-xs shadow-md backdrop-blur-md transition-all border border-purple-200 hover:scale-105 active:scale-95"
+      >
+        <ArrowLeft className="w-4 h-4 text-purple-600" />
+        <span>Back to Home</span>
+      </a>
+
       {/* BACKGROUND */}
       <HexagonBackground
         hexagonSize={90}
@@ -146,12 +154,12 @@ if (fullName) {
 
             {/* LEFT — Illustration */}
             <div className="hidden md:flex flex-col justify-center pointer-events-auto">
-              <h2 className="text-3xl lg:text-4xl font-semibold text-gray-900 mb-4">
-                Red Angle Studio
+              <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
+                Demo Studio
               </h2>
 
-              <p className="text-gray-600 max-w-sm mb-10 leading-relaxed">
-                Manage your workspace and collaborate with your team seamlessly
+              <p className="text-gray-600 max-w-sm mb-10 leading-relaxed font-normal">
+                Manage your sales workspace, leads, and team collaboration seamlessly
                 with our intuitive platform.
               </p>
 
@@ -162,23 +170,29 @@ if (fullName) {
               />
             </div>
 
-            {/* RIGHT — LOGIN CARD (CRITICAL FIX) */}
+            {/* RIGHT — LOGIN CARD */}
             <div className="flex justify-center md:justify-end pointer-events-auto">
-              <div className="w-full max-w-md rounded-2xl bg-white/95 backdrop-blur-md border border-gray-200 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.15)] px-6 sm:px-7 pt-10 sm:pt-12 pb-6">
+              <div className="w-full max-w-md rounded-2xl bg-white/95 backdrop-blur-md border border-gray-200 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.15)] px-6 sm:px-7 pt-8 pb-6">
 
-                {/* LOGO */}
-                <div className="flex justify-center mb-4">
-                  <div className="h-[56px] overflow-hidden">
-                    <img
-                      src={redAngleLogo}
-                      alt="Red Angle Studio"
-                      className="h-[140px] w-auto object-contain -translate-y-[38px]"
-                    />
+                {/* LOGO BADGE */}
+                <div className="flex justify-center mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-violet-600 flex items-center justify-center shadow-md">
+                      <Camera className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span className="font-extrabold text-xl tracking-wider uppercase font-display text-slate-900">
+                        DEMO STUDIO
+                      </span>
+                      <span className="text-[10px] text-violet-600 tracking-widest uppercase font-semibold -mt-0.5">
+                        Sales & Admin Portal
+                      </span>
+                    </div>
                   </div>
                 </div>
 
                 {/* TITLE */}
-                <div className="mb-8 text-center sm:text-left">
+                <div className="mb-6 text-center sm:text-left">
                   <h1 className="text-2xl font-semibold text-gray-900">
                     Sign in
                   </h1>

@@ -84,7 +84,14 @@ export default function ClientSidebar({ isOpen, setIsOpen }: { isOpen?: boolean,
         >
             {/* Logo Area */}
             <div className="h-[var(--topbar-height)] flex items-center px-6 border-b border-indigo-900/10 pt-4 pb-2">
-                <img src="/red_angle_logo.png" alt="RED ANGLE STUDIO" className="h-[32px] w-auto object-contain cursor-pointer" onClick={() => navigate('/client/dashboard')} />
+                <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/client/dashboard')}>
+                    <div className="w-7 h-7 rounded-lg bg-[#5B5FC7] flex items-center justify-center shadow-sm">
+                        <Camera className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-extrabold text-base tracking-wider uppercase font-display text-indigo-950">
+                        DEMO STUDIO
+                    </span>
+                </div>
             </div>
 
             {/* Navigation Links */}
