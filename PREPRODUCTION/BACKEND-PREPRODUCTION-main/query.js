@@ -1,0 +1,1 @@
+const { Pool } = require('pg'); const pool = new Pool({ connectionString: 'postgresql://postgres:postgres@localhost:5432/Redangle-Preproduction' }); pool.query('SELECT external_lead_id, drive_link, secondary_photo_drive_link, save_the_date_drive_link FROM event_details LIMIT 10').then(res => { console.log(res.rows); pool.end(); }).catch(console.error);

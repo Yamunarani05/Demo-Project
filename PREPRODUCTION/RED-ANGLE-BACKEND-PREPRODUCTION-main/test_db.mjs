@@ -1,0 +1,1 @@
+import pg from 'pg'; const { Pool } = pg; const pool = new Pool({ port: 6000, user: 'postgres', password: 'password', database: 'Redangle-sales' }); async function run() { const res = await pool.query(SELECT * FROM employees_detail WHERE employee_id = 'EMP-08'); console.log(res.rows[0]); } run();

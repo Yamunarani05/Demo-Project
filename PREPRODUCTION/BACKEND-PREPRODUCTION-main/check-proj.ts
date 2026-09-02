@@ -1,0 +1,1 @@
+const { Pool } = require('pg'); require('dotenv').config(); const pool = new Pool(); pool.query('SELECT id, project_id, project_type FROM assign_projects LIMIT 10').then(res => { console.log(res.rows); process.exit(0) }).catch(err => { console.error(err); process.exit(1) });

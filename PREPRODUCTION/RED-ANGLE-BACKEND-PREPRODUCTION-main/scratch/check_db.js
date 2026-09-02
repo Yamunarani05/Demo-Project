@@ -1,0 +1,1 @@
+const { Pool } = require('pg'); const pool = new Pool({ user: 'postgres', host: 'localhost', database: 'redangle', password: 'root', port: 5432 }); pool.query('SELECT accepted_assignments, accepted_by_employees FROM assign_teams WHERE external_lead_id = ''RAS-02''').then(r => console.log(JSON.stringify(r.rows, null, 2))).catch(console.error).finally(() => pool.end());
