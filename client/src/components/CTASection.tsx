@@ -43,10 +43,10 @@ export const CTASection: React.FC<CTASectionProps> = ({ onOpenDemo }) => {
           className="flex justify-center"
         >
           <button
-            onClick={onOpenDemo}
-            className="px-9 py-4 rounded-full bg-[#181126] hover:bg-black text-white font-semibold text-base shadow-xl shadow-purple-950/20 hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2.5 group"
+            onClick={() => (window.location.href = '/login?role=studio_admin&flow=trial')}
+            className="px-9 py-4 rounded-full bg-[#181126] hover:bg-black text-white font-semibold text-base shadow-xl shadow-purple-950/20 hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2.5 group cursor-pointer"
           >
-            <span>Start Your Journey</span>
+            <span>Start Your 14-Day Free Trial</span>
             <ArrowRight className="w-4 h-4 text-purple-300 group-hover:translate-x-1 transition-transform" />
           </button>
         </motion.div>

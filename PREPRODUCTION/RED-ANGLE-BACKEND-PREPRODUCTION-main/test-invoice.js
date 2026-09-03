@@ -1,1 +1,0 @@
-const { Client } = require('pg'); const c = new Client('postgresql://postgres:password@localhost:5432/Redangle-Preproduction'); c.connect().then(()=>c.query(SELECT invoice_data FROM external_leads WHERE lead_name = 'Suryaa M' LIMIT 1).then(r=>{console.log(JSON.stringify(r.rows[0], null, 2)); c.end();}))

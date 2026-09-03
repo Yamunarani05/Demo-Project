@@ -7,6 +7,9 @@
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "dev:client": "npm run dev --prefix client",
     "dev:server": "npm run dev --prefix server",
+    "dev:masteradmin": "concurrently \"npm run dev --prefix MasterAdmin/MasterAdmin-Backend-main\" \"npm run dev --prefix MasterAdmin/MasterAdmin-Frontend-main\"",
+    "dev:masteradmin:server": "npm run dev --prefix MasterAdmin/MasterAdmin-Backend-main",
+    "dev:masteradmin:client": "npm run dev --prefix MasterAdmin/MasterAdmin-Frontend-main",
     "build": "npm run build --prefix client && npm run build --prefix server",
     "start": "npm run start --prefix server"
   },

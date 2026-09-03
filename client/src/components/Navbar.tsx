@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Menu, X, Sparkles, ArrowRight } from 'lucide-react';
+import { Camera, Menu, X, Sparkles, ArrowRight, LogIn } from 'lucide-react';
 
 interface NavbarProps {
-  onOpenDemo: () => void;
-  onOpenContact: () => void;
+  onOpenDemo?: () => void;
+  onOpenContact?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact }) => {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -22,37 +24,40 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact }) => 
   const navLinks = [
     { name: 'Home', href: '#home' },
     { name: 'How It Works', href: '#how-it-works' },
-    { name: 'AI', href: '#ai' },
+    { name: 'Features', href: '#features' },
     { name: 'Pricing', href: '#pricing' },
-    { name: 'About', href: '#about' },
     { name: 'Contact', href: '#contact', onClick: onOpenContact },
   ];
 
   return (
     <header className="sticky top-0 z-40 w-full transition-all duration-300">
-      {/* Top Main Navigation Bar */}
-      <div className="bg-[#5E35B1] text-white shadow-md">
+      {/* Top Main Navigation Bar - White Glassmorphism */}
+      <div className={`transition-all duration-300 ${
+        scrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200/80'
+          : 'bg-white/90 backdrop-blur-md border-b border-slate-100'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Brand Logo */}
-          <a
-            href="#home"
-            className="flex items-center gap-3 text-white group focus:outline-none"
+          <Link
+            to="/"
+            className="flex items-center gap-3 text-slate-900 group focus:outline-none"
           >
-            <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-2xl bg-purple-600 flex items-center justify-center text-white shadow-md shadow-purple-900/20 group-hover:scale-105 transition-transform">
               <Camera className="w-5 h-5 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-xl tracking-wider uppercase font-display">
+              <span className="font-extrabold text-xl tracking-wider uppercase font-display leading-tight text-slate-900">
                 DEMO PROJECT
               </span>
-              <span className="text-[10px] text-purple-200 tracking-widest uppercase font-medium -mt-1">
-                Photography Suite
+              <span className="text-[10px] text-purple-600 tracking-widest uppercase font-bold -mt-0.5">
+                Great Master & Studio Admin
               </span>
             </div>
-          </a>
+          </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+          <nav className="hidden md:flex items-center gap-1 lg:gap-1.5">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -63,7 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact }) => 
                     link.onClick();
                   }
                 }}
-                className="px-4 py-2 rounded-full text-sm font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all"
+                className="px-4 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-purple-700 hover:bg-purple-50/60 transition-all"
               >
                 {link.name}
               </a>
@@ -71,33 +76,35 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact }) => 
           </nav>
 
           {/* Right Action CTA Buttons */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2.5">
             <button
-              onClick={onOpenContact}
-              className="px-5 py-2.5 rounded-full text-sm font-semibold text-white hover:bg-white/10 transition-all"
+              onClick={() => navigate('/login')}
+              className="px-4 py-2 rounded-full text-sm font-semibold text-slate-700 hover:text-purple-700 hover:bg-purple-50/60 transition-all cursor-pointer flex items-center gap-1.5"
             >
-              Login
+              <LogIn className="w-4 h-4 text-slate-400" />
+              <span>Login</span>
             </button>
+
             <button
-              onClick={onOpenDemo}
-              className="px-6 py-2.5 rounded-full text-sm font-bold bg-white text-[#5E35B1] hover:bg-purple-50 shadow-sm hover:shadow-md transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
+              onClick={() => navigate('/signup')}
+              className="px-5 py-2.5 rounded-full text-sm font-bold bg-[#5E35B1] hover:bg-[#512DA8] text-white shadow-md shadow-purple-900/20 hover:shadow-lg hover:shadow-purple-900/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5 cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#5E35B1]" />
-              Get Started
+              <Sparkles className="w-3.5 h-3.5 text-purple-200" />
+              <span>Start Free Trial</span>
             </button>
           </div>
 
           {/* Mobile Hamburger Button */}
           <div className="flex sm:hidden items-center gap-2">
             <button
-              onClick={onOpenDemo}
-              className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white text-[#5E35B1]"
+              onClick={() => navigate('/signup')}
+              className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#5E35B1] text-white shadow-sm"
             >
-              Start Free
+              Free Trial
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors"
+              className="p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -114,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact }) => 
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
-            className="sm:hidden bg-[#532e9e] border-t border-purple-400/20 text-white px-4 py-6 shadow-2xl"
+            className="sm:hidden bg-white border-t border-slate-100 text-slate-800 px-4 py-6 shadow-2xl"
           >
             <div className="flex flex-col space-y-2">
               {navLinks.map((link) => (
@@ -128,31 +135,31 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact }) => 
                       link.onClick();
                     }
                   }}
-                  className="px-4 py-3 rounded-xl text-base font-medium text-white/90 hover:bg-white/10 hover:text-white transition-all flex items-center justify-between"
+                  className="px-4 py-3 rounded-xl text-base font-medium text-slate-700 hover:bg-purple-50 hover:text-purple-700 transition-all flex items-center justify-between"
                 >
                   {link.name}
-                  <ArrowRight className="w-4 h-4 text-purple-300" />
+                  <ArrowRight className="w-4 h-4 text-slate-400" />
                 </a>
               ))}
 
-              <div className="pt-4 border-t border-purple-400/20 grid grid-cols-2 gap-3">
+              <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-3">
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    onOpenContact();
+                    navigate('/login');
                   }}
-                  className="w-full py-3 rounded-xl text-sm font-semibold border border-white/30 text-white hover:bg-white/10"
+                  className="w-full py-3 rounded-xl text-sm font-semibold border border-slate-200 text-slate-800 hover:bg-slate-50"
                 >
                   Login
                 </button>
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    onOpenDemo();
+                    navigate('/signup');
                   }}
-                  className="w-full py-3 rounded-xl text-sm font-bold bg-white text-[#5E35B1] hover:bg-purple-50"
+                  className="w-full py-3 rounded-xl text-sm font-bold bg-[#5E35B1] text-white hover:bg-[#512DA8] shadow-sm"
                 >
-                  Get Started
+                  Start Free Trial
                 </button>
               </div>
             </div>
@@ -162,3 +169,4 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact }) => 
     </header>
   );
 };
+export default Navbar;
