@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 export default function StudioDetailsStep() {
   const navigate = useNavigate();
-  const { loginAsStudioAdmin } = useAuth();
+  const { registerStudioAccount } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -35,23 +35,45 @@ export default function StudioDetailsStep() {
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
+
+    const savedAccount = sessionStorage.getItem("signup_account");
+    if (!savedAccount) {
+      toast.error("Account information missing. Please start from Step 1.");
+      navigate("/signup");
+      return;
+    }
+
+    let accountData: any;
+    try {
+      accountData = JSON.parse(savedAccount);
+    } catch {
+      toast.error("Account data could not be read. Please start again.");
+      navigate("/signup");
+      return;
+    }
+
     setIsLoading(true);
     sessionStorage.setItem("signup_studio", JSON.stringify(form));
-    setTimeout(() => {
-      loginAsStudioAdmin("studio_1");
+
+    try {
+      await registerStudioAccount(accountData, form);
       toast.success("Studio created successfully!", {
         description: "Welcome to Lumina — your studio workspace is ready.",
       });
       navigate("/signup/complete");
+    } catch (err: any) {
+      console.error("Signup error:", err);
+      toast.error(err?.message || "Failed to create studio account. Please try again.");
+    } finally {
       setIsLoading(false);
-    }, 600);
+    }
   };
 
   const teamFields = [

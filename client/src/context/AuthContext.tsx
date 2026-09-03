@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '../services/api';
 import {
   DemoStudio,
   DemoClient,
@@ -30,6 +31,8 @@ interface AuthContextType {
   studiosList: DemoStudio[];
   clientsList: DemoClient[];
   activitiesList: DemoActivity[];
+  login: (email: string, password: string) => Promise<{ success: boolean; user: User; studio?: DemoStudio }>;
+  registerStudioAccount: (accountData: any, studioData: any) => Promise<{ success: boolean; user: User; studio: DemoStudio }>;
   loginAsGreatMaster: () => void;
   loginAsStudioAdmin: (studioId?: string) => void;
   switchStudio: (studioId: string) => void;
@@ -79,7 +82,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   // 3. Studios List
-  const [studiosList] = useState<DemoStudio[]>(INITIAL_STUDIOS);
+  const [studiosList, setStudiosList] = useState<DemoStudio[]>(() => {
+    const saved = localStorage.getItem('demo_studios_store');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    return INITIAL_STUDIOS;
+  });
+
+  // Persist studios store
+  useEffect(() => {
+    localStorage.setItem('demo_studios_store', JSON.stringify(studiosList));
+  }, [studiosList]);
 
   // 4. Clients List
   const [clientsList, setClientsList] = useState<DemoClient[]>(() => {
@@ -118,6 +135,145 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [activitiesList]);
 
   const activeStudio = studiosList.find((s) => s.id === (user?.studioId || activeStudioId)) || studiosList[0];
+
+  const login = async (email: string, password: string): Promise<{ success: boolean; user: User; studio?: DemoStudio }> => {
+    const res = await api.login({ email, password });
+    if (!res || !res.success || !res.user) {
+      throw new Error((res as any)?.message || 'Invalid email or password');
+    }
+
+    if (res.token) {
+      localStorage.setItem('demo_auth_token', res.token);
+    }
+
+    const authUser: User = {
+      id: res.user.id,
+      name: res.user.name,
+      email: res.user.email,
+      role: res.user.role,
+      studioId: res.user.studioId,
+      avatar: res.user.avatar || (res.user.role === 'super_admin'
+        ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80'
+        : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80'),
+    };
+
+    setUser(authUser);
+    localStorage.setItem('demo_auth_user', JSON.stringify(authUser));
+
+    let matchedStudio: DemoStudio | undefined;
+    if (res.user.studioId) {
+      setActiveStudioId(res.user.studioId);
+      localStorage.setItem('demo_active_studio_id', res.user.studioId);
+
+      // Ensure studio is in studiosList
+      setStudiosList((prev) => {
+        const exists = prev.find((s) => s.id === res.user.studioId);
+        if (exists) {
+          matchedStudio = exists;
+          return prev;
+        }
+        if (res.studio) {
+          const mapped: DemoStudio = {
+            id: res.studio.id,
+            name: res.studio.name,
+            slug: res.studio.slug,
+            tagline: res.studio.tagline || 'Artistic & Cinematic Wedding Storytellers',
+            city: res.studio.city || 'Bangalore',
+            state: res.studio.state || 'Karnataka',
+            logo: res.studio.logo || 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=150&auto=format&fit=crop&q=80',
+            coverImage: res.studio.coverImage,
+            adminName: res.user.name,
+            adminEmail: res.user.email,
+            adminPhone: res.user.phone || '+91 98000 00000',
+            plan: res.studio.plan || 'Studio Pro',
+            status: 'active',
+            totalRevenue: res.studio.totalRevenue || 0,
+            activeClientsCount: 0,
+            onboardedClientsCount: 0,
+            totalEmployees: res.studio.totalEmployees || 1,
+            photographersCount: res.studio.photographersCount || 1,
+            editorsCount: res.studio.editorsCount || 1,
+            completedShootsCount: 0,
+          };
+          matchedStudio = mapped;
+          return [mapped, ...prev];
+        }
+        return prev;
+      });
+    }
+
+    return { success: true, user: authUser, studio: matchedStudio || activeStudio };
+  };
+
+  const registerStudioAccount = async (accountData: any, studioData: any): Promise<{ success: boolean; user: User; studio: DemoStudio }> => {
+    const payload = {
+      studioName: studioData.studioName,
+      adminName: accountData.fullName,
+      email: accountData.email,
+      phone: accountData.phone,
+      password: accountData.password,
+      address: studioData.address,
+      city: studioData.city,
+      state: studioData.state,
+      country: studioData.country,
+      totalEmployees: studioData.totalEmployees,
+      photographers: studioData.photographers,
+      editors: studioData.editors,
+    };
+
+    const res = await api.registerStudio(payload);
+    if (!res || !res.success) {
+      throw new Error((res as any)?.message || 'Failed to register studio account');
+    }
+
+    const returnedUser = res.user || (res as any).data?.user;
+    const returnedStudio = res.studio || (res as any).data?.studio;
+    const returnedToken = res.token || (res as any).data?.token;
+
+    if (returnedToken) {
+      localStorage.setItem('demo_auth_token', returnedToken);
+    }
+
+    const newStudio: DemoStudio = {
+      id: returnedStudio?.id || `studio_${Date.now()}`,
+      name: studioData.studioName,
+      slug: studioData.studioName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      tagline: 'Artistic & Cinematic Wedding Storytellers',
+      city: studioData.city || 'Bangalore',
+      state: studioData.state || 'Karnataka',
+      logo: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=150&auto=format&fit=crop&q=80',
+      coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&auto=format&fit=crop&q=80',
+      adminName: accountData.fullName,
+      adminEmail: accountData.email,
+      adminPhone: accountData.phone,
+      plan: 'Studio Pro (Trial)',
+      status: 'active',
+      totalRevenue: 0,
+      activeClientsCount: 0,
+      onboardedClientsCount: 0,
+      totalEmployees: studioData.totalEmployees ? Number(studioData.totalEmployees) : 1,
+      photographersCount: studioData.photographers ? Number(studioData.photographers) : 1,
+      editorsCount: studioData.editors ? Number(studioData.editors) : 1,
+      completedShootsCount: 0,
+    };
+
+    const studioUser: User = {
+      id: returnedUser?.id || `usr_admin_${newStudio.id}`,
+      name: accountData.fullName,
+      email: accountData.email,
+      role: 'studio_admin',
+      studioId: newStudio.id,
+      avatar: newStudio.logo,
+    };
+
+    setUser(studioUser);
+    localStorage.setItem('demo_auth_user', JSON.stringify(studioUser));
+    setActiveStudioId(newStudio.id);
+    localStorage.setItem('demo_active_studio_id', newStudio.id);
+    setStudiosList((prev) => [newStudio, ...prev]);
+
+    return { success: true, user: studioUser, studio: newStudio };
+  };
 
   const loginAsGreatMaster = () => {
     const gmUser: User = {
@@ -312,6 +468,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     localStorage.removeItem('demo_auth_user');
+    localStorage.removeItem('demo_auth_token');
   };
 
   return (
@@ -324,6 +481,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         studiosList,
         clientsList,
         activitiesList,
+        login,
+        registerStudioAccount,
         loginAsGreatMaster,
         loginAsStudioAdmin,
         switchStudio,

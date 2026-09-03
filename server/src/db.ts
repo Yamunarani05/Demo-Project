@@ -1,5 +1,6 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
@@ -72,6 +73,7 @@ export interface UserRecord {
   role: UserRole;
   phone?: string;
   avatar?: string;
+  passwordHash?: string;
   created_at: string;
 }
 
@@ -277,13 +279,13 @@ export function seedInitialData() {
   memoryStore.studios = [
     {
       id: 'studio_1',
-      name: 'Red Angle Studio',
-      slug: 'red-angle-studio',
-      tagline: 'Premier Wedding & Cinematic Storytellers',
+      name: 'Studio Aurora',
+      slug: 'studio-aurora',
+      tagline: 'Artistic & Cinematic Wedding Storytellers',
       logo: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=150&auto=format&fit=crop&q=80',
       coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&auto=format&fit=crop&q=80',
-      email: 'contact@redanglestudio.com',
-      phone: '+91 98401 23456',
+      email: 'priya@studioaurora.in',
+      phone: '+91 98401 11223',
       city: 'Bangalore',
       state: 'Karnataka',
       status: 'active',
@@ -386,6 +388,8 @@ export function seedInitialData() {
   ];
 
   // 2. USERS (Roles: Super Admin, Studio Admin, Client, Photographer)
+  const defaultHash = bcrypt.hashSync('123456789', 10);
+
   memoryStore.users = [
     {
       id: 'usr_super_admin',
@@ -394,6 +398,18 @@ export function seedInitialData() {
       role: 'super_admin',
       phone: '+91 98000 00001',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
+      passwordHash: defaultHash,
+      created_at: now,
+    },
+    {
+      id: 'usr_studio_aurora',
+      studioId: 'studio_1',
+      name: 'Priya Sharma (Studio Aurora)',
+      email: 'priya@studioaurora.in',
+      role: 'studio_admin',
+      phone: '+91 98401 11223',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+      passwordHash: defaultHash,
       created_at: now,
     },
     {
@@ -404,6 +420,7 @@ export function seedInitialData() {
       role: 'studio_admin',
       phone: '+91 98401 23456',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+      passwordHash: defaultHash,
       created_at: now,
     },
     {
@@ -414,6 +431,7 @@ export function seedInitialData() {
       role: 'studio_admin',
       phone: '+91 98200 67890',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+      passwordHash: defaultHash,
       created_at: now,
     },
     {
@@ -425,6 +443,7 @@ export function seedInitialData() {
       role: 'client',
       phone: '+91 98840 98765',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      passwordHash: defaultHash,
       created_at: now,
     },
     {
@@ -436,6 +455,7 @@ export function seedInitialData() {
       role: 'client',
       phone: '+91 97120 54321',
       avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+      passwordHash: defaultHash,
       created_at: now,
     },
     {
@@ -447,6 +467,7 @@ export function seedInitialData() {
       role: 'photographer',
       phone: '+91 98402 33445',
       avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80',
+      passwordHash: defaultHash,
       created_at: now,
     },
   ];

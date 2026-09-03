@@ -14,47 +14,65 @@ import { toast } from 'sonner';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { loginAsStudioAdmin, studiosList } = useAuth();
-
-  // Demo credentials
-  const DEMO_EMAIL = 'priya@studioaurora.in';
-  const DEMO_PASSWORD = '123456789';
+  const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [generalError, setGeneralError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Reset errors
     setEmailError('');
     setPasswordError('');
+    setGeneralError('');
+
+    let hasError = false;
 
     // Validate email
-    if (email.trim().toLowerCase() !== DEMO_EMAIL.toLowerCase()) {
-      setEmailError('No account found with this email address.');
-      return;
+    if (!email.trim()) {
+      setEmailError('Please enter your email');
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setEmailError('Please enter a valid email address');
+      hasError = true;
     }
 
     // Validate password
-    if (password !== DEMO_PASSWORD) {
-      setPasswordError('Incorrect password. Please try again.');
-      return;
+    if (!password) {
+      setPasswordError('Please enter your password');
+      hasError = true;
     }
 
+    if (hasError) return;
+
     setIsLoading(true);
-    setTimeout(() => {
-      const studio = studiosList[0];
-      loginAsStudioAdmin(studio?.id || 'studio_1');
-      toast.success(`Welcome back, ${studio?.adminName || 'Admin'}!`, {
-        description: `Logged in to ${studio?.name || 'Studio'} Admin Workspace.`,
+
+    try {
+      const result = await login(email.trim(), password);
+      toast.success(`Welcome back, ${result.user.name}!`, {
+        description:
+          result.user.role === 'super_admin'
+            ? 'Logged in to Great Master Admin Overview.'
+            : `Logged in to ${result.studio?.name || 'Studio'} Workspace.`,
       });
-      navigate('/studio/dashboard');
+
+      if (result.user.role === 'super_admin') {
+        navigate('/master/dashboard');
+      } else {
+        navigate('/studio/dashboard');
+      }
+    } catch (err: any) {
+      const msg = err?.message || 'Invalid email or password';
+      setGeneralError(msg);
+      toast.error(msg);
+    } finally {
       setIsLoading(false);
-    }, 300);
+    }
   };
 
   return (
@@ -112,6 +130,13 @@ export default function Login() {
 
           {/* Credentials Form */}
           <form onSubmit={handleLogin} className="space-y-4">
+            {generalError && (
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600 font-semibold flex items-center gap-2">
+                <span>⚠</span>
+                <span>{generalError}</span>
+              </div>
+            )}
+
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Email Address
@@ -121,11 +146,10 @@ export default function Login() {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setEmailError(''); }}
+                  onChange={(e) => { setEmail(e.target.value); setEmailError(''); setGeneralError(''); }}
                   placeholder="your@email.com"
-                  required
                   className={`w-full bg-slate-50 border rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${
-                    emailError
+                    emailError || generalError
                       ? 'border-red-400 focus:ring-red-400/40'
                       : 'border-slate-200 focus:ring-purple-500'
                   }`}
@@ -144,7 +168,7 @@ export default function Login() {
                 <button
                   type="button"
                   className="text-[11px] text-purple-600 font-semibold hover:underline normal-case cursor-pointer"
-                  onClick={() => toast.info('Demo project — password reset not required.')}
+                  onClick={() => toast.info('Please contact your administrator to reset your password.')}
                 >
                   Forgot password?
                 </button>
@@ -154,11 +178,10 @@ export default function Login() {
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setPasswordError(''); }}
+                  onChange={(e) => { setPassword(e.target.value); setPasswordError(''); setGeneralError(''); }}
                   placeholder="Enter your password"
-                  required
                   className={`w-full bg-slate-50 border rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${
-                    passwordError
+                    passwordError || generalError
                       ? 'border-red-400 focus:ring-red-400/40'
                       : 'border-slate-200 focus:ring-purple-500'
                   }`}
@@ -169,10 +192,6 @@ export default function Login() {
                   <span>⚠</span> {passwordError}
                 </p>
               )}
-              {/* Demo hint */}
-              <p className="text-[11px] text-slate-400 mt-1.5 pl-1">
-                Demo password: <span className="font-mono font-semibold text-slate-600">123456789</span>
-              </p>
             </div>
 
             {/* Primary Login Button */}

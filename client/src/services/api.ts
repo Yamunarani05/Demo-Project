@@ -20,10 +20,12 @@ const API_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:500
 
 async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T> {
   try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('demo_auth_token') : null;
     const res = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options?.headers,
       },
     });
