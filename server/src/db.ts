@@ -49,10 +49,11 @@ export interface StudioRecord {
   logo: string;
   coverImage?: string;
   email: string;
+  referenceEmail?: string;
   phone: string;
   city: string;
   state: string;
-  status: 'active' | 'pending' | 'suspended';
+  status: 'active' | 'pending' | 'suspended' | 'rejected' | 'approved';
   plan: string;
   activeShootsCount: number;
   completedShootsCount: number;

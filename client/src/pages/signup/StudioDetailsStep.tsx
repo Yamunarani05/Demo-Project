@@ -64,13 +64,13 @@ export default function StudioDetailsStep() {
 
     try {
       await registerStudioAccount(accountData, form);
-      toast.success("Studio created successfully!", {
-        description: "Welcome to Lumina — your studio workspace is ready.",
+      toast.success("Access request submitted!", {
+        description: "Your studio access request is awaiting Great Master approval.",
       });
       navigate("/signup/complete");
     } catch (err: any) {
       console.error("Signup error:", err);
-      toast.error(err?.message || "Failed to create studio account. Please try again.");
+      toast.error(err?.message || "Failed to submit access request. Please try again.");
     } finally {
       setIsLoading(false);
     }

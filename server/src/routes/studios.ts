@@ -133,10 +133,10 @@ router.post('/', (req: Request, res: Response) => {
   });
 });
 
-// PUT /api/studios/:id/status - Toggle status (active/suspended/pending)
-router.put('/:id/status', (req: Request, res: Response) => {
+// PUT /api/studios/:id/status - Update studio access request status (active/approved/rejected/pending)
+router.put('/:id/status', async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, reason } = req.body;
 
   const studio = memoryStore.studios.find(s => s.id === id);
   if (!studio) {
@@ -144,21 +144,45 @@ router.put('/:id/status', (req: Request, res: Response) => {
   }
 
   studio.status = status;
+  const studioAdmin = memoryStore.users.find(u => u.role === 'studio_admin' && u.studioId === id);
+  const adminName = studioAdmin?.name || studio.name;
+  const adminEmail = studioAdmin?.email || studio.email;
 
   memoryStore.activityLogs.unshift({
     id: `act_${Date.now()}`,
     studioId: studio.id,
     actorName: 'Super Admin',
     actorRole: 'Platform Owner',
-    action: `Studio Status Updated to ${status}`,
-    details: `Studio ${studio.name} status updated to ${status}`,
+    action: `Studio Access Request ${status === 'active' || status === 'approved' ? 'Approved' : status === 'rejected' ? 'Rejected' : 'Updated'}`,
+    details: `Studio ${studio.name} status set to ${status}`,
     timestamp: 'Just now',
   });
+
+  let emailResult = { success: false, emailSent: false, message: '' };
+
+  const emailData = {
+    adminName,
+    studioName: studio.name,
+    adminEmail,
+    referenceEmail: (studio as any).referenceEmail,
+    reason,
+  };
+
+  if (status === 'active' || status === 'approved') {
+    const { sendApprovalEmail } = await import('../services/emailService');
+    emailResult = await sendApprovalEmail(emailData);
+  } else if (status === 'rejected') {
+    const { sendRejectionEmail } = await import('../services/emailService');
+    emailResult = await sendRejectionEmail(emailData);
+  }
 
   res.json({
     success: true,
     data: studio,
-    message: `Studio status changed to ${status}`,
+    emailSent: emailResult.emailSent,
+    message: emailResult.emailSent
+      ? `Studio status updated to ${status}. Notification email sent to ${adminEmail}.`
+      : `Studio status updated to ${status}. However, the notification email could not be sent.`,
   });
 });
 

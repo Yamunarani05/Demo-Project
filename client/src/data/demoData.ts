@@ -40,9 +40,10 @@ export interface DemoStudio {
   coverImage?: string;
   adminName: string;
   adminEmail: string;
+  referenceEmail?: string;
   adminPhone: string;
   plan: string;
-  status: 'active' | 'pending' | 'trial';
+  status: 'active' | 'pending' | 'trial' | 'rejected' | 'approved';
   totalRevenue: number;
   activeClientsCount: number;
   onboardedClientsCount: number;

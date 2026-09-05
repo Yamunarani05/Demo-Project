@@ -101,13 +101,13 @@ export default function StudioLayout() {
           <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white shadow-md shadow-purple-900/40 shrink-0">
             <Camera className="w-5 h-5" />
           </div>
-          <div>
-            <div className="font-extrabold text-sm tracking-wider uppercase text-white font-display leading-tight">
-              DEMO PROJECT
+          <div className="min-w-0 flex-1">
+            <div className="font-extrabold text-sm tracking-wider uppercase text-white font-display leading-tight truncate">
+              {activeStudio?.name || 'STUDIO PORTAL'}
             </div>
             <div className="text-[10px] text-purple-400 font-bold uppercase tracking-widest flex items-center gap-1">
-              <Building2 className="w-3 h-3 text-purple-400" />
-              <span>Studio Admin</span>
+              <Building2 className="w-3 h-3 text-purple-400 shrink-0" />
+              <span>Studio Workspace</span>
             </div>
           </div>
         </div>

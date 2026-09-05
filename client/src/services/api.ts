@@ -68,9 +68,9 @@ export const api = {
     method: 'POST',
     body: JSON.stringify(data),
   }),
-  updateStudioStatus: (id: string, status: string) => fetchJson<{ success: boolean; data: any; message: string }>(`/studios/${id}/status`, {
+  updateStudioStatus: (id: string, status: string, reason?: string) => fetchJson<{ success: boolean; data: any; message: string; emailSent?: boolean }>(`/studios/${id}/status`, {
     method: 'PUT',
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ status, reason }),
   }),
 
   // Clients

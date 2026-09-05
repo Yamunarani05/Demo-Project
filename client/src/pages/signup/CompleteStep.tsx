@@ -1,18 +1,12 @@
-﻿import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight, Sparkles, Camera, Users, Star } from "lucide-react";
-
-const checklist = [
-  { icon: CheckCircle2, label: "Account created", delay: 0.1 },
-  { icon: CheckCircle2, label: "Studio profile completed", delay: 0.25 },
-  { icon: CheckCircle2, label: "Ready to onboard your first client", delay: 0.4 },
-];
+import { Clock, ArrowRight, Camera, Building2, MapPin, Users, ShieldAlert, LogIn, Home } from "lucide-react";
 
 export default function CompleteStep() {
   const navigate = useNavigate();
-  const [accountData, setAccountData] = useState<{ fullName?: string } | null>(null);
-  const [studioData, setStudioData] = useState<{ studioName?: string } | null>(null);
+  const [accountData, setAccountData] = useState<{ fullName?: string; email?: string; phone?: string } | null>(null);
+  const [studioData, setStudioData] = useState<{ studioName?: string; city?: string; state?: string; totalEmployees?: string; photographers?: string; editors?: string } | null>(null);
 
   useEffect(() => {
     const acc = sessionStorage.getItem("signup_account");
@@ -24,10 +18,10 @@ export default function CompleteStep() {
   const firstName = accountData?.fullName?.split(" ")[0] || "there";
   const studioName = studioData?.studioName || "your studio";
 
-  const handleGoToDashboard = () => {
+  const handleFinish = () => {
     sessionStorage.removeItem("signup_account");
     sessionStorage.removeItem("signup_studio");
-    navigate("/studio/dashboard");
+    navigate("/login");
   };
 
   return (
@@ -38,14 +32,14 @@ export default function CompleteStep() {
       className="w-full max-w-md"
     >
       <div className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50 text-center">
-        {/* Big success icon */}
+        {/* Big Pending Status Icon */}
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1, type: "spring", stiffness: 200, damping: 15 }}
-          className="mx-auto mb-6 w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-purple-900/25"
+          className="mx-auto mb-6 w-20 h-20 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center shadow-xl shadow-amber-900/20"
         >
-          <CheckCircle2 className="w-10 h-10 text-white" />
+          <Clock className="w-10 h-10 text-white" />
         </motion.div>
 
         {/* Headline */}
@@ -54,67 +48,86 @@ export default function CompleteStep() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 text-xs font-semibold mb-4">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Studio Ready</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold mb-4">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+            <span>Access Request Submitted</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-slate-900 leading-tight mb-2">
-            Your studio is ready, {firstName}!
+            Pending Approval, {firstName}!
           </h1>
-          <p className="text-sm text-slate-500">
-            Welcome to Lumina. Let&apos;s get your first client started.
+          <p className="text-xs sm:text-sm text-slate-500">
+            Your studio access request has been received and is awaiting approval from Great Master Admin.
           </p>
         </motion.div>
 
-        {/* Studio name badge */}
-        {studioData?.studioName && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
-            className="mt-5 mb-5 inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-purple-50 border border-purple-200"
-          >
-            <div className="w-7 h-7 rounded-lg bg-purple-600 flex items-center justify-center text-white">
+        {/* Studio Info Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="mt-6 mb-6 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-left space-y-2 text-xs"
+        >
+          <div className="flex items-center gap-2 font-bold text-slate-900 text-sm pb-2 border-b border-slate-200/60">
+            <div className="w-7 h-7 rounded-lg bg-purple-600 flex items-center justify-center text-white shrink-0">
               <Camera className="w-3.5 h-3.5" />
             </div>
-            <span className="text-sm font-bold text-slate-800">{studioName}</span>
-          </motion.div>
-        )}
-
-        {/* Checklist */}
-        <div className="space-y-2.5 my-6 text-left">
-          {checklist.map(({ icon: Icon, label, delay }) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, x: -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.35, delay }}
-              className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80"
-            >
-              <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center shrink-0">
-                <Icon className="w-3.5 h-3.5 text-purple-600" />
+            <span className="truncate">{studioName}</span>
+            <span className="ml-auto px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">
+              Pending
+            </span>
+          </div>
+          <div className="text-slate-600 pt-1 space-y-1">
+            <div><strong className="text-slate-800">Admin:</strong> {accountData?.fullName} ({accountData?.email})</div>
+            {studioData?.city && (
+              <div className="flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-slate-400" />
+                <span>{studioData.city}, {studioData.state}</span>
               </div>
-              <span className="text-sm font-medium text-slate-700">{label}</span>
-            </motion.div>
-          ))}
+            )}
+            <div>
+              <strong className="text-slate-800">Team Scope:</strong> {studioData?.totalEmployees || 1} staff · {studioData?.photographers || 1} photographers · {studioData?.editors || 1} editors
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Notice alert */}
+        <div className="p-3.5 rounded-xl bg-purple-50/80 border border-purple-200/60 text-left text-xs text-purple-900 mb-6 flex items-start gap-2.5">
+          <ShieldAlert className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
+          <div>
+            <div className="font-bold">What happens next?</div>
+            <p className="text-[11px] text-purple-700 mt-0.5 leading-snug">
+              Great Master Admin will review your studio access request. Once approved, your studio will become active and you will be able to log in.
+            </p>
+          </div>
         </div>
 
-        {/* CTA */}
-        <motion.button
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.55 }}
-          onClick={handleGoToDashboard}
-          className="w-full bg-[#5E35B1] hover:bg-[#512DA8] text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-purple-900/20 hover:shadow-xl hover:shadow-purple-900/25 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
-        >
-          <span>Go to Studio Dashboard</span>
-          <ArrowRight className="w-4 h-4" />
-        </motion.button>
+        {/* Action Buttons */}
+        <div className="space-y-2.5">
+          <motion.button
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+            onClick={handleFinish}
+            className="w-full bg-[#5E35B1] hover:bg-[#512DA8] text-white font-bold py-3 rounded-xl text-sm transition-all shadow-lg shadow-purple-900/20 hover:shadow-xl hover:shadow-purple-900/25 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+          >
+            <LogIn className="w-4 h-4" />
+            <span>Go to Sign In</span>
+          </motion.button>
 
-        <p className="text-xs text-slate-400 mt-4">
-          Your demo workspace with sample data is ready to explore.
-        </p>
+          <Link
+            to="/"
+            onClick={() => {
+              sessionStorage.removeItem("signup_account");
+              sessionStorage.removeItem("signup_studio");
+            }}
+            className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+          >
+            <Home className="w-3.5 h-3.5" />
+            <span>Return to Landing Page</span>
+          </Link>
+        </div>
       </div>
     </motion.div>
   );
 }
+

@@ -1,26 +1,20 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../../../context/AuthContext';
 import {
   Activity,
-  Building2,
-  CheckCircle2,
-  Clock,
   Sparkles,
-  ChevronRight,
-  TrendingUp,
-  AlertCircle,
   Layers,
-  ArrowRight,
 } from 'lucide-react';
+import {
+  containerStagger,
+  itemFadeSlide,
+} from '../components/MasterMotion';
 
 export default function MasterMonitoring() {
-  const { studiosList, clientsList, activitiesList, switchStudio } = useAuth();
+  const { studiosList, clientsList, switchStudio } = useAuth();
   const navigate = useNavigate();
-
-  const handleOpenStudio = (studioId: string) => {
-    navigate(`/master/studios/${studioId}`);
-  };
 
   const handleImpersonate = (studioId: string) => {
     switchStudio(studioId);
@@ -28,15 +22,23 @@ export default function MasterMonitoring() {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      variants={containerStagger}
+      initial="hidden"
+      animate="show"
+      className="space-y-6"
+    >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <motion.div
+        variants={itemFadeSlide}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold mb-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold mb-2 shadow-xs">
             <Activity className="w-3.5 h-3.5" />
             <span>Platform Workflow Matrix</span>
           </div>
-          <h1 className="text-2xl font-black text-slate-900 font-display">
+          <h1 className="text-2xl font-black text-slate-900 font-display tracking-tight">
             Multi-Studio Workflow Monitoring
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -45,14 +47,18 @@ export default function MasterMonitoring() {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200">
-            10 Studios Live
+          <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200/80 flex items-center gap-1.5 shadow-xs">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            <span>10 Studios Live</span>
           </span>
         </div>
-      </div>
+      </motion.div>
 
       {/* Multi-Studio Matrix Cards */}
-      <div className="space-y-4">
+      <motion.div variants={containerStagger} className="space-y-4">
         {studiosList.map((studio, idx) => {
           const studioClients = clientsList.filter((c) => c.studioId === studio.id);
           const client = studioClients[0];
@@ -60,16 +66,21 @@ export default function MasterMonitoring() {
           const hasPostWed = client && client.postWeddingStages.length > 0;
 
           return (
-            <div
+            <motion.div
               key={studio.id}
+              variants={itemFadeSlide}
+              whileHover={{ y: -2 }}
               className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm hover:shadow-md transition-all"
             >
               {/* Studio Summary Row */}
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-600 text-white font-bold text-sm flex items-center justify-center shadow-md shadow-purple-900/20 shrink-0">
+                  <motion.div
+                    whileHover={{ scale: 1.06 }}
+                    className="w-10 h-10 rounded-xl bg-purple-600 text-white font-bold text-sm flex items-center justify-center shadow-md shadow-purple-900/20 shrink-0"
+                  >
                     {idx + 1}
-                  </div>
+                  </motion.div>
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-bold text-slate-900 text-base">
@@ -90,18 +101,20 @@ export default function MasterMonitoring() {
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <div className="text-xs text-slate-400">Total Completion</div>
-                    <div className="text-base font-black text-purple-700">
+                    <div className="text-base font-black text-purple-700 font-display">
                       {client?.preWeddingProgress || client?.postWeddingProgress || 0}% Complete
                     </div>
                   </div>
 
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
                     type="button"
                     onClick={() => handleImpersonate(studio.id)}
                     className="px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold text-xs transition-colors"
                   >
                     Manage Studio →
-                  </button>
+                  </motion.button>
                 </div>
               </div>
 
@@ -123,17 +136,17 @@ export default function MasterMonitoring() {
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                      {client.preWeddingStages.map((stage, sIdx) => {
+                      {client.preWeddingStages.map((stage) => {
                         const isDone = stage.status === 'completed';
                         const isInProg = stage.status === 'in_progress';
                         return (
                           <div
                             key={stage.id}
-                            className={`p-2 rounded-lg text-center border text-[11px] ${
+                            className={`p-2 rounded-lg text-center border text-[11px] transition-transform hover:scale-102 ${
                               isDone
                                 ? 'bg-emerald-50 border-emerald-200 text-emerald-800 font-bold'
                                 : isInProg
-                                ? 'bg-purple-100/70 border-purple-300 text-purple-900 font-bold animate-pulse'
+                                ? 'bg-purple-100 border-purple-300 text-purple-900 font-bold ring-1 ring-purple-400/40'
                                 : 'bg-white border-slate-200 text-slate-400'
                             }`}
                           >
@@ -164,17 +177,17 @@ export default function MasterMonitoring() {
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                      {client.postWeddingStages.map((stage, sIdx) => {
+                      {client.postWeddingStages.map((stage) => {
                         const isDone = stage.status === 'completed';
                         const isInProg = stage.status === 'in_progress';
                         return (
                           <div
                             key={stage.id}
-                            className={`p-2 rounded-lg text-center border text-[11px] ${
+                            className={`p-2 rounded-lg text-center border text-[11px] transition-transform hover:scale-102 ${
                               isDone
                                 ? 'bg-emerald-50 border-emerald-200 text-emerald-800 font-bold'
                                 : isInProg
-                                ? 'bg-indigo-100/70 border-indigo-300 text-indigo-900 font-bold'
+                                ? 'bg-indigo-100 border-indigo-300 text-indigo-900 font-bold ring-1 ring-indigo-400/40'
                                 : 'bg-white border-slate-200 text-slate-400'
                             }`}
                           >
@@ -189,10 +202,11 @@ export default function MasterMonitoring() {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
+

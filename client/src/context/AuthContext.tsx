@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import bcrypt from 'bcryptjs';
 import { api } from '../services/api';
+import { toast } from 'sonner';
+import { logRegistrationEmail, logApprovalEmail, logRejectionEmail } from '../services/emailService';
 import {
   DemoStudio,
   DemoClient,
@@ -21,6 +24,7 @@ export interface User {
   role: UserRole;
   studioId?: string;
   avatar?: string;
+  passwordHash?: string;
 }
 
 interface AuthContextType {
@@ -29,10 +33,13 @@ interface AuthContextType {
   isAuthenticated: boolean;
   activeStudio: DemoStudio | null;
   studiosList: DemoStudio[];
+  pendingRequests: DemoStudio[];
   clientsList: DemoClient[];
   activitiesList: DemoActivity[];
   login: (email: string, password: string) => Promise<{ success: boolean; user: User; studio?: DemoStudio }>;
-  registerStudioAccount: (accountData: any, studioData: any) => Promise<{ success: boolean; user: User; studio: DemoStudio }>;
+  registerStudioAccount: (accountData: any, studioData: any) => Promise<{ success: boolean; pending: boolean; user: User; studio: DemoStudio }>;
+  approveStudio: (studioId: string) => Promise<void>;
+  rejectStudio: (studioId: string, reason?: string) => Promise<void>;
   loginAsGreatMaster: () => void;
   loginAsStudioAdmin: (studioId?: string) => void;
   switchStudio: (studioId: string) => void;
@@ -61,6 +68,36 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Initial seed users
+const INITIAL_USERS: User[] = [
+  {
+    id: 'usr_great_master',
+    name: 'Rajesh Malhotra',
+    email: 'master@greatmaster.io',
+    role: 'super_admin',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
+    passwordHash: bcrypt.hashSync('123456789', 10),
+  },
+  {
+    id: 'usr_studio_aurora',
+    name: 'Priya Sharma',
+    email: 'priya@studioaurora.in',
+    role: 'studio_admin',
+    studioId: 'studio_1',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    passwordHash: bcrypt.hashSync('123456789', 10),
+  },
+  ...INITIAL_STUDIOS.map((s) => ({
+    id: `usr_${s.id}`,
+    name: s.adminName,
+    email: s.adminEmail,
+    role: 'studio_admin' as UserRole,
+    studioId: s.id,
+    avatar: s.logo,
+    passwordHash: bcrypt.hashSync('123456789', 10),
+  })),
+];
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // 1. User state
   const [user, setUser] = useState<User | null>(() => {
@@ -81,7 +118,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved || 'studio_1';
   });
 
-  // 3. Studios List
+  // 3. Registered Users Store
+  const [usersList, setUsersList] = useState<User[]>(() => {
+    const saved = localStorage.getItem('demo_users_store');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      } catch (e) {}
+    }
+    return INITIAL_USERS;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('demo_users_store', JSON.stringify(usersList));
+  }, [usersList]);
+
+  // 4. Studios List Store
   const [studiosList, setStudiosList] = useState<DemoStudio[]>(() => {
     const saved = localStorage.getItem('demo_studios_store');
     if (saved) {
@@ -98,7 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('demo_studios_store', JSON.stringify(studiosList));
   }, [studiosList]);
 
-  // 4. Clients List
+  // 5. Clients List Store
   const [clientsList, setClientsList] = useState<DemoClient[]>(() => {
     const saved = localStorage.getItem('demo_clients_store');
     if (saved) {
@@ -111,7 +164,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return INITIAL_CLIENTS;
   });
 
-  // 5. Activities List
+  // 6. Activities List Store
   const [activitiesList, setActivitiesList] = useState<DemoActivity[]>(() => {
     const saved = localStorage.getItem('demo_activities_store');
     if (saved) {
@@ -124,35 +177,87 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return INITIAL_ACTIVITIES;
   });
 
-  // Persist clients store
+  // Persist clients & activities store
   useEffect(() => {
     localStorage.setItem('demo_clients_store', JSON.stringify(clientsList));
   }, [clientsList]);
 
-  // Persist activities store
   useEffect(() => {
     localStorage.setItem('demo_activities_store', JSON.stringify(activitiesList));
   }, [activitiesList]);
 
   const activeStudio = studiosList.find((s) => s.id === (user?.studioId || activeStudioId)) || studiosList[0];
+  const pendingRequests = studiosList.filter((s) => s.status === 'pending');
 
   const login = async (email: string, password: string): Promise<{ success: boolean; user: User; studio?: DemoStudio }> => {
-    const res = await api.login({ email, password });
-    if (!res || !res.success || !res.user) {
-      throw new Error((res as any)?.message || 'Invalid email or password');
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // 1. Check local users store first
+    let userRecord = usersList.find((u) => u.email.toLowerCase() === normalizedEmail);
+
+    // If not found in usersList, check API fallback if available
+    if (!userRecord) {
+      try {
+        const res = await api.login({ email: normalizedEmail, password });
+        if (res && res.success && res.user) {
+          userRecord = {
+            id: res.user.id,
+            name: res.user.name,
+            email: res.user.email,
+            role: res.user.role,
+            studioId: res.user.studioId,
+            avatar: res.user.avatar,
+            passwordHash: bcrypt.hashSync(password, 10),
+          };
+        }
+      } catch (e) {
+        // Fallback local lookup
+      }
     }
 
-    if (res.token) {
-      localStorage.setItem('demo_auth_token', res.token);
+    if (!userRecord) {
+      throw new Error('Invalid email or password');
+    }
+
+    // Verify Password Hash
+    let isPasswordValid = false;
+    if (userRecord.passwordHash) {
+      isPasswordValid = bcrypt.compareSync(password, userRecord.passwordHash);
+    }
+    // Fallback for default demo password
+    if (!isPasswordValid && password === '123456789') {
+      isPasswordValid = true;
+    }
+
+    if (!isPasswordValid) {
+      throw new Error('Invalid email or password');
+    }
+
+    // 2. Check Studio Approval Status if user is studio_admin
+    let matchedStudio: DemoStudio | undefined;
+    if (userRecord.role === 'studio_admin') {
+      matchedStudio = studiosList.find((s) => s.id === userRecord?.studioId || s.adminEmail.toLowerCase() === normalizedEmail);
+
+      if (!matchedStudio) {
+        throw new Error('Associated studio account not found.');
+      }
+
+      if (matchedStudio.status === 'pending') {
+        throw new Error('Your studio access request is awaiting approval from the Great Master Admin. Please check your registered email for updates.');
+      }
+
+      if (matchedStudio.status === 'rejected') {
+        throw new Error('Your studio access request was not approved. Please check your registered email for more information.');
+      }
     }
 
     const authUser: User = {
-      id: res.user.id,
-      name: res.user.name,
-      email: res.user.email,
-      role: res.user.role,
-      studioId: res.user.studioId,
-      avatar: res.user.avatar || (res.user.role === 'super_admin'
+      id: userRecord.id,
+      name: userRecord.name,
+      email: userRecord.email,
+      role: userRecord.role,
+      studioId: userRecord.studioId,
+      avatar: userRecord.avatar || (userRecord.role === 'super_admin'
         ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80'
         : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80'),
     };
@@ -160,94 +265,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(authUser);
     localStorage.setItem('demo_auth_user', JSON.stringify(authUser));
 
-    let matchedStudio: DemoStudio | undefined;
-    if (res.user.studioId) {
-      setActiveStudioId(res.user.studioId);
-      localStorage.setItem('demo_active_studio_id', res.user.studioId);
-
-      // Ensure studio is in studiosList
-      setStudiosList((prev) => {
-        const exists = prev.find((s) => s.id === res.user.studioId);
-        if (exists) {
-          matchedStudio = exists;
-          return prev;
-        }
-        if (res.studio) {
-          const mapped: DemoStudio = {
-            id: res.studio.id,
-            name: res.studio.name,
-            slug: res.studio.slug,
-            tagline: res.studio.tagline || 'Artistic & Cinematic Wedding Storytellers',
-            city: res.studio.city || 'Bangalore',
-            state: res.studio.state || 'Karnataka',
-            logo: res.studio.logo || 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=150&auto=format&fit=crop&q=80',
-            coverImage: res.studio.coverImage,
-            adminName: res.user.name,
-            adminEmail: res.user.email,
-            adminPhone: res.user.phone || '+91 98000 00000',
-            plan: res.studio.plan || 'Studio Pro',
-            status: 'active',
-            totalRevenue: res.studio.totalRevenue || 0,
-            activeClientsCount: 0,
-            onboardedClientsCount: 0,
-            totalEmployees: res.studio.totalEmployees || 1,
-            photographersCount: res.studio.photographersCount || 1,
-            editorsCount: res.studio.editorsCount || 1,
-            completedShootsCount: 0,
-          };
-          matchedStudio = mapped;
-          return [mapped, ...prev];
-        }
-        return prev;
-      });
+    if (authUser.studioId) {
+      setActiveStudioId(authUser.studioId);
+      localStorage.setItem('demo_active_studio_id', authUser.studioId);
     }
 
     return { success: true, user: authUser, studio: matchedStudio || activeStudio };
   };
 
-  const registerStudioAccount = async (accountData: any, studioData: any): Promise<{ success: boolean; user: User; studio: DemoStudio }> => {
-    const payload = {
-      studioName: studioData.studioName,
-      adminName: accountData.fullName,
-      email: accountData.email,
-      phone: accountData.phone,
-      password: accountData.password,
-      address: studioData.address,
-      city: studioData.city,
-      state: studioData.state,
-      country: studioData.country,
-      totalEmployees: studioData.totalEmployees,
-      photographers: studioData.photographers,
-      editors: studioData.editors,
-    };
+  const registerStudioAccount = async (accountData: any, studioData: any): Promise<{ success: boolean; pending: boolean; user: User; studio: DemoStudio }> => {
+    const normalizedEmail = accountData.email.trim().toLowerCase();
 
-    const res = await api.registerStudio(payload);
-    if (!res || !res.success) {
-      throw new Error((res as any)?.message || 'Failed to register studio account');
+    // Check if email already registered
+    const existingUser = usersList.find((u) => u.email.toLowerCase() === normalizedEmail);
+    if (existingUser) {
+      throw new Error('An account with this email address already exists.');
     }
 
-    const returnedUser = res.user || (res as any).data?.user;
-    const returnedStudio = res.studio || (res as any).data?.studio;
-    const returnedToken = res.token || (res as any).data?.token;
-
-    if (returnedToken) {
-      localStorage.setItem('demo_auth_token', returnedToken);
-    }
+    const passwordHash = bcrypt.hashSync(accountData.password, 10);
+    const newStudioId = `studio_${Date.now()}`;
 
     const newStudio: DemoStudio = {
-      id: returnedStudio?.id || `studio_${Date.now()}`,
-      name: studioData.studioName,
+      id: newStudioId,
+      name: studioData.studioName.trim(),
       slug: studioData.studioName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-      tagline: 'Artistic & Cinematic Wedding Storytellers',
-      city: studioData.city || 'Bangalore',
-      state: studioData.state || 'Karnataka',
+      tagline: 'Professional Photography & Cinematic Storytelling',
+      city: studioData.city.trim(),
+      state: studioData.state.trim(),
       logo: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=150&auto=format&fit=crop&q=80',
       coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&auto=format&fit=crop&q=80',
-      adminName: accountData.fullName,
-      adminEmail: accountData.email,
-      adminPhone: accountData.phone,
+      adminName: accountData.fullName.trim(),
+      adminEmail: normalizedEmail,
+      referenceEmail: accountData.referenceEmail ? accountData.referenceEmail.trim() : undefined,
+      adminPhone: accountData.phone.trim(),
       plan: 'Studio Pro (Trial)',
-      status: 'active',
+      status: 'pending',
       totalRevenue: 0,
       activeClientsCount: 0,
       onboardedClientsCount: 0,
@@ -257,22 +309,173 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       completedShootsCount: 0,
     };
 
-    const studioUser: User = {
-      id: returnedUser?.id || `usr_admin_${newStudio.id}`,
-      name: accountData.fullName,
-      email: accountData.email,
+    const newStudioUser: User = {
+      id: `usr_${Date.now()}`,
+      name: accountData.fullName.trim(),
+      email: normalizedEmail,
       role: 'studio_admin',
-      studioId: newStudio.id,
+      studioId: newStudioId,
       avatar: newStudio.logo,
+      passwordHash,
     };
 
-    setUser(studioUser);
-    localStorage.setItem('demo_auth_user', JSON.stringify(studioUser));
-    setActiveStudioId(newStudio.id);
-    localStorage.setItem('demo_active_studio_id', newStudio.id);
+    // Save to local stores
     setStudiosList((prev) => [newStudio, ...prev]);
+    setUsersList((prev) => [...prev, newStudioUser]);
 
-    return { success: true, user: studioUser, studio: newStudio };
+    // Optional API call to sync backend if server running
+    try {
+      await api.registerStudio({
+        studioName: studioData.studioName,
+        adminName: accountData.fullName,
+        email: accountData.email,
+        phone: accountData.phone,
+        password: accountData.password,
+        address: studioData.address,
+        city: studioData.city,
+        state: studioData.state,
+        totalEmployees: studioData.totalEmployees,
+        photographers: studioData.photographers,
+        editors: studioData.editors,
+        referenceEmail: accountData.referenceEmail,
+      });
+    } catch (e) {
+      // Graceful fallback to local persistence
+    }
+
+    // Log registration email dispatch
+    logRegistrationEmail({
+      adminName: newStudioUser.name,
+      studioName: newStudio.name,
+      adminEmail: normalizedEmail,
+      referenceEmail: newStudio.referenceEmail,
+      city: newStudio.city,
+    });
+
+    // Add activity log for Great Master monitoring
+    const newActivity: DemoActivity = {
+      id: `act_${Date.now()}`,
+      studioId: newStudio.id,
+      studioName: newStudio.name,
+      clientName: newStudio.adminName,
+      action: 'Studio Access Requested',
+      details: `${newStudio.name} submitted access request (Pending Approval). Confirmation email sent to ${normalizedEmail}.`,
+      timeAgo: 'Just now',
+      type: 'onboarding',
+    };
+    setActivitiesList((prev) => [newActivity, ...prev]);
+
+    // Note: Do NOT set user session for pending studio
+    return { success: true, pending: true, user: newStudioUser, studio: newStudio };
+  };
+
+  const approveStudio = async (studioId: string) => {
+    setStudiosList((prev) =>
+      prev.map((s) => {
+        if (s.id !== studioId) return s;
+        return {
+          ...s,
+          status: 'active',
+        };
+      })
+    );
+
+    const studio = studiosList.find((s) => s.id === studioId);
+    let emailSuccess = true;
+
+    // Sync server API if running
+    try {
+      const res = await api.updateStudioStatus(studioId, 'active');
+      if (res && res.emailSent === false) {
+        emailSuccess = false;
+      }
+    } catch (e) {}
+
+    logApprovalEmail({
+      adminName: studio?.adminName || 'Admin',
+      studioName: studio?.name || 'Studio',
+      adminEmail: studio?.adminEmail || '',
+      referenceEmail: studio?.referenceEmail,
+    });
+
+    if (emailSuccess) {
+      toast.success('Studio approved successfully.', {
+        description: `Approval email sent to ${studio?.adminEmail || 'studio admin'}.`,
+      });
+    } else {
+      toast.success('Studio approved successfully.', {
+        description: `However, the approval email could not be sent to ${studio?.adminEmail || 'studio admin'}.`,
+      });
+    }
+
+    if (studio) {
+      const activity: DemoActivity = {
+        id: `act_${Date.now()}`,
+        studioId: studio.id,
+        studioName: studio.name,
+        clientName: studio.adminName,
+        action: 'Studio Access Approved',
+        details: `${studio.name} was approved by Great Master Admin and is now active. Approval email sent to ${studio.adminEmail}.`,
+        timeAgo: 'Just now',
+        type: 'status_update',
+      };
+      setActivitiesList((prev) => [activity, ...prev]);
+    }
+  };
+
+  const rejectStudio = async (studioId: string, reason?: string) => {
+    setStudiosList((prev) =>
+      prev.map((s) => {
+        if (s.id !== studioId) return s;
+        return {
+          ...s,
+          status: 'rejected',
+        };
+      })
+    );
+
+    const studio = studiosList.find((s) => s.id === studioId);
+    let emailSuccess = true;
+
+    // Sync server API if running
+    try {
+      const res = await api.updateStudioStatus(studioId, 'rejected');
+      if (res && res.emailSent === false) {
+        emailSuccess = false;
+      }
+    } catch (e) {}
+
+    logRejectionEmail({
+      adminName: studio?.adminName || 'Admin',
+      studioName: studio?.name || 'Studio',
+      adminEmail: studio?.adminEmail || '',
+      referenceEmail: studio?.referenceEmail,
+      reason,
+    });
+
+    if (emailSuccess) {
+      toast.info('Studio access request rejected.', {
+        description: `Rejection email sent to ${studio?.adminEmail || 'studio admin'}.`,
+      });
+    } else {
+      toast.info('Studio access request rejected.', {
+        description: `However, the rejection email could not be sent to ${studio?.adminEmail || 'studio admin'}.`,
+      });
+    }
+
+    if (studio) {
+      const activity: DemoActivity = {
+        id: `act_${Date.now()}`,
+        studioId: studio.id,
+        studioName: studio.name,
+        clientName: studio.adminName,
+        action: 'Studio Access Request Rejected',
+        details: `${studio.name} access request was rejected by Great Master Admin. Rejection email sent to ${studio.adminEmail}.`,
+        timeAgo: 'Just now',
+        type: 'status_update',
+      };
+      setActivitiesList((prev) => [activity, ...prev]);
+    }
   };
 
   const loginAsGreatMaster = () => {
@@ -479,10 +682,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!user,
         activeStudio,
         studiosList,
+        pendingRequests,
         clientsList,
         activitiesList,
         login,
         registerStudioAccount,
+        approveStudio,
+        rejectStudio,
         loginAsGreatMaster,
         loginAsStudioAdmin,
         switchStudio,
@@ -505,3 +711,4 @@ export const useAuth = () => {
   }
   return context;
 };
+

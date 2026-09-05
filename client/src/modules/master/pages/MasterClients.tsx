@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../../context/AuthContext';
 import {
-  FolderKanban,
   Search,
   Building2,
   Calendar,
   MapPin,
-  Sparkles,
-  Layers,
   ChevronRight,
   Eye,
 } from 'lucide-react';
+import {
+  AnimatedCounter,
+  AnimatedProgressBar,
+  containerStagger,
+  itemFadeSlide,
+} from '../components/MasterMotion';
 
 export default function MasterClients() {
   const { clientsList, studiosList } = useAuth();
@@ -21,14 +25,22 @@ export default function MasterClients() {
   const filteredStudios = studiosList.filter((s) => selectedStudio === 'all' || s.id === selectedStudio);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <motion.div
+      variants={containerStagger}
+      initial="hidden"
+      animate="show"
+      className="space-y-6"
+    >
+      <motion.div
+        variants={itemFadeSlide}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold mb-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold mb-2 shadow-xs">
             <Eye className="w-3.5 h-3.5" />
             <span>Studio → Client Relationship View</span>
           </div>
-          <h1 className="text-2xl font-black text-slate-900 font-display">
+          <h1 className="text-2xl font-black text-slate-900 font-display tracking-tight">
             Client Monitoring by Studio
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -36,13 +48,19 @@ export default function MasterClients() {
           </p>
         </div>
 
-        <div className="px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold self-start">
-          {clientsList.length} Active Client Workspaces Monitored
+        <div className="px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold self-start flex items-center gap-1.5 shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse" />
+          <span>
+            <AnimatedCounter end={clientsList.length} duration={600} /> Active Client Workspaces Monitored
+          </span>
         </div>
-      </div>
+      </motion.div>
 
       {/* Filter Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center gap-3">
+      <motion.div
+        variants={itemFadeSlide}
+        className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center gap-3"
+      >
         <div className="relative flex-1 w-full">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -50,7 +68,7 @@ export default function MasterClients() {
             placeholder="Search clients by couple name, location, or lead ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all"
           />
         </div>
 
@@ -59,7 +77,7 @@ export default function MasterClients() {
           <select
             value={selectedStudio}
             onChange={(e) => setSelectedStudio(e.target.value)}
-            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all cursor-pointer"
           >
             <option value="all">All 10 Studios</option>
             {studiosList.map((s) => (
@@ -69,10 +87,10 @@ export default function MasterClients() {
             ))}
           </select>
         </div>
-      </div>
+      </motion.div>
 
       {/* Studio → Clients Accordion / Grouped List */}
-      <div className="space-y-5">
+      <motion.div variants={containerStagger} className="space-y-5">
         {filteredStudios.map((studio) => {
           const studioClients = clientsList.filter(
             (c) =>
@@ -85,16 +103,20 @@ export default function MasterClients() {
           if (search && studioClients.length === 0) return null;
 
           return (
-            <div
+            <motion.div
               key={studio.id}
-              className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm"
+              variants={itemFadeSlide}
+              className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm hover:shadow-md transition-shadow"
             >
               {/* Studio Header Row */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-600 text-white font-bold text-sm flex items-center justify-center shadow-md shadow-purple-900/20 shrink-0">
+                  <motion.div
+                    whileHover={{ scale: 1.06 }}
+                    className="w-10 h-10 rounded-xl bg-purple-600 text-white font-bold text-sm flex items-center justify-center shadow-md shadow-purple-900/20 shrink-0"
+                  >
                     <Building2 className="w-5 h-5" />
-                  </div>
+                  </motion.div>
                   <div>
                     <div className="flex items-center gap-2">
                       <h2 className="font-bold text-lg text-slate-900">{studio.name}</h2>
@@ -110,10 +132,10 @@ export default function MasterClients() {
 
                 <Link
                   to={`/master/studios/${studio.id}`}
-                  className="text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 px-3.5 py-2 rounded-xl transition-colors inline-flex items-center gap-1 self-start sm:self-center"
+                  className="text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 px-3.5 py-2 rounded-xl transition-colors inline-flex items-center gap-1 self-start sm:self-center group"
                 >
                   <span>Studio Details</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
 
@@ -137,12 +159,13 @@ export default function MasterClients() {
                         : client.preWeddingProgress;
 
                     return (
-                      <div
+                      <motion.div
                         key={client.id}
-                        className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                        whileHover={{ y: -2 }}
+                        className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/70 hover:bg-white hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="w-9 h-9 rounded-lg bg-white border border-purple-200 text-purple-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                          <div className="w-9 h-9 rounded-lg bg-white border border-purple-200 text-purple-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 shadow-xs">
                             {client.name.split(' ').map((n) => n[0]).join('')}
                           </div>
                           <div>
@@ -180,27 +203,23 @@ export default function MasterClients() {
                             </div>
                           </div>
 
-                          <div className="w-24">
+                          <div className="w-28">
                             <div className="text-[11px] font-bold text-slate-700 mb-1">
                               {progress}% Done
                             </div>
-                            <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                              <div
-                                className="bg-purple-600 h-1.5 rounded-full"
-                                style={{ width: `${progress}%` }}
-                              />
-                            </div>
+                            <AnimatedProgressBar progress={progress} colorClass="bg-purple-600" heightClass="h-1.5" />
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })
                 )}
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
+

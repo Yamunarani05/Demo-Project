@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { memoryStore, UserRecord } from '../db';
+import { sendRegistrationEmail } from '../services/emailService';
 
 const router = Router();
 
@@ -11,7 +12,7 @@ const DEMO_PERSONAS = [
     name: 'Rajesh Malhotra',
     label: 'Great Master (Platform Owner)',
     email: 'master@greatmaster.io',
-    description: 'Monitor all 6 studios, live shoot radar, platform metrics',
+    description: 'Monitor all studios, live shoot radar, platform metrics',
   },
   {
     role: 'studio_admin',
@@ -20,49 +21,6 @@ const DEMO_PERSONAS = [
     label: 'Dream Frames Studio (Admin)',
     email: 'admin@dreamframes.in',
     description: 'Manage Dream Frames: 12 active shoots, 4 photographers, CRM',
-  },
-  {
-    role: 'studio_admin',
-    studioId: 'studio_2',
-    name: 'Aakash Mehta',
-    label: 'Pixel Stories Productions (Admin)',
-    email: 'admin@pixelstories.in',
-    description: 'Manage Pixel Stories: Goa & Mumbai destination weddings',
-  },
-  {
-    role: 'studio_admin',
-    studioId: 'studio_3',
-    name: 'Prasad Reddy',
-    label: 'Lens Studio & Co. (Admin)',
-    email: 'connect@lensstudio.co',
-    description: 'Manage Lens Studio: 15 active South Indian weddings',
-  },
-  {
-    role: 'client',
-    studioId: 'studio_1',
-    clientId: 'client_1',
-    name: 'Arun & Priya',
-    label: 'Couple Client (Arun & Priya)',
-    email: 'arun.priya@gmail.com',
-    description: 'Pre-Wedding in Ooty: Live timeline, photo selection gallery',
-  },
-  {
-    role: 'client',
-    studioId: 'studio_2',
-    clientId: 'client_6',
-    name: 'Rahul & Meena',
-    label: 'Couple Client (Rahul & Meena)',
-    email: 'rahul.meena@gmail.com',
-    description: 'Goa Beach Wedding: 3-day luxury celebration portal',
-  },
-  {
-    role: 'photographer',
-    studioId: 'studio_1',
-    photographerId: 'photo_1',
-    name: 'Karthik Rajan',
-    label: 'Lead Photographer (Karthik)',
-    email: 'karthik@dreamframes.in',
-    description: 'Assigned shoots, shoot schedule, photo uploads',
   },
 ];
 
@@ -105,6 +63,21 @@ router.post('/login', async (req: Request, res: Response) => {
     const studio = user.studioId ? memoryStore.studios.find(s => s.id === user?.studioId) : null;
     const client = user.clientId ? memoryStore.clients.find(c => c.id === user?.clientId) : null;
 
+    if (user.role === 'studio_admin' && studio) {
+      if (studio.status === 'pending') {
+        return res.status(403).json({
+          success: false,
+          message: 'Your studio access request is awaiting approval from the Great Master Admin. Please check your registered email for updates.',
+        });
+      }
+      if (studio.status === 'rejected') {
+        return res.status(403).json({
+          success: false,
+          message: 'Your studio access request was not approved. Please check your registered email for more information.',
+        });
+      }
+    }
+
     // Do not return passwordHash
     const { passwordHash: _, ...safeUser } = user;
 
@@ -146,7 +119,7 @@ router.get('/me', (req: Request, res: Response) => {
   });
 });
 
-// POST /api/auth/register-studio - Customer-Facing Studio Free Trial Registration
+// POST /api/auth/register-studio - Customer-Facing Studio Registration
 router.post('/register-studio', async (req: Request, res: Response) => {
   const {
     studioName,
@@ -160,6 +133,7 @@ router.post('/register-studio', async (req: Request, res: Response) => {
     totalEmployees,
     photographers,
     editors,
+    referenceEmail,
   } = req.body;
 
   if (!studioName || !studioName.trim()) {
@@ -198,15 +172,16 @@ router.post('/register-studio', async (req: Request, res: Response) => {
       logo: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=150&auto=format&fit=crop&q=80',
       coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&auto=format&fit=crop&q=80',
       email: normalizedEmail,
+      referenceEmail: referenceEmail || undefined,
       phone: phone || '+91 98000 00000',
       address: address || '',
       city: city || 'Bangalore',
       state: state || 'Karnataka',
-      status: 'active',
+      status: 'pending',
       plan: 'Studio Pro (Trial)',
       trialStartDate: now.toISOString(),
       trialEndDate: trialEnd.toISOString(),
-      trialStatus: 'Active Trial',
+      trialStatus: 'Pending Approval',
       activeShootsCount: 0,
       completedShootsCount: 0,
       totalRevenue: 0,
@@ -236,25 +211,38 @@ router.post('/register-studio', async (req: Request, res: Response) => {
       studioId,
       actorName: newUser.name,
       actorRole: 'Studio Admin',
-      action: 'Studio Registered & Trial Started',
-      details: `${newStudio.name} registered for 14-Day Free Trial`,
+      action: 'Studio Access Requested',
+      details: `${newStudio.name} submitted access request (Pending Approval).`,
       timestamp: 'Just now',
     });
 
+    // Send Registration Success Email Notification
+    let emailResult: any = { success: false, emailSent: false };
+    try {
+      emailResult = await sendRegistrationEmail({
+        adminName: newUser.name,
+        studioName: newStudio.name,
+        adminEmail: normalizedEmail,
+        referenceEmail: referenceEmail || undefined,
+        city: newStudio.city,
+      });
+    } catch (e) {
+      console.error(`[Email] Failed to send registration email to ${normalizedEmail}`);
+    }
+
     const { passwordHash: _, ...safeUser } = newUser;
-    const token = `token_${newUser.id}_${Date.now()}`;
 
     res.status(201).json({
       success: true,
-      token,
+      pending: true,
+      emailSent: emailResult.emailSent,
       data: {
         user: safeUser,
         studio: newStudio,
-        token,
       },
       user: safeUser,
       studio: newStudio,
-      message: 'Studio registered successfully with 14-day free trial',
+      message: `Studio access request submitted successfully. Confirmation email ${emailResult.emailSent ? 'sent' : 'queued'} to ${normalizedEmail}.`,
     });
   } catch (err: any) {
     console.error('Registration error:', err);
