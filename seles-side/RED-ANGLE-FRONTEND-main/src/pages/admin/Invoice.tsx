@@ -1319,34 +1319,34 @@ const Invoice: React.FC = () => {
             <table className="w-full text-left border-collapse table-fixed">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="w-[7%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[7%] px-2 py-3.5 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Lead ID
                   </th>
-                  <th className="w-[13%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[13%] px-2 py-3.5 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Lead Name
                   </th>
-                  <th className="w-[11%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[11%] px-2 py-3.5 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Contact Id
                   </th>
-                  <th className="w-[8%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[8%] px-2 py-3.5 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Invoice Id
                   </th>
-                  <th className="w-[8%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[8%] px-2 py-3.5 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Billing Date
                   </th>
-                  <th className="w-[13%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[13%] px-2 py-3.5 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Employee Assigned
                   </th>
-                  <th className="w-[8%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[8%] px-2 py-3.5 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Plan
                   </th>
-                  <th className="w-[12%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase">
+                  <th className="w-[12%] px-2 py-3.5 text-left text-[11px] font-semibold text-gray-600 uppercase">
                     Payment
                   </th>
-                  <th className="w-[11%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[11%] px-2 py-3.5 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="w-[9%] px-2 py-3 text-center text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[9%] px-2 py-3.5 text-center text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Action
                   </th>
                 </tr>
@@ -1358,31 +1358,31 @@ const Invoice: React.FC = () => {
                       key={r.invoiceId ? `inv-${r.invoiceId}` : `lead-${r.leadId}-${idx}`}
                       className="hover:bg-gray-50/80 transition-colors"
                     >
-                      <td className="px-2 py-2.5 text-xs font-medium truncate">
+                      <td className="px-2 py-3.5 text-xs font-medium truncate">
                         <span className="text-gray-900 font-semibold truncate" title={r.leadSerialNumber || String(r.leadId)}>
                           {r.leadSerialNumber || r.leadId}
                         </span>
                       </td>
 
-                      <td className="px-2 py-2.5 text-xs text-gray-800 font-medium truncate">
+                      <td className="px-2 py-3.5 text-xs text-gray-800 font-medium truncate">
                         <div className="truncate" title={r.name}>
                           {r.name}
                         </div>
                       </td>
-                      <td className="px-2 py-2.5 text-xs text-gray-600 truncate">
+                      <td className="px-2 py-3.5 text-xs text-gray-600 truncate">
                         <div className="truncate" title={r.contact}>
                           {r.contact}
                         </div>
                       </td>
-                      <td className="px-2 py-2.5 text-xs font-semibold text-purple-700 truncate">
+                      <td className="px-2 py-3.5 text-xs font-semibold text-purple-700 truncate">
                         {r.invoiceId ? `INV${r.invoiceId}` : (r.billNo || "-")}
                       </td>
-                      <td className="px-2 py-2.5 text-xs text-gray-600 truncate">
+                      <td className="px-2 py-3.5 text-xs text-gray-600 truncate">
                         {r.billingDate}
                       </td>
-                      <td className="px-2 py-2.5 text-xs truncate">
+                      <td className="px-2 py-3.5 text-xs truncate">
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="w-5 h-5 rounded-full bg-purple-100 flex-shrink-0 flex items-center justify-center text-purple-700 text-[10px] font-semibold">
+                          <span className="w-6 h-6 rounded-full bg-purple-100 flex-shrink-0 flex items-center justify-center text-purple-700 text-xs font-semibold">
                             {r.assigned[0] ?? "N"}
                           </span>
                           <span className="text-gray-700 truncate" title={r.assigned}>
@@ -1390,12 +1390,12 @@ const Invoice: React.FC = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-2 py-2.5 text-xs text-gray-700 truncate">
+                      <td className="px-2 py-3.5 text-xs text-gray-700 truncate">
                         <div className="truncate" title={r.plan}>
                           {r.plan}
                         </div>
                       </td>
-                      <td className="px-2 py-2.5 text-xs truncate">
+                      <td className="px-2 py-3.5 text-xs truncate">
                         {(() => {
                           if (!r.invoiceId) {
                             return <span className="text-gray-400 text-xs">—</span>;
@@ -1404,7 +1404,7 @@ const Invoice: React.FC = () => {
                             return (
                               <button
                                 onClick={() => openPayment(r)}
-                                className="px-2 py-0.5 rounded-md border border-orange-400 text-orange-700 hover:bg-orange-50 text-[10px] font-semibold truncate transition-colors max-w-full"
+                                className="px-2.5 py-1 rounded-md border border-orange-400 text-orange-700 hover:bg-orange-50 text-[11px] font-semibold truncate transition-colors max-w-full"
                               >
                                 Verification Pending
                               </button>
@@ -1420,7 +1420,7 @@ const Invoice: React.FC = () => {
                             return (
                               <button
                                 onClick={() => openPayment(r)}
-                                className="px-2 py-0.5 rounded-md bg-green-100 hover:bg-green-200 text-green-700 text-[10px] font-semibold cursor-pointer truncate transition-colors"
+                                className="px-2.5 py-1 rounded-md bg-green-100 hover:bg-green-200 text-green-700 text-[11px] font-semibold cursor-pointer truncate transition-colors"
                                 title="View Payment History"
                               >
                                 Paid
@@ -1432,7 +1432,7 @@ const Invoice: React.FC = () => {
                             return (
                               <button
                                 onClick={() => openPayment(r)}
-                                className="px-2 py-0.5 rounded-md border border-yellow-400 text-yellow-700 hover:bg-yellow-50 text-[10px] font-semibold truncate transition-colors"
+                                className="px-2.5 py-1 rounded-md border border-yellow-400 text-yellow-700 hover:bg-yellow-50 text-[11px] font-semibold truncate transition-colors"
                               >
                                 Partial Payment
                               </button>
@@ -1442,7 +1442,7 @@ const Invoice: React.FC = () => {
                           return (
                             <button
                               onClick={() => openPayment(r)}
-                              className="px-2 py-0.5 rounded-md border border-blue-400 text-blue-700 hover:bg-blue-50 text-[10px] font-semibold truncate transition-colors"
+                              className="px-2.5 py-1 rounded-md border border-blue-400 text-blue-700 hover:bg-blue-50 text-[11px] font-semibold truncate transition-colors"
                             >
                               Add Payment
                             </button>
@@ -1450,7 +1450,7 @@ const Invoice: React.FC = () => {
                         })()}
                       </td>
 
-                      <td className="px-2 py-2.5 text-xs">
+                      <td className="px-2 py-3.5 text-xs">
                         {(() => {
                           const hasInvoice = Boolean(r.invoiceId);
                           const statusLower = (r.status || "").toLowerCase();
@@ -1461,7 +1461,7 @@ const Invoice: React.FC = () => {
 
                           return (
                             <span
-                              className={`inline-flex items-center justify-center whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-semibold select-none ${isApproved
+                              className={`inline-flex items-center justify-center whitespace-nowrap px-3 py-1 rounded-full text-[11px] font-semibold select-none ${isApproved
                                 ? "bg-green-100 text-green-700"
                                 : "bg-red-100 text-red-700"
                                 }`}
@@ -1471,11 +1471,11 @@ const Invoice: React.FC = () => {
                           );
                         })()}
                       </td>
-                      <td className="px-2 py-2.5 text-xs text-center">
+                      <td className="px-2 py-3.5 text-xs text-center">
                         <div className="flex items-center justify-center">
                           <button
                             onClick={() => handleView(r)}
-                            className="px-3 py-1 rounded-full text-[10px] font-semibold bg-white border border-[#6938ef]/40 text-[#6938ef] shadow-sm hover:bg-[#f3ecff] transition-colors whitespace-nowrap"
+                            className="px-3.5 py-1 rounded-full text-xs font-semibold bg-white border border-[#6938ef]/40 text-[#6938ef] shadow-sm hover:bg-[#f3ecff] transition-colors whitespace-nowrap"
                           >
                             View
                           </button>
