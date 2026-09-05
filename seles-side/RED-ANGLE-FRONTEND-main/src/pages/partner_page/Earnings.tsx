@@ -71,6 +71,74 @@ const Earnings = () => {
         setLoading(true);
         setError(null);
 
+        if (localStorage.getItem("isDemoPortal") === "true") {
+          const demoEarnings: EarningsData[] = [
+            {
+              leadId: "RAS-01",
+              leadName: "Vikram Malhotra",
+              type: "Wedding Photography",
+              createdDate: "Sep 01, 2026",
+              projectValue: 85000,
+              commissionPercent: 12,
+              earnings: 10200,
+              status: "Pending",
+            },
+            {
+              leadId: "RAS-02",
+              leadName: "Rohan Mehta",
+              type: "Cinematic Wedding",
+              createdDate: "Aug 25, 2026",
+              projectValue: 120000,
+              commissionPercent: 15,
+              earnings: 18000,
+              status: "Paid",
+            },
+            {
+              leadId: "RAS-03",
+              leadName: "Meera Nair",
+              type: "Reception & Sangeet",
+              createdDate: "Aug 18, 2026",
+              projectValue: 60000,
+              commissionPercent: 10,
+              earnings: 6000,
+              status: "Paid",
+            },
+            {
+              leadId: "RAS-04",
+              leadName: "Karan Kapoor",
+              type: "Pre-Wedding Shoot",
+              createdDate: "Jul 29, 2026",
+              projectValue: 40000,
+              commissionPercent: 10,
+              earnings: 4000,
+              status: "Paid",
+            },
+            {
+              leadId: "RAS-05",
+              leadName: "Divya Verma",
+              type: "Destination Wedding",
+              createdDate: "Jul 12, 2026",
+              projectValue: 150000,
+              commissionPercent: 15,
+              earnings: 22500,
+              status: "Unpaid",
+            },
+            {
+              leadId: "RAS-06",
+              leadName: "Arjun Sharma",
+              type: "Engagement Coverage",
+              createdDate: "Jun 20, 2026",
+              projectValue: 50000,
+              commissionPercent: 10,
+              earnings: 5000,
+              status: "Paid",
+            },
+          ];
+          setEarningsData(demoEarnings);
+          setLoading(false);
+          return;
+        }
+
         const token =
           localStorage.getItem('token') ||
           localStorage.getItem('authToken') ||

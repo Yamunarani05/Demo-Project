@@ -124,6 +124,59 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
+        if (localStorage.getItem("isDemoPortal") === "true") {
+          setProfile({
+            employeeId: 999,
+            userId: 999,
+            firstName: "Krishna",
+            lastName: "Partner",
+            contactNumber: "+91 98765 12345",
+            dob: "1992-05-15",
+            workLocation: "Chennai",
+            position: "Channel Partner Lead",
+            profileImagePath: "",
+            user: {
+              userId: 999,
+              email: "Krishna@gmail.com",
+              role: "partner",
+            },
+          });
+          setTasks([
+            {
+              taskId: 1,
+              taskName: "Client Consultation & Plan Selection",
+              lead: { firstName: "Vikram", lastName: "Malhotra" },
+              dueDate: "2026-09-10",
+              status: "In Progress",
+              priority: "High",
+            } as any,
+            {
+              taskId: 2,
+              taskName: "Share Portfolio & Quotation",
+              lead: { firstName: "Rohan", lastName: "Mehta" },
+              dueDate: "2026-09-12",
+              status: "To Do",
+              priority: "Medium",
+            } as any,
+          ]);
+          setEarnings([
+            {
+              leadName: "Rohan Mehta",
+              projectValue: 120000,
+              earning: 18000,
+              status: "Paid",
+            },
+            {
+              leadName: "Meera Nair",
+              projectValue: 60000,
+              earning: 6000,
+              status: "Paid",
+            },
+          ]);
+          setLoading(false);
+          return;
+        }
+
         // PROFILE
         const profileRes = await apiClient.get("/employees/profile");
         const profileData = profileRes.data?.profile ?? null;

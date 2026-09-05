@@ -20,6 +20,7 @@ import type {
   QuotationPackage,
 } from "../../api/quotations.api";
 import { QuotationsAPI } from "../../api/quotations.api";
+import { isUnauthorizedDemoPortal } from "../../utils/demoAuth";
 
 /* ================= COMPONENT ================= */
 
@@ -97,18 +98,69 @@ const Quotation: React.FC = () => {
   // 🔹 Creator-based quotations (ADMIN / EMPLOYEE / PARTNER)
   useEffect(() => {
     const loadMyQuotations = async () => {
-      const list = await QuotationsAPI.getAdminQuotations();
-      setMyQuotations(list);
+      try {
+        const list = await QuotationsAPI.getAdminQuotations();
+        setMyQuotations(list);
+      } catch {
+        setMyQuotations([]);
+      }
     };
 
     loadMyQuotations();
   }, [role]);
 
+  const DEMO_PACKAGES_DATA: InvoicePackage[] = [
+    {
+      id: 1,
+      packageTitle: "Basic Photography Package",
+      packageType: "Basic",
+      price: 30000,
+      items: [
+        { id: 1, name: "Traditional Photography", category: "Service", quantity: 1, price: 15000 },
+        { id: 2, name: "Photo Album 30 Pages", category: "Deliverable", quantity: 1, price: 15000 },
+      ],
+    },
+    {
+      id: 2,
+      packageTitle: "Standard Candid & Traditional Combo",
+      packageType: "Standard",
+      price: 45000,
+      items: [
+        { id: 3, name: "Candid Photography", category: "Service", quantity: 1, price: 25000 },
+        { id: 4, name: "Traditional Video Coverage", category: "Service", quantity: 1, price: 20000 },
+      ],
+    },
+    {
+      id: 3,
+      packageTitle: "Premium Cinematic Wedding Story",
+      packageType: "Premium",
+      price: 75000,
+      items: [
+        { id: 5, name: "Cinematic Film & Teaser", category: "Service", quantity: 1, price: 40000 },
+        { id: 6, name: "Drone Aerial Shoots (4K)", category: "Drone", quantity: 1, price: 15000 },
+        { id: 7, name: "Premium Leather Photobook", category: "Deliverable", quantity: 2, price: 20000 },
+      ],
+    },
+  ];
+
   // 🔹 Invoice packages
   useEffect(() => {
     const fetchPackages = async () => {
-      const data = await QuotationsAPI.getInvoicePackages();
-      setInvoicePackages(Array.isArray(data) ? data : []);
+      if (localStorage.getItem("isDemoPortal") === "true") {
+        setInvoicePackages(DEMO_PACKAGES_DATA);
+        return;
+      }
+
+      try {
+        const data = await QuotationsAPI.getInvoicePackages();
+        if (Array.isArray(data) && data.length > 0) {
+          setInvoicePackages(data);
+        } else {
+          setInvoicePackages(DEMO_PACKAGES_DATA);
+        }
+      } catch {
+        setInvoicePackages(DEMO_PACKAGES_DATA);
+      }
     };
     fetchPackages();
   }, []);
@@ -118,9 +170,27 @@ const Quotation: React.FC = () => {
     if (!effectiveLeadId || !isEmployeeOrPartner) return;
 
     const loadRequirement = async () => {
-      const data =
-        await CallsAPI.getLatestRequirementForLead(effectiveLeadId);
-      setRequirement(data);
+      if (localStorage.getItem("isDemoPortal") === "true") {
+        setRequirement({
+          id: 1,
+          leadId: effectiveLeadId,
+          eventDate: "2026-09-25",
+          eventType: "Wedding Photography",
+          guestCount: "500",
+          budget: "75000",
+          location: "Chennai, Tamil Nadu",
+          notes: "Client looking for candid photography + cinematic teaser reel.",
+        } as any);
+        return;
+      }
+
+      try {
+        const data =
+          await CallsAPI.getLatestRequirementForLead(effectiveLeadId);
+        setRequirement(data);
+      } catch {
+        setRequirement(null);
+      }
     };
 
     loadRequirement();
@@ -376,6 +446,31 @@ const Quotation: React.FC = () => {
               )}
             </div>
           </div>
+
+          {isUnauthorizedDemoPortal() && effectiveLeadId && (
+            <div className="flex justify-end pt-4 pb-6">
+              <button
+                onClick={() => {
+                  const targetConfirmation =
+                    role === "partner"
+                      ? `/partner/leads/${effectiveLeadId}/confirmation`
+                      : `/employee/leads/${effectiveLeadId}/confirmation`;
+                  navigate(targetConfirmation, {
+                    state: {
+                      leadSerialNumber: navState?.leadSerialNumber,
+                      taskId: currentTaskId,
+                      taskName: currentTaskName,
+                      dueDate: navState?.eventDate,
+                    },
+                  });
+                }}
+                className="px-8 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold shadow-md transition flex items-center gap-2"
+              >
+                <span>Continue</span>
+                <span>&rarr;</span>
+              </button>
+            </div>
+          )}
         </main>
       </div>
 

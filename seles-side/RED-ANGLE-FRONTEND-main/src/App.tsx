@@ -156,7 +156,7 @@
 
 // export default App;
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import { NotificationsProvider } from "./notifications/NotificationsContext";
 import ResetPassword from "./pages/auth/ResetPassword";
@@ -241,6 +241,8 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <Routes>
+                  <Route path="" element={<Navigate to="dashboard" replace />} />
+                  <Route path="dashboard" element={<AdminDashboard />} />
                   <Route path="view-leads" element={<ViewLeads />} />
                   <Route path="view-lead/:id" element={<ViewLead />} />
                   <Route path="assign-leads" element={<AssignLeads />} />
@@ -258,10 +260,8 @@ function App() {
                   <Route path="report/invoice" element={<InvoiceReport />} />
                   <Route path="tracking/track-leads" element={<LeadTrack />} />
                   <Route path="tracking/employee-profile/track-employee" element={<EmployeeTrack />} />
-                  <Route path="dashboard" element={<AdminDashboard />} />
                   <Route path="attendance" element={<AdminAttendance />} />
-                  {/* <Route path="/invoice/:token" element={<InvoicePublic />} /> */}
-
+                  <Route path="*" element={<Navigate to="dashboard" replace />} />
                 </Routes>
               </ProtectedRoute>
             }
@@ -273,6 +273,7 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["partner"]}>
                 <Routes>
+                  <Route path="" element={<Navigate to="dashboard" replace />} />
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="profile" element={<Profile />} />
                   <Route path="leads" element={<Leads />} />
@@ -282,6 +283,7 @@ function App() {
                   <Route path="leads/:leadId" element={<Lead />} />
                   <Route path="leads/:leadId/quotation" element={<Quotation />} />
                   <Route path="leads/:leadId/confirmation" element={<PartnerConfirmationPage />} />
+                  <Route path="*" element={<Navigate to="dashboard" replace />} />
                 </Routes>
               </ProtectedRoute>
             }
@@ -305,6 +307,7 @@ function App() {
                   <Route path="leads/:leadId/quotation" element={<Quotation />} />
                   <Route path="leads/:leadId/confirmation" element={<EmployeeConfirmationPage />} />
                   <Route path="notifications" element={<Notifications />} />
+                  <Route path="*" element={<Navigate to="dashboard" replace />} />
                 </Routes>
               </ProtectedRoute>
             }
@@ -315,7 +318,7 @@ function App() {
           <Route path="/notifications" element={<NotificationsPage />} />
 
           {/* ================= FALLBACK ================= */}
-          <Route path="*" element={<div>Page Not Found</div>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </NotificationsProvider>

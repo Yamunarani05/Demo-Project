@@ -22,6 +22,7 @@ import type {
   InvoiceDetail,
 } from "../../types/invoice";
 import { exportToExcel } from "../../utils/excelExport";
+import { isUnauthorizedDemoPortal } from "../../utils/demoAuth";
 
 interface LeadRow {
   leadId: number;
@@ -105,6 +106,21 @@ const Invoice: React.FC = () => {
     setPaymentRow(row);
     setIsPaymentOpen(true);
 
+    if (isUnauthorizedDemoPortal()) {
+      setPaymentProofs([
+        {
+          id: 1,
+          amount: row.paid || 20000,
+          paymentMode: "UPI / Bank Transfer",
+          status: "VERIFIED",
+          transactionId: `TXN-DEMO-${row.invoiceId || 9001}`,
+          createdAt: row.billingDate !== "-" ? row.billingDate : "2026-03-01",
+          proofUrl: null,
+        },
+      ]);
+      return;
+    }
+
     if (row.invoiceId) {
       try {
         const res = await api.get(`/payments/invoice/${row.invoiceId}`);
@@ -171,10 +187,144 @@ const Invoice: React.FC = () => {
   };
 
 
+  const DEMO_INVOICE_ROWS: InvoiceRow[] = [
+    {
+      leadId: 101,
+      leadCode: "LD-2026-001",
+      leadSerialNumber: "LD-2026-001",
+      leadType: "LD",
+      name: "Arun Kumar",
+      contact: "+91 98765 43210",
+      invoiceId: 9001,
+      billNo: "INV-9001",
+      billingDate: "2026-03-01",
+      assigned: "Ramesh Sharma",
+      plan: "Premium",
+      status: "Paid",
+      totalAmount: 75000,
+      discount: 5000,
+      paid: 70000,
+      balance: 0,
+      hasUnverifiedPayment: false,
+    },
+    {
+      leadId: 102,
+      leadCode: "LD-2026-002",
+      leadSerialNumber: "LD-2026-002",
+      leadType: "LD",
+      name: "Priya Sundaram",
+      contact: "+91 98765 43211",
+      invoiceId: 9002,
+      billNo: "INV-9002",
+      billingDate: "2026-03-02",
+      assigned: "Sneha Patel",
+      plan: "Standard",
+      status: "Partial",
+      totalAmount: 45000,
+      discount: 0,
+      paid: 20000,
+      balance: 25000,
+      hasUnverifiedPayment: false,
+    },
+    {
+      leadId: 103,
+      leadCode: "LD-2026-003",
+      leadSerialNumber: "LD-2026-003",
+      leadType: "LD",
+      name: "Vikram Malhotra",
+      contact: "+91 98765 43212",
+      invoiceId: 9003,
+      billNo: "INV-9003",
+      billingDate: "2026-03-03",
+      assigned: "Ramesh Sharma",
+      plan: "Premium Plus",
+      status: "Approved",
+      totalAmount: 120000,
+      discount: 10000,
+      paid: 110000,
+      balance: 0,
+      hasUnverifiedPayment: false,
+    },
+    {
+      leadId: 104,
+      leadCode: "LD-2026-004",
+      leadSerialNumber: "LD-2026-004",
+      leadType: "LD",
+      name: "Ananya Deshmukh",
+      contact: "+91 98765 43213",
+      invoiceId: 9004,
+      billNo: "INV-9004",
+      billingDate: "2026-03-04",
+      assigned: "Karthik Raja",
+      plan: "Basic",
+      status: "Not Approved",
+      totalAmount: 30000,
+      discount: 0,
+      paid: 0,
+      balance: 30000,
+      hasUnverifiedPayment: false,
+    },
+    {
+      leadId: 105,
+      leadCode: "LD-2026-005",
+      leadSerialNumber: "LD-2026-005",
+      leadType: "LD",
+      name: "Rajesh Kannan",
+      contact: "+91 98765 43214",
+      invoiceId: 9005,
+      billNo: "INV-9005",
+      billingDate: "2026-03-05",
+      assigned: "Sneha Patel",
+      plan: "Standard",
+      status: "Paid",
+      totalAmount: 55000,
+      discount: 5000,
+      paid: 50000,
+      balance: 0,
+      hasUnverifiedPayment: false,
+    },
+    {
+      leadId: 106,
+      leadCode: "LD-2026-006",
+      leadSerialNumber: "LD-2026-006",
+      leadType: "LD",
+      name: "Kavitha Ranganathan",
+      contact: "+91 98765 43215",
+      invoiceId: null,
+      billNo: undefined,
+      billingDate: "-",
+      assigned: "Karthik Raja",
+      plan: "—",
+      status: "Not Approved",
+      totalAmount: 40000,
+      discount: 0,
+      paid: 0,
+      balance: 40000,
+      hasUnverifiedPayment: false,
+    },
+  ];
+
   // LOAD ALL INVOICES DIRECTLY (no lead-stage filter)
   const loadInvoices = useCallback(async () => {
     try {
       setLoading(true);
+
+      if (isUnauthorizedDemoPortal()) {
+        setRows(DEMO_INVOICE_ROWS);
+        setPackages([
+          { id: 1, packageTitle: "Basic Photography" },
+          { id: 2, packageTitle: "Standard Candid & Traditional" },
+          { id: 3, packageTitle: "Premium Cinematic Wedding" },
+          { id: 4, packageTitle: "Premium Plus Luxury Coverage" },
+        ]);
+        setAddons([
+          { id: 1, name: "Drone Aerial Shoots (4K)" },
+          { id: 2, name: "Teaser Video 60s Reel" },
+          { id: 3, name: "Traditional Photobook Album" },
+        ]);
+        setLoading(false);
+        return;
+      }
 
       // Fetch all invoices (grouped per lead) — no stage filter
       const invoiceRes = await invoiceService.getInvoices({
@@ -470,11 +620,80 @@ const Invoice: React.FC = () => {
 
   // VIEW BY INVOICE ID
   const handleViewByInvoiceId = async (invoiceId: number) => {
-
+    if (isUnauthorizedDemoPortal()) {
+      const foundDemo = DEMO_INVOICE_ROWS.find((r) => r.invoiceId === invoiceId) || DEMO_INVOICE_ROWS[0];
+      const demoInvoice = {
+        invoiceId: foundDemo.invoiceId ?? 9001,
+        token: "demo-invoice-token",
+        status: foundDemo.status,
+        billingDate: foundDemo.billingDate,
+        billNo: foundDemo.billNo ?? `INV${foundDemo.invoiceId}`,
+        name: foundDemo.name,
+        contact: foundDemo.contact,
+        eventDate: "2026-03-20",
+        eventName: `${foundDemo.plan} Wedding Event`,
+        engagementDetails: "Grand Palace, Hall A",
+        weddingDetails: "Grand Palace, Main Mandap",
+        receptionDetails: "Grand Palace, Lawn Banquet",
+        ritualsDetails: "Pre-wedding ceremonies & Sangeet included",
+        location: "Chennai / Bangalore",
+        itemsByCategory: {
+          SERVICE: [
+            { name: `${foundDemo.plan} Coverage Package`, quantity: 1, price: 35000 },
+            { name: "Candid & Traditional Photography", quantity: 1, price: 25000 },
+            { name: "Traditional HD Video Coverage", quantity: 1, price: 15000 },
+          ],
+          "ADD-ONS": [
+            { name: "Drone Aerial Shoots (4K UHD)", quantity: 1, price: 15000 },
+            { name: "Instagram Reel (60 sec)", quantity: 1, price: 5000 },
+          ],
+          DELIVERABLES: [
+            { name: "Premium Leather Photobook Album (40 Pages)", quantity: 2, price: 15000 },
+            { name: "Edited Cinematic Highlight Film on USB", quantity: 1, price: 5000 },
+          ],
+          COMPLIMENTARY: [
+            { name: "Mini Pocket Photobook for Parents", quantity: 1, price: 0 },
+            { name: "Live Webcast Link for Family", quantity: 1, price: 0 },
+          ],
+        },
+        totalAmount: foundDemo.totalAmount ?? 115000,
+        paid: foundDemo.paid ?? 50000,
+        discount: foundDemo.discount ?? 5000,
+        qtyOverrides: {},
+        previewEvents: [
+          { title: "EVENT NAME", value: `${foundDemo.plan} Wedding Event` },
+          { title: "ENGAGEMENT", value: "2026-03-18 • Grand Palace Banquet" },
+          { title: "WEDDING", value: "2026-03-20 • Main Mandapam Hall" },
+          { title: "RECEPTION", value: "2026-03-21 • Open Lawn Reception" },
+          { title: "RITUALS", value: "Pre-wedding ceremonies, Haldi & Sangeet" },
+          { title: "LOCATION", value: "Chennai / Bangalore" },
+        ],
+        previewItems: null,
+        leadAddons: [],
+        payments: [
+          {
+            id: 1,
+            amount: foundDemo.paid ?? 50000,
+            paymentMode: "Bank Transfer",
+            status: "VERIFIED",
+            date: foundDemo.billingDate,
+          },
+        ],
+        lead: {
+          leadId: foundDemo.leadId,
+          firstName: foundDemo.name.split(" ")[0],
+          lastName: foundDemo.name.split(" ").slice(1).join(" "),
+          contactNumber: foundDemo.contact,
+          email: `${foundDemo.name.toLowerCase().replace(/\s+/g, ".")}@example.com`,
+          address: "Chennai, Tamil Nadu",
+        },
+      };
+      setPreviewInvoice(demoInvoice);
+      setIsPreviewOpen(true);
+      return;
+    }
 
     try {
-
-
       const res = await invoiceService.getInvoiceById(invoiceId);
       const inv = res.data?.data ?? res.data;
 
@@ -1100,34 +1319,34 @@ const Invoice: React.FC = () => {
             <table className="w-full text-left border-collapse table-fixed">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="w-[8%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[7%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Lead ID
                   </th>
                   <th className="w-[13%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Lead Name
                   </th>
-                  <th className="w-[12%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[11%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Contact Id
                   </th>
-                  <th className="w-[9%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[8%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Invoice Id
                   </th>
-                  <th className="w-[9%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[8%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Billing Date
                   </th>
-                  <th className="w-[14%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[13%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Employee Assigned
                   </th>
-                  <th className="w-[9%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[8%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Plan
                   </th>
                   <th className="w-[12%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase">
                     Payment
                   </th>
-                  <th className="w-[9%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[11%] px-2 py-3 text-left text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="w-[5%] px-2 py-3 text-center text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="w-[9%] px-2 py-3 text-center text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
                     Action
                   </th>
                 </tr>
@@ -1231,7 +1450,7 @@ const Invoice: React.FC = () => {
                         })()}
                       </td>
 
-                      <td className="px-2 py-2.5 text-xs truncate">
+                      <td className="px-2 py-2.5 text-xs">
                         {(() => {
                           const hasInvoice = Boolean(r.invoiceId);
                           const statusLower = (r.status || "").toLowerCase();
@@ -1242,7 +1461,7 @@ const Invoice: React.FC = () => {
 
                           return (
                             <span
-                              className={`inline-flex items-center justify-center truncate px-2 py-0.5 rounded-full text-[10px] font-semibold select-none ${isApproved
+                              className={`inline-flex items-center justify-center whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-semibold select-none ${isApproved
                                 ? "bg-green-100 text-green-700"
                                 : "bg-red-100 text-red-700"
                                 }`}
@@ -1252,11 +1471,11 @@ const Invoice: React.FC = () => {
                           );
                         })()}
                       </td>
-                      <td className="px-2 py-2.5 text-xs text-center truncate">
+                      <td className="px-2 py-2.5 text-xs text-center">
                         <div className="flex items-center justify-center">
                           <button
                             onClick={() => handleView(r)}
-                            className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white border border-[#6938ef]/40 text-[#6938ef] shadow-sm hover:bg-[#f3ecff] transition-colors"
+                            className="px-3 py-1 rounded-full text-[10px] font-semibold bg-white border border-[#6938ef]/40 text-[#6938ef] shadow-sm hover:bg-[#f3ecff] transition-colors whitespace-nowrap"
                           >
                             View
                           </button>

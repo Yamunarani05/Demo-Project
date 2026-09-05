@@ -4,6 +4,7 @@ import api from "../../api/api";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import DashboardHeader from "../../components/DashboardHeader/DashboardHeader";
 import { exportToExcel } from "../../utils/excelExport";
+import { isUnauthorizedDemoPortal } from "../../utils/demoAuth";
 
 type Stage = "Lead" | "Quotation" | "Confirmation" | "Finalised";
 
@@ -68,11 +69,34 @@ const PartnerConfirmationPage = () => {
     const controller = new AbortController();
 
     const fetchLead = async () => {
+      const isDemo = isUnauthorizedDemoPortal();
+      if (isDemo) {
+        setLead({
+          leadId: Number(leadId) || 801,
+          firstName: "Vikram",
+          lastName: "Malhotra",
+          email: "vikram.malhotra@example.com",
+          contactNumber: "+91 98765 43212",
+          eventType: "Wedding Photography",
+          address: "Chennai, Tamil Nadu",
+          eventDate: "2026-09-25",
+          currentStage: "Confirmation",
+          createdAt: "2026-09-01T10:00:00.000Z",
+        });
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await api.get(`/leads/${leadId}`, {
           signal: controller.signal,
         });
-        setLead(res.data?.data ?? null);
+        const d = res.data?.data;
+        if (d) {
+          setLead(d);
+        } else {
+          setLead(null);
+        }
       } catch {
         setLead(null);
       } finally {
@@ -109,6 +133,12 @@ const PartnerConfirmationPage = () => {
   const moveToFinalize = async () => {
     if (!leadId) return;
 
+    if (isUnauthorizedDemoPortal()) {
+      setLead((prev) => (prev ? { ...prev, currentStage: "Finalised" } : prev));
+      navigate(`/partner/lead/${leadId}/overview`);
+      return;
+    }
+
     try {
       setUpdating(true);
       setError("");
@@ -120,6 +150,7 @@ const PartnerConfirmationPage = () => {
       setLead((prev) =>
         prev ? { ...prev, currentStage: "Finalised" } : prev
       );
+      navigate(`/partner/lead/${leadId}/overview`);
     } catch (err) {
       setError("Failed to move lead to Finalised stage");
       console.error(err);
@@ -246,28 +277,37 @@ const PartnerConfirmationPage = () => {
             </div>
           )}
 
-          <div className="flex justify-between items-center">
-            <button
-              onClick={handleDownload}
-              className="px-8 py-3 rounded-xl bg-purple-600 text-white shadow"
-            >
-              Download
-            </button>
+          <div className="flex flex-wrap justify-between items-center gap-4 pt-4 border-t border-gray-200">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate(`/partner/lead/${leadId}/overview`)}
+                className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium transition"
+              >
+                ← Pipeline Overview
+              </button>
+              <button
+                onClick={handleDownload}
+                className="px-6 py-3 rounded-xl bg-purple-600 text-white shadow hover:bg-purple-700 transition"
+              >
+                Download Report
+              </button>
+            </div>
 
             {isFinalised ? (
               <button
-                disabled
-                className="px-8 py-3 rounded-xl bg-green-600 text-white opacity-80 cursor-not-allowed"
+                onClick={() => navigate(`/partner/lead/${leadId}/overview`)}
+                className="px-8 py-3 rounded-xl bg-green-600 text-white shadow font-semibold hover:bg-green-700 transition"
               >
-                Completed
+                Completed ✓ (View Pipeline)
               </button>
             ) : (
               <button
                 onClick={moveToFinalize}
                 disabled={updating}
-                className="px-8 py-3 rounded-xl bg-purple-600 text-white shadow"
+                className="px-8 py-3 rounded-xl bg-purple-600 text-white shadow font-semibold hover:bg-purple-700 transition flex items-center gap-2"
               >
-                {updating ? "Updating…" : "Move to Finalize"}
+                <span>{updating ? "Updating…" : "Continue to Finalize"}</span>
+                <span>→</span>
               </button>
             )}
           </div>

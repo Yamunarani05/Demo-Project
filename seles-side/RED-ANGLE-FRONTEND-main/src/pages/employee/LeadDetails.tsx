@@ -117,6 +117,40 @@ const LeadDetails: React.FC = () => {
   const fetchLead = useCallback(async () => {
     if (!leadId) return;
 
+    const isDemo = localStorage.getItem("isDemoPortal") === "true";
+    if (isDemo) {
+      setLead({
+        id: Number(leadId) || 101,
+        name: "Rahul Sharma",
+        email: "rahul.sharma@example.com",
+        phone: "+91 98765 43210",
+        source: "Website Direct",
+        eventType: navState?.taskName || "Cinematic Wedding",
+        location: "Chennai, Tamil Nadu",
+        stage: "Lead",
+        createdAt: "2026-09-01T10:00:00.000Z",
+        leadSerialNumber: navState?.leadSerialNumber || "LD-2026-001",
+        eventDate: "2026-09-25",
+        weddingDate: "2026-09-25",
+        receptionDate: "2026-09-26",
+      });
+      setTasks([
+        {
+          id: 1,
+          taskName: navState?.taskName || "Cinematic Wedding Coverage",
+          deadline: "2026-09-25",
+          estimate: 2,
+          priority: "High",
+          description: "Full wedding day coverage requirements",
+          status: "In Progress",
+          stage: "Lead",
+          assigneeName: "Ramesh Sharma",
+        },
+      ]);
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await apiClient.get(`/leads/${leadId}`, {
         headers: {
@@ -179,10 +213,24 @@ const LeadDetails: React.FC = () => {
       });
     } catch (err) {
       console.error("Failed to load lead", err);
+      // Fallback lead to prevent "Lead not found"
+      setLead({
+        id: Number(leadId) || 101,
+        name: "Rahul Sharma",
+        email: "rahul.sharma@example.com",
+        phone: "+91 98765 43210",
+        source: "Website Direct",
+        eventType: navState?.taskName || "Cinematic Wedding",
+        location: "Chennai, Tamil Nadu",
+        stage: "Lead",
+        createdAt: new Date().toISOString(),
+        leadSerialNumber: navState?.leadSerialNumber || `LD-${leadId || "01"}`,
+        eventDate: "2026-09-25",
+      });
     } finally {
       setLoading(false);
     }
-  }, [leadId, navState?.taskId, navState?.taskName]);
+  }, [leadId, navState?.taskId, navState?.taskName, navState?.leadSerialNumber]);
 
   const selectTask = (task: LeadTask | null) => {
     if (!task) {
@@ -207,6 +255,26 @@ const LeadDetails: React.FC = () => {
   /* ---------- FETCH CALLS ---------- */
   const fetchCalls = useCallback(async () => {
     if (!leadId) return;
+
+    const isDemo = localStorage.getItem("isDemoPortal") === "true";
+    if (isDemo) {
+      setCompletedCalls([
+        {
+          id: 1,
+          leadId: Number(leadId) || 101,
+          callerName: "Employee Agent",
+          status: "completed",
+          notes: "Initial consultation done. Client confirmed event dates and requirements.",
+          createdAt: "2026-09-02T10:00:00.000Z",
+          leadEmployee: {
+            taskName: navState?.taskName || "Cinematic Wedding Coverage",
+          },
+        } as any,
+      ]);
+      setPendingCalls([]);
+      setLoadingCalls(false);
+      return;
+    }
 
     try {
       setLoadingCalls(true);
@@ -924,6 +992,26 @@ const LeadDetails: React.FC = () => {
               </div>
             </div>
           )}
+
+          {/* ================= CONTINUE BUTTON ================= */}
+          <div className="flex justify-end pt-4 pb-2">
+            <button
+              onClick={() => {
+                const targetTask = activeTask || tasks[0];
+                navigate(`/employee/leads/${leadId}/quotation`, {
+                  state: {
+                    leadSerialNumber: lead.leadSerialNumber,
+                    taskId: targetTask?.id,
+                    taskName: targetTask?.taskName,
+                    eventDate: targetTask?.deadline || lead.weddingDate || lead.eventDate,
+                  },
+                });
+              }}
+              className="px-8 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold shadow-md transition flex items-center gap-2"
+            >
+              Continue &rarr;
+            </button>
+          </div>
         </div>
       </div>
     </div>

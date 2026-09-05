@@ -98,6 +98,120 @@ const extractNumber = (str: string): number | undefined => {
   return isNaN(num) ? undefined : num;
 };
 
+const DEMO_VIEW_LEADS: Lead[] = [
+  {
+    id: "1",
+    leadId: "1",
+    leadCode: "LD-2026-001",
+    leadName: "Rahul Sharma",
+    contactNumber: "9988776655",
+    createdTime: new Date().toISOString(),
+    email: "rahul.sharma@example.com",
+    leadSource: {
+      type: "Website",
+      assignee: "John Employee",
+      avatar: "https://ui-avatars.com/api/?name=John+Employee&background=6938ef&color=fff",
+    },
+    status: "To Do",
+    firstName: "Rahul",
+    lastName: "Sharma",
+    address: "12 Beach Road, Chennai",
+    budget: "89000",
+    priority: 1,
+    eventType: "Wedding & Reception",
+    eventDate: "2026-10-15",
+    assignedEmployee: {
+      id: 1,
+      name: "John Employee",
+      role: "employee",
+    },
+    currentStage: "Lead",
+  },
+  {
+    id: "2",
+    leadId: "2",
+    leadCode: "LD-2026-002",
+    leadName: "Ananya Verma",
+    contactNumber: "9988776644",
+    createdTime: new Date().toISOString(),
+    email: "ananya.v@example.com",
+    leadSource: {
+      type: "Instagram",
+      assignee: "John Employee",
+      avatar: "https://ui-avatars.com/api/?name=John+Employee&background=6938ef&color=fff",
+    },
+    status: "In Progress",
+    firstName: "Ananya",
+    lastName: "Verma",
+    address: "45 Anna Nagar, Chennai",
+    budget: "160000",
+    priority: 1,
+    eventType: "Pre-Wedding Shoot",
+    eventDate: "2026-10-20",
+    assignedEmployee: {
+      id: 1,
+      name: "John Employee",
+      role: "employee",
+    },
+    currentStage: "Quotation",
+  },
+  {
+    id: "3",
+    leadId: "3",
+    leadCode: "LD-2026-003",
+    leadName: "Vikram Malhotra",
+    contactNumber: "9988776633",
+    createdTime: new Date().toISOString(),
+    email: "vikram.m@example.com",
+    leadSource: {
+      type: "Referral",
+      assignee: "Krishna Partner",
+      avatar: "https://ui-avatars.com/api/?name=Krishna+Partner&background=10b981&color=fff",
+    },
+    status: "In Review",
+    firstName: "Vikram",
+    lastName: "Malhotra",
+    address: "88 RS Puram, Coimbatore",
+    budget: "54000",
+    priority: 2,
+    eventType: "Engagement Shoot",
+    eventDate: "2026-11-12",
+    assignedEmployee: {
+      id: 2,
+      name: "Krishna Partner",
+      role: "partner",
+    },
+    currentStage: "Confirmation",
+  },
+  {
+    id: "4",
+    leadId: "4",
+    leadCode: "LD-2026-004",
+    leadName: "Sneha Kapoor",
+    contactNumber: "9988776622",
+    createdTime: new Date().toISOString(),
+    email: "sneha.k@example.com",
+    leadSource: {
+      type: "Partner",
+      assignee: "John Employee",
+      avatar: "https://ui-avatars.com/api/?name=John+Employee&background=6938ef&color=fff",
+    },
+    status: "Done",
+    firstName: "Sneha",
+    lastName: "Kapoor",
+    address: "102 T Nagar, Chennai",
+    budget: "106000",
+    priority: 1,
+    eventType: "Wedding",
+    eventDate: "2026-12-05",
+    assignedEmployee: {
+      id: 1,
+      name: "John Employee",
+      role: "employee",
+    },
+    currentStage: "Finalised",
+  },
+];
 
 const ViewLeads = () => {
   const [selectedLead, setSelectedLead] = useState<Number | null>(null);
@@ -780,50 +894,65 @@ const ViewLeads = () => {
   };
 
   const fetchLeads = useCallback(async () => {
-    const res = await LeadsAPI.getLeads(1, 1000, "");
-    const backendLeads = res.data.data;
-    setTotalLeads(res.data.total);
+    const isDemo = localStorage.getItem("isDemoPortal") === "true";
+    if (isDemo) {
+      setLeads(DEMO_VIEW_LEADS);
+      setTotalLeads(DEMO_VIEW_LEADS.length);
+      return;
+    }
 
-    const mapped = backendLeads.map((l: any) => {
-      const employee = l.leadEmployee?.[0]?.employee;
+    try {
+      const res = await LeadsAPI.getLeads(1, 1000, "");
+      const backendLeads = res?.data?.data || [];
+      setTotalLeads(res?.data?.total || 0);
 
-      return {
-        id: String(l.leadId),
-        leadId: l.leadId,
-        leadCode: l.leadSerialNumber || `LD${l.leadId}`,
-        leadName: `${l.firstName} ${l.lastName ?? ""}`.trim(),
-        contactNumber: l.contactNumber,
-        createdTime: l.createdTime,
-        email: l.email,
-        address: l.address ?? '',
-        eventDate: l.eventDate ?? '',
-        budget: l.budget ?? '',
-        eventType: l.eventType ?? '',
-        priority: l.priority,
-        firstName: l.firstName,
-        lastName: l.lastName,
-        assignedEmployee: employee
-          ? {
-            id: employee.employeeId,
-            name: `${employee.firstName} ${employee.lastName}`,
-            role: employee.user?.role,
-          }
-          : (l.leadFollowedBy || l.assignee ? {
-            id: 0,
-            name: l.leadFollowedBy || l.assignee,
-            role: 'employee',
-          } : null),
-        leadSource: {
-          type: l.leadSource,
-          assignee: l.assignee ?? '',
-          avatar: l.avatar ?? '',
-        },
-        currentStage: l.currentStage,
-        status: getStatusFromStage(l.currentStage),
-      };
-    });
+      const mapped = backendLeads.map((l: any) => {
+        const employee = l.leadEmployee?.[0]?.employee;
 
-    setLeads(mapped);
+        return {
+          id: String(l.leadId),
+          leadId: l.leadId,
+          leadCode: l.leadSerialNumber || `LD${l.leadId}`,
+          leadName: `${l.firstName} ${l.lastName ?? ""}`.trim(),
+          contactNumber: l.contactNumber,
+          createdTime: l.createdTime,
+          email: l.email,
+          address: l.address ?? '',
+          eventDate: l.eventDate ?? '',
+          budget: l.budget ?? '',
+          eventType: l.eventType ?? '',
+          priority: l.priority,
+          firstName: l.firstName,
+          lastName: l.lastName,
+          assignedEmployee: employee
+            ? {
+              id: employee.employeeId,
+              name: `${employee.firstName} ${employee.lastName}`,
+              role: employee.user?.role,
+            }
+            : (l.leadFollowedBy || l.assignee ? {
+              id: 0,
+              name: l.leadFollowedBy || l.assignee,
+              role: 'employee',
+            } : null),
+          leadSource: {
+            type: l.leadSource,
+            assignee: l.assignee ?? '',
+            avatar: l.avatar ?? '',
+          },
+          currentStage: l.currentStage,
+          status: getStatusFromStage(l.currentStage),
+        };
+      });
+
+      setLeads(mapped);
+    } catch (err) {
+      console.error("Failed to fetch leads", err);
+      if (isDemo) {
+        setLeads(DEMO_VIEW_LEADS);
+        setTotalLeads(DEMO_VIEW_LEADS.length);
+      }
+    }
   }, []);
 
 

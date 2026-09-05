@@ -249,9 +249,11 @@ const DashboardHeader = ({
   // NEW: logout handler
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
     sessionStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('profileData');
+    localStorage.removeItem('isDemoPortal');
     setShowProfileMenu(false);
     navigate('/');
   };

@@ -36,6 +36,87 @@ interface EmployeeTracking {
   avatar: string;
 }
 
+const DEMO_LEAD_TRACKING: LeadTracking[] = [
+  {
+    id: "1",
+    leadId: "LD-2026-001",
+    leadName: "Rahul Sharma (Wedding Coverage)",
+    contactId: "9988776655",
+    invoiceId: "INV-1001",
+    billingDate: "01 Sep 2026",
+    employeeAssigned: {
+      name: "John Employee",
+      avatar: "https://ui-avatars.com/api/?name=John+Employee&background=6938ef&color=fff",
+    },
+    plan: "Standard Wedding Plan",
+    status: "Paid",
+    email: "rahul.sharma@example.com",
+    address: "12 Beach Road, Chennai",
+    eventDate: "15 Oct 2026",
+    createdTime: "01 Sep 2026",
+    currentStage: "Quotation",
+  },
+  {
+    id: "2",
+    leadId: "LD-2026-002",
+    leadName: "Ananya Verma (Pre-Wedding Shoot)",
+    contactId: "9988776644",
+    invoiceId: "INV-1002",
+    billingDate: "02 Sep 2026",
+    employeeAssigned: {
+      name: "John Employee",
+      avatar: "https://ui-avatars.com/api/?name=John+Employee&background=6938ef&color=fff",
+    },
+    plan: "Premium Shoot Plan",
+    status: "Unpaid",
+    email: "ananya.v@example.com",
+    address: "45 Anna Nagar, Chennai",
+    eventDate: "20 Oct 2026",
+    createdTime: "02 Sep 2026",
+    currentStage: "Confirmation",
+  },
+  {
+    id: "3",
+    leadId: "LD-2026-003",
+    leadName: "Vikram Malhotra (Engagement)",
+    contactId: "9988776633",
+    invoiceId: "INV-1003",
+    billingDate: "03 Sep 2026",
+    employeeAssigned: {
+      name: "Krishna Partner",
+      avatar: "https://ui-avatars.com/api/?name=Krishna+Partner&background=10b981&color=fff",
+    },
+    plan: "Elite Engagement Plan",
+    status: "Paid",
+    email: "vikram.m@example.com",
+    address: "88 RS Puram, Coimbatore",
+    eventDate: "12 Nov 2026",
+    createdTime: "03 Sep 2026",
+    currentStage: "Finalised",
+  },
+];
+
+const DEMO_EMPLOYEE_TRACKING: EmployeeTracking[] = [
+  {
+    id: "1",
+    employeeName: "John Employee",
+    employeeId: "EM-001",
+    email: "employee@test.com",
+    position: "Senior Sales Manager",
+    contact: "9876543210",
+    avatar: "https://ui-avatars.com/api/?name=John+Employee&background=10b981&color=fff",
+  },
+  {
+    id: "2",
+    employeeName: "Krishna Partner",
+    employeeId: "PRT-001",
+    email: "Krishna@gmail.com",
+    position: "Partner Account Manager",
+    contact: "9876543211",
+    avatar: "https://ui-avatars.com/api/?name=Krishna+Partner&background=10b981&color=fff",
+  },
+];
+
 const TrackingDetails = () => {
   const navigate = useNavigate();
   const [leadTracking, setLeadTracking] = useState<LeadTracking[]>([]);
@@ -59,6 +140,7 @@ const TrackingDetails = () => {
   useEffect(() => {
     const fetchLeadsAndInvoices = async () => {
       setLoading(true);
+      const isDemo = localStorage.getItem("isDemoPortal") === "true";
       try {
         const leadsRes = await api.get('/leads');
         const leadsData = leadsRes.data.data;
@@ -237,9 +319,16 @@ const TrackingDetails = () => {
           })
         );
 
-        setLeadTracking(enrichedLeads);
+        if (isDemo && enrichedLeads.length === 0) {
+          setLeadTracking(DEMO_LEAD_TRACKING);
+        } else {
+          setLeadTracking(enrichedLeads);
+        }
       } catch (err) {
         console.error('Failed to fetch leads or invoices', err);
+        if (isDemo) {
+          setLeadTracking(DEMO_LEAD_TRACKING);
+        }
       } finally {
         setLoading(false);
       }
@@ -251,6 +340,7 @@ const TrackingDetails = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       setLoading(true);
+      const isDemo = localStorage.getItem("isDemoPortal") === "true";
       try {
         const res = await api.get('/employees');
         const employeesData = res.data.employees.employees;
@@ -267,9 +357,16 @@ const TrackingDetails = () => {
             : 'https://ui-avatars.com/api/?name=NA&background=10b981&color=fff',
         }));
 
-        setEmployeeTracking(formattedEmployees);
+        if (isDemo && formattedEmployees.length === 0) {
+          setEmployeeTracking(DEMO_EMPLOYEE_TRACKING);
+        } else {
+          setEmployeeTracking(formattedEmployees);
+        }
       } catch (err) {
         console.error('Failed to fetch employees', err);
+        if (isDemo) {
+          setEmployeeTracking(DEMO_EMPLOYEE_TRACKING);
+        }
       } finally {
         setLoading(false);
       }

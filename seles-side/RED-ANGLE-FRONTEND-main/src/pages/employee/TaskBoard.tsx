@@ -164,7 +164,29 @@ const TaskBoard: React.FC = () => {
           }
         );
 
-        setTasks(mappedTasks);
+        const isDemo = localStorage.getItem("isDemoPortal") === "true";
+        if (isDemo && mappedTasks.length === 0) {
+          setTasks([
+            {
+              id: "1",
+              leadId: 1,
+              leadSerialNumber: "LD-DEMO-001",
+              leadType: "LD",
+              leadName: "Rahul Sharma",
+              sno: "01.",
+              task: "Initial Consultation Call & Requirement Gathering",
+              assignee: "Demo Employee",
+              avatar: "https://i.pravatar.cc/150?img=12",
+              due: "15 Sep 2026",
+              dueStatus: "normal",
+              diffDays: 5,
+              estimate: "1h",
+              status: "ToDo",
+            },
+          ]);
+        } else {
+          setTasks(mappedTasks);
+        }
         setCurrentPage(1);
 
       } catch (err: any) {
@@ -173,6 +195,27 @@ const TaskBoard: React.FC = () => {
           return;
         }
         console.error("Failed to fetch tasks", err);
+        const isDemo = localStorage.getItem("isDemoPortal") === "true";
+        if (isDemo) {
+          setTasks([
+            {
+              id: "1",
+              leadId: 1,
+              leadSerialNumber: "LD-DEMO-001",
+              leadType: "LD",
+              leadName: "Rahul Sharma",
+              sno: "01.",
+              task: "Initial Consultation Call & Requirement Gathering",
+              assignee: "Demo Employee",
+              avatar: "https://i.pravatar.cc/150?img=12",
+              due: "15 Sep 2026",
+              dueStatus: "normal",
+              diffDays: 5,
+              estimate: "1h",
+              status: "ToDo",
+            },
+          ]);
+        }
       } finally {
         setLoading(false);
       }

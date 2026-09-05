@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Camera, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Camera, ArrowLeft, MoreVertical, Shield, UserCheck, Users } from "lucide-react";
 import { api } from "../../api/axios";
 
 import loginIllustration from "../../assets/focus-animate.svg";
@@ -14,6 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPortalMenu, setShowPortalMenu] = useState(false);
 
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
@@ -32,10 +33,9 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthError("");
 
-    const newErrors: typeof errors = {};
-    setAuthError(null); // clear previous auth error
-
+    const newErrors: { email?: string; password?: string } = {};
     if (!email) newErrors.email = "Email is required";
     else if (!validateEmail(email))
       newErrors.email = "Enter a valid email";
@@ -55,27 +55,36 @@ const Login = () => {
         password,
       });
 
- const { token, role, userId, id, employeeId, adminId, partnerId, fullName } = res.data;
+      const { token, role, userId, id, employeeId, adminId, partnerId, fullName } = res.data;
 
-if (!token || !role) throw new Error();
+      if (!token || !role) throw new Error();
 
-// resolve whatever ID backend sends
-const resolvedUserId = String(
-  userId ?? id ?? employeeId ?? adminId ?? partnerId
-);
+      const resolvedUserId = String(
+        userId ?? id ?? employeeId ?? adminId ?? partnerId
+      );
 
-if (!resolvedUserId) {
-  throw new Error("User ID not returned from login API");
-}
+      if (!resolvedUserId) {
+        throw new Error("User ID not returned from login API");
+      }
 
-localStorage.setItem("token", token);
-localStorage.setItem("role", role);
-localStorage.setItem("userId", resolvedUserId);
-
-// optional but recommended
-if (fullName) {
-  localStorage.setItem("fullName", fullName);
-}
+      // Clear demo flag for authorized portal access
+      localStorage.removeItem("isDemoPortal");
+      localStorage.setItem("token", token);
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("role", role);
+      localStorage.setItem("userId", resolvedUserId);
+      localStorage.setItem("employeeId", resolvedUserId);
+      if (fullName) {
+        localStorage.setItem("fullName", fullName);
+      }
+      localStorage.setItem("user", JSON.stringify({
+        id: resolvedUserId,
+        userId: resolvedUserId,
+        employeeId: resolvedUserId,
+        role: role,
+        fullName: fullName || "User",
+        email: email.trim().toLowerCase()
+      }));
 
       if (role === "admin") navigate("/admin/dashboard", { replace: true });
       else if (role === "employee")
@@ -129,6 +138,42 @@ if (fullName) {
 };
 
 
+  const handlePortalDirectAccess = async (targetRole: "admin" | "employee" | "partner") => {
+    setShowPortalMenu(false);
+    setLoading(true);
+
+    let defaultEmail = "admin@gmail.com";
+    if (targetRole === "employee") {
+      defaultEmail = "employee@test.com";
+    } else if (targetRole === "partner") {
+      defaultEmail = "Krishna@gmail.com";
+    }
+
+    const fallbackName = `Demo ${targetRole.toUpperCase()} User`;
+    // Direct unauthorized demo access flag
+    localStorage.setItem("isDemoPortal", "true");
+    localStorage.setItem("token", "demo-portal-token");
+    localStorage.setItem("authToken", "demo-portal-token");
+    localStorage.setItem("role", targetRole);
+    localStorage.setItem("userId", "999");
+    localStorage.setItem("employeeId", "999");
+    localStorage.setItem("fullName", fallbackName);
+    localStorage.setItem("user", JSON.stringify({
+      id: "999",
+      userId: "999",
+      employeeId: "999",
+      role: targetRole,
+      fullName: fallbackName,
+      email: defaultEmail
+    }));
+
+    if (targetRole === "admin") navigate("/admin/dashboard", { replace: true });
+    else if (targetRole === "employee") navigate("/employee/dashboard", { replace: true });
+    else if (targetRole === "partner") navigate("/partner/dashboard", { replace: true });
+
+    setLoading(false);
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-purple-50 via-violet-100 to-purple-200">
       {/* BACK TO HOME NAVIGATION BUTTON */}
@@ -139,6 +184,54 @@ if (fullName) {
         <ArrowLeft className="w-4 h-4 text-purple-600" />
         <span>Back to Home</span>
       </a>
+
+      {/* TOP RIGHT 3 DOTS PORTALS MENU */}
+      <div className="absolute top-6 right-6 z-30 pointer-events-auto">
+        <button
+          onClick={() => setShowPortalMenu((prev) => !prev)}
+          className="p-2.5 rounded-full bg-white/90 hover:bg-white text-slate-800 hover:text-purple-700 shadow-md backdrop-blur-md transition-all border border-purple-200 hover:scale-105 active:scale-95 flex items-center justify-center"
+          title="Portals Options"
+        >
+          <MoreVertical className="w-5 h-5 text-purple-600" />
+        </button>
+
+        {showPortalMenu && (
+          <>
+            {/* BACKDROP TO CLOSE MENU */}
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setShowPortalMenu(false)}
+            />
+
+            {/* DROPDOWN MENU */}
+            <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-2xl border border-purple-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <button
+                onClick={() => handlePortalDirectAccess("admin")}
+                className="w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-700 flex items-center gap-2.5 transition-colors"
+              >
+                <Shield className="w-4 h-4 text-purple-600" />
+                Go To Admin Portal
+              </button>
+
+              <button
+                onClick={() => handlePortalDirectAccess("employee")}
+                className="w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-700 flex items-center gap-2.5 transition-colors"
+              >
+                <UserCheck className="w-4 h-4 text-purple-600" />
+                Go To Employee Portal
+              </button>
+
+              <button
+                onClick={() => handlePortalDirectAccess("partner")}
+                className="w-full text-left px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-700 flex items-center gap-2.5 transition-colors"
+              >
+                <Users className="w-4 h-4 text-purple-600" />
+                Go To Partner Portal
+              </button>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* BACKGROUND */}
       <HexagonBackground

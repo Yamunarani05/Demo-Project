@@ -461,7 +461,7 @@
 //   .catch(console.error)
 //   .finally(() => prisma.$disconnect());
 
-import { PrismaClient, PackageServiceCategory, UserRole } from "@prisma/client";
+import { PrismaClient, PackageServiceCategory, UserRole, LeadStage, QuotationApprovalStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
@@ -638,7 +638,7 @@ async function main() {
   await seedPackage(
     {
       id: 4,
-      title: "RedAngle Elite Basic - Wedding & Reception",
+      title: "Demo Elite Basic - Wedding & Reception",
       type: "Wedding",
       price: 69000,
       image: "/default_uploads/quotations/elite_basic_page-0001.jpg",
@@ -666,7 +666,7 @@ async function main() {
   await seedPackage(
     {
       id: 5,
-      title: "RedAngle Elite Standard - Wedding & Reception",
+      title: "Demo Elite Standard - Wedding & Reception",
       type: "Wedding",
       price: 106000,
       image: "/default_uploads/quotations/elite_standard_page-0001.jpg",
@@ -697,7 +697,7 @@ async function main() {
   await seedPackage(
     {
       id: 6,
-      title: "RedAngle Elite Premium - Wedding & Reception",
+      title: "Demo Elite Premium - Wedding & Reception",
       type: "Wedding",
       price: 180000,
       image: "/default_uploads/quotations/elite_premium_page-0001.jpg",
@@ -728,7 +728,7 @@ async function main() {
   await seedPackage(
     {
       id: 7,
-      title: "RedAngle-Single Session Basic Quotation",
+      title: "Demo-Single Session Basic Quotation",
       type: "Single Session",
       price: 19000,
       image: "/default_uploads/quotations/singlesession-basic.jpeg",
@@ -745,7 +745,7 @@ async function main() {
   await seedPackage(
     {
       id: 8,
-      title: "RedAngle-Single Session Elite Quotation",
+      title: "Demo-Single Session Elite Quotation",
       type: "Single Session",
       price: 80000,
       image: "/default_uploads/quotations/singlesection-elite.jpeg",
@@ -768,7 +768,7 @@ async function main() {
   await seedPackage(
     {
       id: 9,
-      title: "RedAngle-Single Session Premium Quotation",
+      title: "Demo-Single Session Premium Quotation",
       type: "Single Session",
       price: 45000,
       image: "/default_uploads/quotations/singlesection-premium.jpeg",
@@ -788,7 +788,7 @@ async function main() {
   await seedPackage(
     {
       id: 10,
-      title: "RedAngle-Single Session Standard Quotation",
+      title: "Demo-Single Session Standard Quotation",
       type: "Single Session",
       price: 29000,
       image: "/default_uploads/quotations/singlesection-standard.jpeg",

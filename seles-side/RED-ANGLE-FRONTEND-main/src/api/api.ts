@@ -21,13 +21,13 @@ api.interceptors.response.use(
   },
   (error) => {
 
-    // Handle 401 Unauthorized errors
-    if (error.response?.status === 401) {
+    // Handle 401 Unauthorized errors (ignore if in demo portal mode)
+    if (error.response?.status === 401 && localStorage.getItem("isDemoPortal") !== "true") {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+      if (window.location.pathname !== "/login" && window.location.pathname !== "/") {
+        window.location.href = "/";
       }
     }
 

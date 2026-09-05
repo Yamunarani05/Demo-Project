@@ -11,12 +11,20 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const token =
     localStorage.getItem("token") || localStorage.getItem("authToken");
-  const role = localStorage.getItem("role"); // ADMIN | EMPLOYEE | PARTNER
+  const rawRole = localStorage.getItem("role");
+  const role = rawRole ? rawRole.toLowerCase().trim() : "";
 
   useLocation();
   const hasShownToast = useRef(false);
 
   useEffect(() => {
+    // If real authorized token is present, ensure demo flag is cleared so authorized portals are undisturbed
+    if (token && token !== "demo-portal-token" && !token.startsWith("demo-")) {
+      if (localStorage.getItem("isDemoPortal")) {
+        localStorage.removeItem("isDemoPortal");
+      }
+    }
+
     if (!token && !hasShownToast.current) {
       toast.error("Please login to continue");
       hasShownToast.current = true;

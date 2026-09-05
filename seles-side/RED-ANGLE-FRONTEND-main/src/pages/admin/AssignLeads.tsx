@@ -37,6 +37,130 @@ export interface Employee {
   assignedEmployeeId?: number | string;
 }
 
+const DEMO_ASSIGN_EMPLOYEES: Employee[] = [
+  {
+    id: "1",
+    employeeId: "EM001",
+    employeeName: "John Employee",
+    contactNumber: "9876543210",
+    createdTime: "01/01/2024",
+    email: "employee@test.com",
+    role: "employee",
+    department: { type: "Assignee" },
+    priority: "Low",
+    status: "To Do",
+    firstName: "John",
+    lastName: "Employee",
+  },
+  {
+    id: "2",
+    employeeId: "PRT001",
+    employeeName: "Krishna Partner",
+    contactNumber: "9876543211",
+    createdTime: "01/02/2024",
+    email: "Krishna@gmail.com",
+    role: "partner",
+    department: { type: "Assignee" },
+    priority: "Low",
+    status: "To Do",
+    firstName: "Krishna",
+    lastName: "Partner",
+  },
+];
+
+const DEMO_ASSIGN_LEADS: Employee[] = [
+  {
+    id: "1",
+    employeeId: "LD-2026-001",
+    employeeName: "Rahul Sharma",
+    contactNumber: "9988776655",
+    createdTime: "01/09/2026",
+    email: "rahul.sharma@example.com",
+    role: "lead",
+    department: {
+      type: "Website",
+      manager: "John Employee",
+    },
+    priority: "High",
+    status: "To Do",
+    taskName: "Wedding & Reception",
+    deadline: "2026-10-15",
+    description: "Traditional & Candid photography package assignment",
+    estimate: "30h",
+    firstName: "Rahul",
+    lastName: "Sharma",
+    assignedEmployeeName: "John Employee",
+    assignedTasksSummary: "John Employee (Initial Consultation Call)",
+    assignedTasks: [
+      {
+        taskName: "Initial Consultation Call",
+        employee: { firstName: "John", lastName: "Employee" }
+      }
+    ],
+    assignedEmployeeId: 1,
+  },
+  {
+    id: "2",
+    employeeId: "LD-2026-002",
+    employeeName: "Ananya Verma",
+    contactNumber: "9988776644",
+    createdTime: "02/09/2026",
+    email: "ananya.v@example.com",
+    role: "lead",
+    department: {
+      type: "Instagram",
+      manager: "John Employee",
+    },
+    priority: "High",
+    status: "In Progress",
+    taskName: "Pre-Wedding Shoot",
+    deadline: "2026-10-20",
+    description: "Custom quotation preparation for outdoor shoot",
+    estimate: "45h",
+    firstName: "Ananya",
+    lastName: "Verma",
+    assignedEmployeeName: "John Employee",
+    assignedTasksSummary: "John Employee (Quotation Preparation)",
+    assignedTasks: [
+      {
+        taskName: "Quotation Preparation",
+        employee: { firstName: "John", lastName: "Employee" }
+      }
+    ],
+    assignedEmployeeId: 1,
+  },
+  {
+    id: "3",
+    employeeId: "LD-2026-003",
+    employeeName: "Vikram Malhotra",
+    contactNumber: "9988776633",
+    createdTime: "03/09/2026",
+    email: "vikram.m@example.com",
+    role: "lead",
+    department: {
+      type: "Referral",
+      manager: "Krishna Partner",
+    },
+    priority: "Medium",
+    status: "In Review",
+    taskName: "Engagement Shoot",
+    deadline: "2026-11-12",
+    description: "Finalise engagement contract with partner",
+    estimate: "20h",
+    firstName: "Vikram",
+    lastName: "Malhotra",
+    assignedEmployeeName: "Krishna Partner",
+    assignedTasksSummary: "Krishna Partner (Engagement Confirmation)",
+    assignedTasks: [
+      {
+        taskName: "Engagement Confirmation",
+        employee: { firstName: "Krishna", lastName: "Partner" }
+      }
+    ],
+    assignedEmployeeId: 2,
+  },
+];
+
 const AssignLeads: React.FC = () => {
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
   const [selectedEmployeeForAssign, setSelectedEmployeeForAssign] =
@@ -82,6 +206,11 @@ const AssignLeads: React.FC = () => {
 
   useEffect(() => {
     const fetchEmployees = async () => {
+      const isDemo = localStorage.getItem("isDemoPortal") === "true";
+      if (isDemo) {
+        setEmployees(DEMO_ASSIGN_EMPLOYEES);
+        return;
+      }
       try {
         const employeeRes = await EmployeeAPI.getEmployees(0, 1000, "");
 
@@ -109,6 +238,9 @@ const AssignLeads: React.FC = () => {
         setEmployees(mappedEmployees);
       } catch (err) {
         console.error("Employee fetch failed", err);
+        if (isDemo) {
+          setEmployees(DEMO_ASSIGN_EMPLOYEES);
+        }
       }
     };
 
@@ -118,6 +250,13 @@ const AssignLeads: React.FC = () => {
   useEffect(() => {
     const fetchLeads = async () => {
       setLoading(true);
+      const isDemo = localStorage.getItem("isDemoPortal") === "true";
+      if (isDemo) {
+        setLeads(DEMO_ASSIGN_LEADS);
+        setTotalLeads(DEMO_ASSIGN_LEADS.length);
+        setLoading(false);
+        return;
+      }
 
       try {
         const leadRes = await LeadsAPI.getLeads(1, 1000, "");
@@ -187,6 +326,10 @@ const AssignLeads: React.FC = () => {
 
       } catch (err) {
         console.error("Lead fetch failed", err);
+        if (isDemo) {
+          setLeads(DEMO_ASSIGN_LEADS);
+          setTotalLeads(DEMO_ASSIGN_LEADS.length);
+        }
       } finally {
         setLoading(false);
       }

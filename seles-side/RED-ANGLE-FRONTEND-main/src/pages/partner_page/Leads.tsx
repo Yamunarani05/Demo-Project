@@ -157,9 +157,120 @@ const Leads = () => {
 
   const searchTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
+const DEMO_PARTNER_LEADS_DATA: Lead[] = [
+  {
+    leadId: "801",
+    leadSerialNumber: "RAS-01",
+    leadName: "Vikram Malhotra",
+    type: "Wedding Photography",
+    createdDate: "Sep 01, 2026",
+    createdAtRaw: "2026-09-01T10:00:00.000Z",
+    editedDate: "-",
+    status: "In Progress",
+    tasks: [
+      {
+        taskId: 1001,
+        taskName: "Client Consultation & Plan Selection",
+        priority: "High",
+      },
+    ],
+  },
+  {
+    leadId: "802",
+    leadSerialNumber: "RAS-02",
+    leadName: "Rohan Mehta",
+    type: "Cinematic Wedding",
+    createdDate: "Sep 02, 2026",
+    createdAtRaw: "2026-09-02T11:30:00.000Z",
+    editedDate: "-",
+    status: "To Do",
+    tasks: [
+      {
+        taskId: 1002,
+        taskName: "Share Portfolio & Quotation",
+        priority: "Medium",
+      },
+    ],
+  },
+  {
+    leadId: "803",
+    leadSerialNumber: "RAS-03",
+    leadName: "Meera Nair",
+    type: "Reception & Sangeet",
+    createdDate: "Aug 28, 2026",
+    createdAtRaw: "2026-08-28T14:15:00.000Z",
+    editedDate: "Sep 01, 2026",
+    status: "Done",
+    tasks: [
+      {
+        taskId: 1003,
+        taskName: "Deliverable Review & Approval",
+        priority: "Low",
+      },
+    ],
+  },
+  {
+    leadId: "804",
+    leadSerialNumber: "RAS-04",
+    leadName: "Karan Kapoor",
+    type: "Pre-Wedding Shoot",
+    createdDate: "Aug 20, 2026",
+    createdAtRaw: "2026-08-20T09:45:00.000Z",
+    editedDate: "Aug 25, 2026",
+    status: "In Review",
+    tasks: [
+      {
+        taskId: 1004,
+        taskName: "Teaser Clip Feedback",
+        priority: "Medium",
+      },
+    ],
+  },
+  {
+    leadId: "805",
+    leadSerialNumber: "RAS-05",
+    leadName: "Divya Verma",
+    type: "Destination Wedding",
+    createdDate: "Aug 15, 2026",
+    createdAtRaw: "2026-08-15T16:20:00.000Z",
+    editedDate: "-",
+    status: "In Progress",
+    tasks: [
+      {
+        taskId: 1005,
+        taskName: "Venue Coordination & Gear Checklist",
+        priority: "High",
+      },
+    ],
+  },
+  {
+    leadId: "806",
+    leadSerialNumber: "RAS-06",
+    leadName: "Arjun Sharma",
+    type: "Engagement Coverage",
+    createdDate: "Jul 25, 2026",
+    createdAtRaw: "2026-07-25T12:00:00.000Z",
+    editedDate: "Jul 30, 2026",
+    status: "Done",
+    tasks: [
+      {
+        taskId: 1006,
+        taskName: "Final Photo Album Handover",
+        priority: "Low",
+      },
+    ],
+  },
+];
+
   const fetchLeads = useCallback(async () => {
     setLoading(true);
     setError(null);
+
+    if (localStorage.getItem("isDemoPortal") === "true") {
+      setLeads(DEMO_PARTNER_LEADS_DATA);
+      setLoading(false);
+      return;
+    }
 
     try {
       const res: any = await LeadService.getPartnerAssignedLeads();
@@ -266,6 +377,27 @@ const Leads = () => {
     setError(null);
     setSaving(true);
     setSuccess(null);
+
+    if (localStorage.getItem("isDemoPortal") === "true") {
+      const newLead: Lead = {
+        leadId: String(Date.now()),
+        leadSerialNumber: `RAS-${leads.length + 1}`,
+        leadName: `${leadData.firstName || ''} ${leadData.lastName || ''}`.trim() || 'New Partner Lead',
+        type: leadData.eventType || 'Wedding Photography',
+        createdDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+        createdAtRaw: new Date().toISOString(),
+        editedDate: '-',
+        status: 'To Do',
+        tasks: [],
+      };
+      setLeads((prev) => [newLead, ...prev]);
+      setSuccess('Lead created successfully! (Demo Mode)');
+      setTimeout(() => setSuccess(null), 4000);
+      setShowModal(false);
+      setSelectedLead(null);
+      setSaving(false);
+      return;
+    }
 
     const token = localStorage.getItem('token');
     if (!token) {

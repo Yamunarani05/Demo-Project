@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import apiClient from "../../Services/apiClient";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Header from "../../components/Header/Header";
+import { isUnauthorizedDemoPortal } from "../../utils/demoAuth";
 
 type Stage = "Leads" | "Quotation" | "Confirmation" | "Finalize";
 
@@ -149,7 +150,18 @@ const EmployeeLeadOverview = () => {
       });
     } catch (err) {
       console.error("Failed to load lead overview", err);
-      setLead(null);
+      if (isUnauthorizedDemoPortal()) {
+        setLead({
+          id: Number(leadId) || 101,
+          name: "Rahul Sharma",
+          stage: normalizeStage(navState?.taskName || "Leads"),
+          eventType: navState?.taskName || "Initial Consultation & Requirements",
+          dueDate: navState?.dueDate || new Date().toISOString(),
+          leadSerialNumber: navState?.leadSerialNumber || `LD-${leadId || "101"}`,
+        });
+      } else {
+        setLead(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -252,13 +264,13 @@ const EmployeeLeadOverview = () => {
                       </div>
                     </div>
                   )}
-                </div>
-              );
-            })}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

@@ -302,6 +302,39 @@ interface LeadRow {
   email: string;
 }
 
+const DEMO_DASHBOARD_LEADS: LeadRow[] = [
+  {
+    id: "1",
+    leadIdLabel: "LD-2026-001",
+    name: "Rahul Sharma (Wedding & Reception)",
+    assignedEmployee: "John Employee",
+    date: "01 Sep 2026",
+    source: "Website",
+    status: "In Progress",
+    email: "rahul.sharma@example.com",
+  },
+  {
+    id: "2",
+    leadIdLabel: "LD-2026-002",
+    name: "Ananya Verma (Pre-Wedding Shoot)",
+    assignedEmployee: "John Employee",
+    date: "02 Sep 2026",
+    source: "Instagram",
+    status: "Approved",
+    email: "ananya.v@example.com",
+  },
+  {
+    id: "3",
+    leadIdLabel: "LD-2026-003",
+    name: "Vikram Malhotra (Engagement)",
+    assignedEmployee: "Krishna Partner",
+    date: "03 Sep 2026",
+    source: "Referral",
+    status: "Complete",
+    email: "vikram.m@example.com",
+  },
+];
+
 const AdminDashboard: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -349,6 +382,26 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     const loadSummary = async () => {
+      const isDemo = localStorage.getItem("isDemoPortal") === "true";
+      if (isDemo) {
+        setTotalEmployees(8);
+        setTotalLeads(18);
+        setPendingLeads(5);
+        setTotalInvoices(12);
+        setPendingInvoices(3);
+        const demoLeadsList = [
+          { currentStage: "Lead", createdAt: new Date() },
+          { currentStage: "Quotation", createdAt: new Date() },
+          { currentStage: "Confirmation", createdAt: new Date() },
+          { currentStage: "Finalised", createdAt: new Date() },
+        ];
+        setAllLeads(demoLeadsList);
+        const initialEnd = new Date();
+        setSelectedEndMonth(initialEnd);
+        recomputePerformance(initialEnd, demoLeadsList);
+        return;
+      }
+
       try {
         setLoadingSummary(true);
         const summary = await dashboardService.getSummary();
@@ -390,6 +443,12 @@ const AdminDashboard: React.FC = () => {
     };
 
     const loadLeads = async () => {
+      const isDemo = localStorage.getItem("isDemoPortal") === "true";
+      if (isDemo) {
+        setLeads(DEMO_DASHBOARD_LEADS);
+        return;
+      }
+
       try {
         setLoadingLeads(true);
         const recent = await dashboardService.getRecentLeads();

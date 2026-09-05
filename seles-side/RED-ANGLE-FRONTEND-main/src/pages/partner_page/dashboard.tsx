@@ -219,6 +219,89 @@ const Dashboard = () => {
     setLoading(true);
     setRecentLeadsLoading(true);
     try {
+      if (localStorage.getItem("isDemoPortal") === "true") {
+        const demoLeads: Lead[] = [
+          {
+            leadId: "801",
+            leadSerialNumber: "RAS-01",
+            leadName: "Vikram Malhotra",
+            type: "Wedding Photography",
+            createdDate: "Sep 01, 2026",
+            editedDate: "-",
+            status: "In Progress",
+            currentStage: "Quotation",
+          },
+          {
+            leadId: "802",
+            leadSerialNumber: "RAS-02",
+            leadName: "Rohan Mehta",
+            type: "Cinematic Wedding",
+            createdDate: "Sep 02, 2026",
+            editedDate: "-",
+            status: "Pending",
+            currentStage: "Leads",
+          },
+          {
+            leadId: "803",
+            leadSerialNumber: "RAS-03",
+            leadName: "Meera Nair",
+            type: "Reception & Sangeet",
+            createdDate: "Aug 28, 2026",
+            editedDate: "Sep 01, 2026",
+            status: "Finalized",
+            currentStage: "Finalize",
+          },
+          {
+            leadId: "804",
+            leadSerialNumber: "RAS-04",
+            leadName: "Karan Kapoor",
+            type: "Pre-Wedding Shoot",
+            createdDate: "Aug 20, 2026",
+            editedDate: "Aug 25, 2026",
+            status: "Completed",
+            currentStage: "Finalize",
+          },
+          {
+            leadId: "805",
+            leadSerialNumber: "RAS-05",
+            leadName: "Divya Verma",
+            type: "Destination Wedding",
+            createdDate: "Aug 15, 2026",
+            editedDate: "-",
+            status: "In Review",
+            currentStage: "Confirmation",
+          },
+          {
+            leadId: "806",
+            leadSerialNumber: "RAS-06",
+            leadName: "Arjun Sharma",
+            type: "Engagement Coverage",
+            createdDate: "Jul 25, 2026",
+            editedDate: "Jul 30, 2026",
+            status: "Done",
+            currentStage: "Finalize",
+          },
+        ];
+
+        setAllLeads(demoLeads);
+        setTotalLeads(demoLeads.length);
+        setPendingLeads(countPendingLeads(demoLeads));
+        setCurrentMonthLeads(2);
+
+        const demoPerformanceData: PerformanceChartData[] = [
+          { month: "May", target: 5, achieved: 4 },
+          { month: "Jun", target: 6, achieved: 5 },
+          { month: "Jul", target: 8, achieved: 7 },
+          { month: "Aug", target: 7, achieved: 6 },
+          { month: "Sep", target: 5, achieved: 3 },
+        ];
+        setChartData(demoPerformanceData);
+        setRecentLeads(getRecentLeads(demoLeads));
+        setLoading(false);
+        setRecentLeadsLoading(false);
+        return;
+      }
+
       const [leadsData, monthWise] = await Promise.all([
         fetchAllLeads(),
         (() => {

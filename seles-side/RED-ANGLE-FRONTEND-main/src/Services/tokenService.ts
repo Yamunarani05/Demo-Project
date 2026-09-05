@@ -55,6 +55,7 @@ export const tokenService = {
     localStorage.removeItem(FULL_NAME_KEY);
     localStorage.removeItem(USER_ID_KEY);
     localStorage.removeItem(EMPLOYEE_ID_KEY);
+    localStorage.removeItem("isDemoPortal");
   },
 
   getAuthHeader(): Record<string, string> {

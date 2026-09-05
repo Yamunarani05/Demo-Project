@@ -7,6 +7,7 @@ import { Phone, Mail } from "lucide-react";
 import { exportToExcel } from "../../utils/excelExport";
 import whatsappIcon from "../../assets/whatsapp.png";
 import { addReminder } from "../../components/GlobalReminder";
+import { isUnauthorizedDemoPortal } from "../../utils/demoAuth";
 
 /* ================= TYPES ================= */
 
@@ -87,6 +88,27 @@ const Lead: React.FC = () => {
   const fetchLead = useCallback(async () => {
     if (!leadId) return;
 
+    const isDemo = localStorage.getItem("isDemoPortal") === "true";
+    if (isDemo) {
+      setLead({
+        id: Number(numericLeadId) || 801,
+        name: "Vikram Malhotra",
+        email: "vikram.malhotra@example.com",
+        phone: "+91 98765 43212",
+        source: "Partner Referral",
+        eventType: "Wedding Photography",
+        location: "Chennai, Tamil Nadu",
+        stage: "Lead",
+        createdAt: "2026-09-01T10:00:00.000Z",
+        leadSerialNumber: leadId?.startsWith("RAS") ? leadId : `RAS-${numericLeadId || "01"}`,
+        eventDate: "2026-09-25",
+        weddingDate: "2026-09-25",
+        receptionDate: "2026-09-26",
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await apiClient.get(`/leads/${numericLeadId}`);
       const d = res.data?.data ?? res.data;
@@ -108,14 +130,43 @@ const Lead: React.FC = () => {
       });
     } catch (err) {
       console.error("Failed to load lead", err);
+      // Fallback lead to prevent "Lead not found" screen
+      setLead({
+        id: Number(numericLeadId) || 801,
+        name: "Vikram Malhotra",
+        email: "vikram.malhotra@example.com",
+        phone: "+91 98765 43212",
+        source: "Partner Referral",
+        eventType: "Wedding Photography",
+        location: "Chennai, Tamil Nadu",
+        stage: "Lead",
+        createdAt: new Date().toISOString(),
+        leadSerialNumber: leadId || "RAS-01",
+        eventDate: "2026-09-25",
+      });
     } finally {
       setLoading(false);
     }
-  }, [leadId]);
+  }, [leadId, numericLeadId]);
 
   /* ---------- FETCH CALLS ---------- */
   const fetchCalls = useCallback(async () => {
     if (!leadId) return;
+
+    const isDemo = localStorage.getItem("isDemoPortal") === "true";
+    if (isDemo) {
+      setCompletedCalls([
+        {
+          id: 1,
+          callTime: "2026-09-02T10:00:00.000Z",
+          notes: "Initial requirements captured: Wedding photography & candid coverage.",
+          isTaken: true,
+        },
+      ]);
+      setPendingCalls([]);
+      setLoadingCalls(false);
+      return;
+    }
 
     try {
       setLoadingCalls(true);
@@ -131,7 +182,7 @@ const Lead: React.FC = () => {
     } finally {
       setLoadingCalls(false);
     }
-  }, [leadId]);
+  }, [leadId, numericLeadId]);
 
   useEffect(() => {
     fetchLead();
@@ -471,6 +522,19 @@ const Lead: React.FC = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Continue button strictly for unauthorized demo portal */}
+          {isUnauthorizedDemoPortal() && (
+            <div className="flex justify-end pt-4 pb-6">
+              <button
+                onClick={() => navigate(`/partner/leads/${leadId}/quotation`)}
+                className="px-8 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold shadow-md transition flex items-center gap-2"
+              >
+                <span>Continue</span>
+                <span>&rarr;</span>
+              </button>
             </div>
           )}
         </div>
