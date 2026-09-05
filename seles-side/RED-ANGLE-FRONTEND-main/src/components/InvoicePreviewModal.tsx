@@ -5,6 +5,7 @@ import type { CreatedItem } from "./CreateInvoiceModal";
 import toast from "react-hot-toast";
 import logoImage from "../assets/red_angle_logo.png";
 import api from "../Services/apiClient";
+import { isUnauthorizedDemoPortal } from "../utils/demoAuth";
 
 export interface AddonItem {
   id: string | number;
@@ -549,10 +550,10 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-white w-full max-w-[840px] rounded shadow-xl flex flex-col max-h-[90vh]"
+        className="bg-white w-full max-w-[980px] rounded shadow-xl flex flex-col max-h-[94vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* â”€â”€ Modal header â”€â”€ */}
+        {/* ── Modal header ── */}
         <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
           <h2 className="font-semibold text-lg"></h2>
           <div className="flex gap-3">
@@ -563,7 +564,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
               <button
                 onClick={() => setShowAddAddon(true)}
                 title="Add Add-on"
-                className="flex items-center gap-1 text-sm bg-blue-50 px-2 py-1 rounded text-blue-600 font-medium border border-blue-200"
+                className="flex items-center gap-1 text-sm bg-blue-50 px-2.5 py-1 rounded text-blue-600 font-medium border border-blue-200"
               >
                 <Plus size={14} /> Add-on
               </button>
@@ -572,42 +573,42 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
           </div>
         </div>
 
-        {/* â”€â”€ Invoice body â”€â”€ */}
+        {/* ── Invoice body ── */}
         <div className="overflow-y-auto flex-1">
-          <div id="invoice-content" className="flex justify-center bg-white py-4 px-6">
+          <div id="invoice-content" className="flex justify-center bg-white py-5 px-6">
             <style>{`
-              /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• INVOICE WRAP â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+              /* ═══════════════ INVOICE WRAP ═══════════════ */
               .inv {
                 background: #fff;
-                width: 780px;
+                width: 900px;
                 border: 2px solid #000;
-                font-size: 11.5px;
+                font-size: 13px;
                 color: #000;
                 font-family: Arial, Helvetica, sans-serif;
               }
 
-              /* â”€â”€ TOP BAR â”€â”€ */
+              /* ── TOP BAR ── */
               .inv-top {
                 border-bottom: 1px solid #000;
-                padding: 6px 14px 5px;
+                padding: 8px 16px 7px;
                 font-weight: 700;
-                font-size: 11.5px;
+                font-size: 12.5px;
               }
               .inv-top table { width: 100%; border-collapse: collapse; }
               .inv-top td   { vertical-align: top; line-height: 1.65; }
               .inv-top .mid {
                 text-align: center;
-                font-size: 13px;
+                font-size: 14.5px;
                 font-weight: 900;
                 text-decoration: underline;
                 letter-spacing: 2px;
               }
               .inv-top .right { text-align: right; }
 
-              /* â”€â”€ LOGO / ADDRESS â”€â”€ */
+              /* ── LOGO / ADDRESS ── */
               .inv-logo {
                 border-bottom: 1px solid #000;
-                padding: 10px 16px 8px;
+                padding: 12px 18px 10px;
                 text-align: center;
               }
               .inv-logo-row {
@@ -617,90 +618,90 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                 margin-bottom: 5px;
               }
               .inv-logo-svg { width: 54px; height: 54px; }
-              .inv-brand    { font-size: 26px; font-weight: 900; color: #c00; letter-spacing: 1px; line-height: 1; }
-              .inv-studio   { font-size: 11px; font-weight: 700; letter-spacing: 5px; color: #111; }
-              .inv-address  { font-size: 12.5px; font-weight: 700; margin-top: 2px; }
+              .inv-brand    { font-size: 28px; font-weight: 900; color: #c00; letter-spacing: 1px; line-height: 1; }
+              .inv-studio   { font-size: 12px; font-weight: 700; letter-spacing: 5px; color: #111; }
+              .inv-address  { font-size: 13.5px; font-weight: 700; margin-top: 3px; }
 
-              /* â”€â”€ CLIENT + EVENT TABLE â”€â”€ */
+              /* ── CLIENT + EVENT TABLE ── */
               .inv-client-table {
                 width: 100%;
                 border-collapse: collapse;
                 border-bottom: 1px solid #000;
               }
               .inv-client-cell {
-                width: 170px;
+                width: 200px;
                 border-right: 1px solid #000;
-                padding: 8px 10px;
+                padding: 9px 12px;
                 vertical-align: top;
                 font-weight: 700;
-                font-size: 11.5px;
+                font-size: 13px;
                 line-height: 1.6;
               }
-              .inv-client-name { font-size: 12px; font-weight: 900; margin-top: 14px; text-transform: uppercase; }
+              .inv-client-name { font-size: 14px; font-weight: 900; margin-top: 14px; text-transform: uppercase; }
               .inv-event-inner { width: 100%; border-collapse: collapse; }
               .inv-event-inner tr { border-bottom: 1px solid #000; }
               .inv-event-inner tr:last-child { border-bottom: none; }
               .inv-ev-label {
-                width: 140px;
-                padding: 5px 8px;
+                width: 160px;
+                padding: 6px 10px;
                 font-weight: 700;
                 border-right: 1px solid #000;
                 white-space: nowrap;
                 vertical-align: middle;
-                font-size: 11.5px;
+                font-size: 13px;
                 text-transform: uppercase;
               }
               .inv-ev-value {
-                padding: 5px 8px;
+                padding: 6px 10px;
                 vertical-align: middle;
                 position: relative;
-                font-size: 11.5px;
+                font-size: 13px;
                 font-weight: 600;
                 text-transform: uppercase;
               }
 
-              /* â”€â”€ ITEMS TABLE â”€â”€ */
+              /* ── ITEMS TABLE ── */
               .inv-items {
                 width: 100%;
                 border-collapse: collapse;
                 border-top: 1.5px solid #000;
                 border-bottom: 1px solid #000;
-                font-size: 11.5px;
+                font-size: 13px;
               }
               .inv-items thead tr { border-bottom: 1.5px solid #000; }
               .inv-items th {
-                padding: 7px 8px;
+                padding: 8px 10px;
                 font-weight: 700;
-                font-size: 11.5px;
+                font-size: 13px;
                 border-right: 1px solid #000;
                 text-align: center;
               }
               .inv-items th:last-child { border-right: none; }
-              .inv-items th.th-sl  { width: 58px; }
-              .inv-items th.th-qty { width: 88px; }
+              .inv-items th.th-sl  { width: 65px; }
+              .inv-items th.th-qty { width: 100px; }
 
               .inv-items td {
-                padding: 3.5px 8px;
+                padding: 4.5px 10px;
                 border-right: 1px solid #000;
                 vertical-align: middle;
               }
               .inv-items td:last-child { border-right: none; }
-              .inv-items .td-sl  { text-align: center; width: 58px; }
-              .inv-items .td-qty { text-align: center; width: 88px; }
+              .inv-items .td-sl  { text-align: center; width: 65px; }
+              .inv-items .td-qty { text-align: center; width: 100px; }
 
-              /* â”€â”€ QTY +/- BUTTONS: show only on hover â”€â”€ */
+              /* ── QTY +/- BUTTONS: show only on hover ── */
               .qty-wrap { display: flex; align-items: center; justify-content: center; gap: 2px; }
               .qty-btn {
-                width: 18px; height: 18px; border: 1px solid #ccc; border-radius: 3px;
-                background: #f5f5f5; cursor: pointer; font-size: 12px; line-height: 16px;
+                width: 20px; height: 20px; border: 1px solid #ccc; border-radius: 3px;
+                background: #f5f5f5; cursor: pointer; font-size: 13px; line-height: 18px;
                 display: flex; align-items: center; justify-content: center; flex-shrink: 0;
                 padding: 0; opacity: 0; transition: opacity 0.15s;
               }
               .qty-wrap:hover .qty-btn { opacity: 1; }
 
-              /* â”€â”€ CATEGORY HEADER ROW â”€â”€ */
+              /* ── CATEGORY HEADER ROW ── */
               .inv-cat-row td {
-                padding: 6px 8px 4px;
+                padding: 7px 10px 5px;
               }
               /* blank SL cell keeps its right border */
               .inv-cat-row .td-sl {
@@ -709,15 +710,15 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
               /* category label: underline + bold, left-aligned */
               .inv-cat-label {
                 font-weight: 700;
-                font-size: 11.5px;
+                font-size: 13px;
                 text-transform: uppercase;
                 text-decoration: underline;
                 letter-spacing: 0.3px;
               }
 
-              /* â”€â”€ TOTALS (now rows inside inv-items) â”€â”€ */
+              /* ── TOTALS (now rows inside inv-items) ── */
               .inv-totals-row td {
-                padding: 5px 10px;
+                padding: 6px 12px;
                 border-bottom: 1px solid #000;
               }
               .inv-totals-row:last-child td {
@@ -735,28 +736,27 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                 position: relative;
                 white-space: nowrap;
               }
-              /* OVERALL BUDGET row â€” bolder + slightly larger */
+              /* OVERALL BUDGET row — bolder + slightly larger */
               .inv-overall td {
                 font-weight: 900;
-                font-size: 12.5px;
+                font-size: 14.5px;
               }
 
-              /* â”€â”€ NOTES â”€â”€ */
+              /* ── NOTES ── */
               .inv-notes {
                 border-top: 1px solid #000;
-                padding: 10px 14px 14px;
-                font-size: 10.5px;
-                line-height: 1.48;
+                padding: 12px 16px 16px;
+                font-size: 12px;
+                line-height: 1.55;
               }
               .inv-notes-title {
                 font-weight: 700;
-                font-size: 11px;
-                margin-bottom: 5px;
+                font-size: 12.5px;
+                margin-bottom: 6px;
                 text-transform: uppercase;
               }
               .inv-note-item {
                 display: flex;
-                gap: 5px;
                 margin-bottom: 3px;
                 align-items: flex-start;
                 text-transform: uppercase;
@@ -798,15 +798,25 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
 
               {/* LOGO + ADDRESS */}
               <div className="inv-logo">
-                <div className="inv-logo-row" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "10px", margin: "6px 0" }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
-                    <circle cx="12" cy="13" r="3"/>
-                  </svg>
-                  <span style={{ fontSize: "24px", fontWeight: "900", color: "#000000", letterSpacing: "2px", lineHeight: "1", fontFamily: "Arial, Helvetica, sans-serif" }}>
-                    DEMO STUDIO
-                  </span>
-                </div>
+                {isUnauthorizedDemoPortal() ? (
+                  <div className="inv-logo-row" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "10px", margin: "6px 0" }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                      <circle cx="12" cy="13" r="3"/>
+                    </svg>
+                    <span style={{ fontSize: "24px", fontWeight: "900", color: "#000000", letterSpacing: "2px", lineHeight: "1", fontFamily: "Arial, Helvetica, sans-serif" }}>
+                      DEMO STUDIO
+                    </span>
+                  </div>
+                ) : (
+                  <div className="inv-logo-row" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", margin: "6px 0" }}>
+                    <img
+                      src={logoImage}
+                      alt="Red Angle Studio"
+                      style={{ width: "260px", objectFit: "contain" }}
+                    />
+                  </div>
+                )}
                 <div className="inv-address">
                   AP 742, G-Block, 2nd Street, 11th Main Rd, Anna Nagar, Chennai, Tamil Nadu 600040.
                 </div>
@@ -826,8 +836,8 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                         <tbody>
                           {dynamicEvents.map((row, index) => (
                             <tr key={index} className="group" style={{ position: "relative" }}>
-                              <td className="inv-ev-label" style={{ position: "relative", width: "140px" }}>
-                                <div style={{ minHeight: 18 }}>
+                              <td className="inv-ev-label" style={{ position: "relative", width: "160px" }}>
+                                <div style={{ minHeight: 20 }}>
                                   {row.title} :
                                 </div>
                                 <input
@@ -843,14 +853,14 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                                     position: "absolute", inset: 0,
                                     width: "100%", height: "100%",
                                     background: "white", border: "none", outline: "none",
-                                    padding: "5px 8px", fontSize: 11.5,
+                                    padding: "6px 10px", fontSize: 13,
                                     fontFamily: "inherit", fontWeight: 700,
                                     textTransform: "uppercase",
                                   }}
                                 />
                               </td>
                               <td className="inv-ev-value" style={{ textTransform: "uppercase", position: "relative" }}>
-                                <div style={{ minHeight: 18 }}>
+                                <div style={{ minHeight: 20 }}>
                                   {row.value || "-"}
                                 </div>
                                 <input
@@ -866,7 +876,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                                     position: "absolute", inset: 0,
                                     width: "calc(100% - 24px)", height: "100%",
                                     background: "white", border: "none", outline: "none",
-                                    padding: "5px 8px", fontSize: 11.5,
+                                    padding: "6px 10px", fontSize: 13,
                                     fontFamily: "inherit", fontWeight: 600,
                                     textTransform: "uppercase",
                                   }}
@@ -892,7 +902,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                             <tr data-html2canvas-ignore="true">
                               <td colSpan={2} className="text-center py-1">
                                 <button
-                                  className="text-[10px] text-blue-600 font-bold hover:underline"
+                                  className="text-xs text-blue-600 font-bold hover:underline"
                                   onClick={() => setDynamicEvents([...dynamicEvents, { title: "NEW EVENT", value: "" }])}
                                 >
                                   + ADD EVENT ROW
@@ -926,7 +936,9 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                             }
                           }
                         }
-                        return "DEMO STUDIO REGULAR PREMIUM PACKAGE DESCRIPTION";
+                        return isUnauthorizedDemoPortal()
+                          ? "DEMO STUDIO REGULAR PREMIUM PACKAGE DESCRIPTION"
+                          : "RED ANGLE REGULAR PREMIUM PACKAGE DESCRIPTION";
                       })()}
                     </th>
                     <th className="th-qty">QTY./Unit</th>
@@ -1100,8 +1112,8 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                           position: "absolute", inset: 0,
                           width: "100%", height: "100%",
                           background: totalFocused ? "white" : "transparent", border: "none", outline: "none",
-                          textAlign: "center", padding: "5px 10px",
-                          fontWeight: 700, fontSize: "11.5px", fontFamily: "inherit",
+                          textAlign: "center", padding: "6px 12px",
+                          fontWeight: 700, fontSize: "13px", fontFamily: "inherit",
                           color: totalFocused ? "#000" : "transparent",
                           caretColor: "#000",
                         }}
@@ -1153,8 +1165,8 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                             position: "absolute", inset: 0,
                             width: "100%", height: "100%",
                             background: discountFocused ? "white" : "transparent", border: "none", outline: "none",
-                            textAlign: "center", padding: "5px 10px",
-                            fontWeight: 700, fontSize: "11.5px", fontFamily: "inherit",
+                            textAlign: "center", padding: "6px 12px",
+                            fontWeight: 700, fontSize: "13px", fontFamily: "inherit",
                             color: discountFocused ? "#000" : "transparent",
                             caretColor: "#000",
                           }}
@@ -1187,8 +1199,8 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                           position: "absolute", inset: 0,
                           width: "100%", height: "100%",
                           background: overallFocused ? "white" : "transparent", border: "none", outline: "none",
-                          textAlign: "center", padding: "5px 10px",
-                          fontWeight: 700, fontSize: "11.5px", fontFamily: "inherit",
+                          textAlign: "center", padding: "6px 12px",
+                          fontWeight: 700, fontSize: "13px", fontFamily: "inherit",
                           color: overallFocused ? "#000" : "transparent",
                           caretColor: "#000",
                         }}
@@ -1223,8 +1235,8 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                           position: "absolute", inset: 0,
                           width: "100%", height: "100%",
                           background: paidFocused ? "white" : "transparent", border: "none", outline: "none",
-                          textAlign: "center", padding: "5px 10px",
-                          fontWeight: 700, fontSize: "11.5px", fontFamily: "inherit",
+                          textAlign: "center", padding: "6px 12px",
+                          fontWeight: 700, fontSize: "13px", fontFamily: "inherit",
                           color: paidFocused ? "#000" : "transparent",
                           caretColor: "#000",
                         }}
@@ -1256,8 +1268,8 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                           position: "absolute", inset: 0,
                           width: "100%", height: "100%",
                           background: balanceFocused ? "white" : "transparent", border: "none", outline: "none",
-                          textAlign: "center", padding: "5px 10px",
-                          fontWeight: 700, fontSize: "11.5px", fontFamily: "inherit",
+                          textAlign: "center", padding: "6px 12px",
+                          fontWeight: 700, fontSize: "13px", fontFamily: "inherit",
                           color: balanceFocused ? "#000" : "transparent",
                           caretColor: "#000",
                         }}
