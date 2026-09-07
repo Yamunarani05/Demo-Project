@@ -202,9 +202,12 @@ export default function MultiRoleSidebar() {
         <aside className="w-[280px] bg-[#F8F6FF] flex flex-col h-screen fixed left-0 top-0 overflow-y-auto z-20 border-r border-purple-100">
             {/* Logo */}
             <div className="px-5 pt-6 pb-4 cursor-pointer" onClick={() => navigate('/multi-role/dashboard')}>
-                <div className="flex flex-col items-start gap-1">
-                    <img src="/red_angle_logo.png" alt="RED ANGLE STUDIO" className="h-[36px] w-auto object-contain" />
-                    <div className="text-[10px] tracking-widest uppercase text-gray-400 font-bold ml-1">Multi-Role</div>
+                <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-purple-700 flex items-center justify-center text-white font-black text-xs shadow-sm">DP</div>
+                    <div className="flex flex-col">
+                        <span className="text-xs font-black tracking-wider uppercase font-display text-slate-900">DEMO STUDIO</span>
+                        <span className="text-[9px] uppercase tracking-widest text-purple-600 font-bold">Multi-Role</span>
+                    </div>
                 </div>
             </div>
 

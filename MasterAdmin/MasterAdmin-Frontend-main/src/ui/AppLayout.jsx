@@ -7,7 +7,7 @@ import { Toaster } from 'sonner'
 const nav = [
   { to: '/sales/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/sales/clients', icon: Users, label: 'Clients' },
-  { to: '/sales/employees', icon: Briefcase, label: 'Employees' },
+  { to: '/sales/employees', icon: Briefcase, label: 'Production Staff' },
   { to: '/sales/work-tracker', icon: BarChart3, label: 'Work Tracker' },
   { to: '/sales/invoices', icon: Receipt, label: 'Invoices' },
   { to: '/sales/attendance', icon: CalendarCheck, label: 'Attendance' },
@@ -24,14 +24,14 @@ export default function AppLayout() {
       <div className="app-shell">
       <aside className="sidebar">
         <div className="brand" onClick={() => navigate('/sales/dashboard')}>
-          <img src="/logo.png" alt="Logo" style={{ width: 40, height: 40, borderRadius: 12, objectFit: 'cover' }} />
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #7c3aed, #5b5fc7)', display: 'grid', placeItems: 'center', color: '#fff', fontWeight: 900, fontSize: 16 }}>DP</div>
           <div>
-            <div className="brand-name">Red Angle</div>
+            <div className="brand-name">Demo Studio</div>
             <div className="brand-sub">Master Admin</div>
           </div>
         </div>
         <div className="sidebar-divider" />
-        <div className="nav-label">Sales</div>
+        <div className="nav-label">Master Operations</div>
         <nav>
           {nav.map(item => {
             const Icon = item.icon

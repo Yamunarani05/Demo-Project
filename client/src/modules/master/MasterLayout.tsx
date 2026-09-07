@@ -13,6 +13,9 @@ import {
   ChevronRight,
   Home,
   Eye,
+  ExternalLink,
+  Clapperboard,
+  TrendingUp,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -161,19 +164,63 @@ export default function MasterLayout() {
           </div>
 
           {/* Topbar Right Controls */}
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-50 border border-purple-200 text-xs font-semibold text-purple-800">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Great Master · 10 Studios Active</span>
+          <div className="flex items-center gap-3">
+            {/* Ecosystem Portals Quick Switcher */}
+            <div className="hidden lg:flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs">
+              <NavLink
+                to="/studio/dashboard"
+                className="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-purple-700 hover:bg-white transition-all flex items-center gap-1"
+                title="Switch to Studio Admin Workspace"
+              >
+                <Building2 className="w-3.5 h-3.5 text-purple-600" />
+                <span>Studio Workspace</span>
+              </NavLink>
+              <a
+                href="http://127.0.0.1:5176"
+                target="_blank"
+                rel="noreferrer"
+                className="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-amber-700 hover:bg-white transition-all flex items-center gap-1"
+                title="Open Standalone Master Admin Portal on port 5176"
+              >
+                <Shield className="w-3.5 h-3.5 text-amber-500" />
+                <span>Master Admin (:5176)</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+              </a>
+              <a
+                href="http://localhost:5178"
+                target="_blank"
+                rel="noreferrer"
+                className="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-indigo-700 hover:bg-white transition-all flex items-center gap-1"
+                title="Open Standalone Preproduction Portal on port 5178"
+              >
+                <Clapperboard className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Preproduction (:5178)</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+              </a>
+              <a
+                href="http://localhost:5175"
+                target="_blank"
+                rel="noreferrer"
+                className="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-amber-700 hover:bg-white transition-all flex items-center gap-1"
+                title="Open Standalone Sales Portal on port 5175"
+              >
+                <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
+                <span>Sales (:5175)</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+              </a>
             </div>
 
             <div className="flex items-center gap-3 pl-3 border-l border-slate-200">
               <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                GM
+                {user?.name ? user.name.slice(0, 2).toUpperCase() : 'MA'}
               </div>
               <div className="hidden sm:block text-left text-xs">
-                <div className="font-bold text-slate-800 leading-tight">Rajesh Malhotra</div>
-                <div className="text-[10px] text-purple-600 font-semibold">Great Master Admin</div>
+                <div className="font-bold text-slate-800 leading-tight">
+                  {user?.name || 'Master Administrator'}
+                </div>
+                <div className="text-[10px] text-purple-600 font-semibold truncate max-w-[150px]">
+                  {user?.email || 'masteradmin@gmail.com'}
+                </div>
               </div>
             </div>
           </div>

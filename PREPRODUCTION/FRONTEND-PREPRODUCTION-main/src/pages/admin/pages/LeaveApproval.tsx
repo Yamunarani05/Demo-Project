@@ -16,11 +16,16 @@ export default function LeaveApproval() {
         try {
             const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api'
             const res = await axios.get(`${API_URL}/leave?role=admin`)
-            if (res.data?.success) {
+            if (res.data?.success && Array.isArray(res.data.data)) {
                 setLeaveRequests(res.data.data)
+            } else if (Array.isArray(res.data)) {
+                setLeaveRequests(res.data)
+            } else {
+                setLeaveRequests([])
             }
         } catch (err) {
             console.error("Failed to fetch leave requests:", err)
+            setLeaveRequests([])
         } finally {
             setLoading(false)
         }
@@ -39,14 +44,15 @@ export default function LeaveApproval() {
     }
 
     const formatDate = (dateStr: string) => {
+        if (!dateStr) return '-'
         try {
             return new Date(dateStr).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })
         } catch {
-            return dateStr
+            return dateStr || '-'
         }
     }
 
-    const getStatusColor = (status: string) => {
+    const getStatusColor = (status: string = '') => {
         switch (status) {
             case 'Approved':
             case 'Accepted':
@@ -58,15 +64,17 @@ export default function LeaveApproval() {
         }
     }
 
-    const getTypeColor = (type: string) => {
-        if (type.toLowerCase().includes('sick')) return 'bg-orange-100 text-orange-600'
-        if (type.toLowerCase().includes('vacation')) return 'bg-blue-100 text-blue-600'
+    const getTypeColor = (type: string = '') => {
+        const safeType = (type || '').toLowerCase()
+        if (safeType.includes('sick')) return 'bg-orange-100 text-orange-600'
+        if (safeType.includes('vacation')) return 'bg-blue-100 text-blue-600'
         return 'bg-green-100 text-green-700'
     }
 
-    const totalRequests = leaveRequests.length
-    const pendingRequests = leaveRequests.filter(l => l.status === 'Pending').length
-    const approvedRequests = leaveRequests.filter(l => l.status === 'Approved' || l.status === 'Accepted').length
+    const safeLeaveRequests = Array.isArray(leaveRequests) ? leaveRequests : []
+    const totalRequests = safeLeaveRequests.length
+    const pendingRequests = safeLeaveRequests.filter(l => l?.status === 'Pending').length
+    const approvedRequests = safeLeaveRequests.filter(l => l?.status === 'Approved' || l?.status === 'Accepted').length
 
     return (
         <div className="space-y-6 max-w-[1400px] animate-in fade-in zoom-in-95 duration-300">
@@ -118,7 +126,7 @@ export default function LeaveApproval() {
                 <div className="hidden md:block overflow-x-auto">
                     {loading ? (
                         <div className="text-center py-6 text-gray-500">Loading leave requests...</div>
-                    ) : leaveRequests.length === 0 ? (
+                    ) : safeLeaveRequests.length === 0 ? (
                         <div className="text-center py-6 text-gray-500">No leave requests found.</div>
                     ) : (
                         <table className="w-full text-left">
@@ -133,25 +141,25 @@ export default function LeaveApproval() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {leaveRequests.map((leave, i) => (
-                                    <tr key={leave.leave_request_id || i} className="border-b border-gray-50 last:border-none hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-6 py-6 text-[13px] font-bold text-gray-800">{leave.employee_name || leave.employee_id} {leave.role ? `(${leave.role})` : ''}</td>
+                                {safeLeaveRequests.map((leave, i) => (
+                                    <tr key={leave?.leave_request_id || i} className="border-b border-gray-50 last:border-none hover:bg-gray-50/50 transition-colors">
+                                        <td className="px-6 py-6 text-[13px] font-bold text-gray-800">{leave?.employee_name || leave?.employee_id || '—'} {leave?.role ? `(${leave.role})` : ''}</td>
                                         <td className="px-6 py-6">
-                                            <span className={`px-4 py-1.5 rounded-full text-[11px] font-bold ${getTypeColor(leave.leave_type)}`}>
-                                                {leave.leave_type}
+                                            <span className={`px-4 py-1.5 rounded-full text-[11px] font-bold ${getTypeColor(leave?.leave_type)}`}>
+                                                {leave?.leave_type || 'General'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-6 text-[13px] font-bold text-gray-900">
-                                            {formatDate(leave.from_date)} - {formatDate(leave.to_date)} ({leave.no_of_days}d)
+                                            {formatDate(leave?.from_date)} - {formatDate(leave?.to_date)} ({leave?.no_of_days || 0}d)
                                         </td>
-                                        <td className="px-6 py-6 text-[13px] font-bold text-gray-800">{leave.reason}</td>
+                                        <td className="px-6 py-6 text-[13px] font-bold text-gray-800">{leave?.reason || '—'}</td>
                                         <td className="px-6 py-6">
-                                            <span className={`px-4 py-1.5 rounded-full text-[11px] font-bold min-w-[80px] text-center inline-block ${getStatusColor(leave.status)}`}>
-                                                {leave.status}
+                                            <span className={`px-4 py-1.5 rounded-full text-[11px] font-bold min-w-[80px] text-center inline-block ${getStatusColor(leave?.status)}`}>
+                                                {leave?.status || 'Pending'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-6 text-center">
-                                            {leave.status === 'Pending' && (
+                                            {leave?.status === 'Pending' && (
                                                 <div className="flex justify-center items-center gap-3">
                                                     <button
                                                         onClick={() => handleStatusUpdate(leave.leave_request_id, 'Approved')}
@@ -181,35 +189,35 @@ export default function LeaveApproval() {
                 <div className="md:hidden grid gap-4 p-4 bg-gray-50/50">
                     {loading ? (
                         <div className="text-center py-6 text-gray-500">Loading leave requests...</div>
-                    ) : leaveRequests.length === 0 ? (
+                    ) : safeLeaveRequests.length === 0 ? (
                         <div className="text-center py-6 text-gray-500">No leave requests found.</div>
                     ) : (
-                        leaveRequests.map((leave, i) => (
-                            <div key={leave.leave_request_id || i} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col gap-3">
+                        safeLeaveRequests.map((leave, i) => (
+                            <div key={leave?.leave_request_id || i} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col gap-3">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <h3 className="text-sm font-bold text-gray-900 leading-none mb-1">{leave.employee_name || leave.employee_id}</h3>
-                                        <p className="text-xs text-gray-500">{leave.role || '—'}</p>
+                                        <h3 className="text-sm font-bold text-gray-900 leading-none mb-1">{leave?.employee_name || leave?.employee_id || '—'}</h3>
+                                        <p className="text-xs text-gray-500">{leave?.role || '—'}</p>
                                     </div>
-                                    <span className={`px-2 py-1 rounded-md text-[10px] font-bold ${getStatusColor(leave.status)}`}>
-                                        {leave.status || 'Pending'}
+                                    <span className={`px-2 py-1 rounded-md text-[10px] font-bold ${getStatusColor(leave?.status)}`}>
+                                        {leave?.status || 'Pending'}
                                     </span>
                                 </div>
                                 <div className="bg-gray-50 rounded-xl p-3 flex flex-col gap-2 text-xs">
                                     <div className="flex justify-between">
                                         <span className="text-gray-500">Type:</span>
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getTypeColor(leave.leave_type)}`}>{leave.leave_type}</span>
+                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getTypeColor(leave?.leave_type)}`}>{leave?.leave_type || 'General'}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-500">Dates:</span>
-                                        <span className="font-medium text-gray-700">{formatDate(leave.from_date)} - {formatDate(leave.to_date)} ({leave.no_of_days} days)</span>
+                                        <span className="font-medium text-gray-700">{formatDate(leave?.from_date)} - {formatDate(leave?.to_date)} ({leave?.no_of_days || 0} days)</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-500">Reason:</span>
-                                        <span className="font-medium text-gray-700 max-w-[150px] truncate" title={leave.reason}>{leave.reason || '—'}</span>
+                                        <span className="font-medium text-gray-700 max-w-[150px] truncate" title={leave?.reason}>{leave?.reason || '—'}</span>
                                     </div>
                                 </div>
-                                {leave.status === 'Pending' && (
+                                {leave?.status === 'Pending' && (
                                     <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
                                         <button onClick={() => handleStatusUpdate(leave.leave_request_id, 'Approved')}
                                             className="flex items-center justify-center gap-1.5 flex-1 bg-green-50 text-green-600 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-green-100">

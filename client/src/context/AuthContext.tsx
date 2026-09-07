@@ -32,6 +32,9 @@ interface AuthContextType {
   activitiesList: DemoActivity[];
   loginAsGreatMaster: () => void;
   loginAsStudioAdmin: (studioId?: string) => void;
+  loginAsMasterAdmin: (userData?: { name?: string; email?: string; token?: string }) => void;
+  loginAsPreproduction: (userData?: { name?: string; email?: string; token?: string; role?: string }) => void;
+  loginAsSales: (userData?: { name?: string; email?: string; token?: string; role?: string; userId?: string }) => void;
   switchStudio: (studioId: string) => void;
   onboardClient: (clientData: {
     name: string;
@@ -146,6 +149,78 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     setUser(studioUser);
     localStorage.setItem('demo_auth_user', JSON.stringify(studioUser));
+  };
+
+  const loginAsMasterAdmin = (userData?: { name?: string; email?: string; token?: string }) => {
+    const email = userData?.email || 'masteradmin@gmail.com';
+    const name = userData?.name || 'Master Administrator';
+    const token = userData?.token || `master_token_${Date.now()}`;
+    const masterUser: User = {
+      id: 'usr_master_admin',
+      name,
+      email,
+      role: 'super_admin',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    };
+    setUser(masterUser);
+    localStorage.setItem('demo_auth_user', JSON.stringify(masterUser));
+    localStorage.setItem('master_admin_token', token);
+    localStorage.setItem('master_admin_user', JSON.stringify({ id: 1, email, name, role: 'master-admin' }));
+  };
+
+  const loginAsPreproduction = (userData?: { name?: string; email?: string; token?: string; role?: string }) => {
+    const email = userData?.email || 'preprodadmin@gmail.com';
+    const name = userData?.name || 'Preproduction Admin';
+    const token = userData?.token || `preprod_token_${Date.now()}`;
+    const targetStudio = studiosList[0];
+    setActiveStudioId(targetStudio.id);
+    localStorage.setItem('demo_active_studio_id', targetStudio.id);
+
+    const preprodUser: User = {
+      id: 'usr_preprod_admin',
+      name,
+      email,
+      role: 'studio_admin',
+      studioId: targetStudio.id,
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    };
+    setUser(preprodUser);
+    localStorage.setItem('demo_auth_user', JSON.stringify(preprodUser));
+    localStorage.setItem('ra_token', token);
+    localStorage.setItem('ra_user', JSON.stringify({
+      id: 1,
+      email,
+      name,
+      role: userData?.role || 'admin',
+      redirectPath: '/admin/dashboard'
+    }));
+  };
+
+  const loginAsSales = (userData?: { name?: string; email?: string; token?: string; role?: string; userId?: string }) => {
+    const email = userData?.email || 'admin@gmail.com';
+    const name = userData?.name || 'Sales Administrator';
+    const token = userData?.token || `sales_token_${Date.now()}`;
+    const role = userData?.role || 'admin';
+    const userId = userData?.userId || '1';
+
+    const targetStudio = studiosList[0];
+    setActiveStudioId(targetStudio.id);
+    localStorage.setItem('demo_active_studio_id', targetStudio.id);
+
+    const salesUser: User = {
+      id: `usr_sales_${role}`,
+      name,
+      email,
+      role: 'studio_admin',
+      studioId: targetStudio.id,
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    };
+    setUser(salesUser);
+    localStorage.setItem('demo_auth_user', JSON.stringify(salesUser));
+    localStorage.setItem('token', token);
+    localStorage.setItem('role', role);
+    localStorage.setItem('userId', userId);
+    localStorage.setItem('fullName', name);
   };
 
   const switchStudio = (studioId: string) => {
@@ -312,6 +387,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     localStorage.removeItem('demo_auth_user');
+    localStorage.removeItem('master_admin_token');
+    localStorage.removeItem('master_admin_user');
+    localStorage.removeItem('ra_token');
+    localStorage.removeItem('ra_user');
   };
 
   return (
@@ -326,6 +405,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         activitiesList,
         loginAsGreatMaster,
         loginAsStudioAdmin,
+        loginAsMasterAdmin,
+        loginAsPreproduction,
+        loginAsSales,
         switchStudio,
         onboardClient,
         updateClientStage,

@@ -25,8 +25,8 @@ export default function Employees() {
   return (
     <div>
       <div className="mb-5">
-        <h1 className="text-lg font-bold text-gray-900">Sales Employees</h1>
-        <p className="text-sm text-gray-500">Employees involved in sales client assignments</p>
+        <h1 className="text-lg font-bold text-gray-900">Production Staff Directory</h1>
+        <p className="text-sm text-gray-500">Pre-production field crew and Post-production specialists assigned to client deliverables</p>
       </div>
 
       <div className="mb-5 flex items-center gap-3">

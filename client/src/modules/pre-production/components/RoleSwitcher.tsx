@@ -150,13 +150,13 @@ export default function RoleSwitcher() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
-          <div className="px-3 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Switch Role</div>
+        <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50 max-h-96 overflow-y-auto">
+          <div className="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Switch Role</div>
 
           {/* Multi-Role option — always shown for multi-role users */}
           <button
             onClick={handleMultiRole}
-            className={`w-full text-left px-3 py-2 text-sm font-semibold transition-colors ${
+            className={`w-full text-left px-3 py-2 text-xs font-semibold transition-colors ${
               isMultiRoleView
                 ? 'bg-purple-50 text-purple-700'
                 : 'text-purple-600 hover:bg-purple-50'
@@ -165,20 +165,73 @@ export default function RoleSwitcher() {
             Multi-Role View
           </button>
 
-          <div className="h-px bg-gray-100 my-1" />
-          {roles.map((role) => (
-            <button
-              key={role}
-              onClick={() => handleSwitch(role)}
-              className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                !isMultiRoleView && role === activeRole
-                  ? 'bg-purple-50 text-purple-700 font-semibold'
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              {roleLabelMap[role] || role}
-            </button>
-          ))}
+          {/* Preproduction & Event Module Roles */}
+          {roles.some(r => ['crm', 'pre-production-crm', 'event-coordinator', 'photographer', 'videographer', 'drone', 'data-manager', 'admin'].includes(r)) && (
+            <div>
+              <div className="px-3 pt-2.5 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-blue-600 bg-blue-50/60 mt-1 border-t border-b border-blue-100/50">
+                Preproduction & Event Module
+              </div>
+              {roles.filter(r => ['crm', 'pre-production-crm', 'event-coordinator', 'photographer', 'videographer', 'drone', 'data-manager', 'admin'].includes(r)).map((role) => (
+                <button
+                  key={role}
+                  onClick={() => handleSwitch(role)}
+                  className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center justify-between ${
+                    !isMultiRoleView && role === activeRole
+                      ? 'bg-blue-50 text-blue-700 font-bold'
+                      : 'text-gray-700 hover:bg-gray-50 font-medium'
+                  }`}
+                >
+                  <span>{roleLabelMap[role] || role}</span>
+                  {!isMultiRoleView && role === activeRole && <span className="text-[10px] text-blue-600">●</span>}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Postproduction Module Roles */}
+          {roles.some(r => ['post-production-crm', 'operational-manager', 'employee-1', 'employee-2', 'employee-4', 'traditional-video-editor', 'retouch-editor', 'album-designer', 'magazine-designer', 'frame-designer', 'candid-video-editor'].includes(r)) && (
+            <div>
+              <div className="px-3 pt-2.5 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-amber-700 bg-amber-50/60 mt-1.5 border-t border-b border-amber-100/50">
+                Postproduction Module
+              </div>
+              {roles.filter(r => ['post-production-crm', 'operational-manager', 'employee-1', 'employee-2', 'employee-4', 'traditional-video-editor', 'retouch-editor', 'album-designer', 'magazine-designer', 'frame-designer', 'candid-video-editor'].includes(r)).map((role) => (
+                <button
+                  key={role}
+                  onClick={() => handleSwitch(role)}
+                  className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center justify-between ${
+                    !isMultiRoleView && role === activeRole
+                      ? 'bg-amber-50 text-amber-800 font-bold'
+                      : 'text-gray-700 hover:bg-gray-50 font-medium'
+                  }`}
+                >
+                  <span>{roleLabelMap[role] || role}</span>
+                  {!isMultiRoleView && role === activeRole && <span className="text-[10px] text-amber-600">●</span>}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Other Roles */}
+          {roles.some(r => !['crm', 'pre-production-crm', 'event-coordinator', 'photographer', 'videographer', 'drone', 'data-manager', 'admin', 'post-production-crm', 'operational-manager', 'employee-1', 'employee-2', 'employee-4', 'traditional-video-editor', 'retouch-editor', 'album-designer', 'magazine-designer', 'frame-designer', 'candid-video-editor'].includes(r)) && (
+            <div>
+              <div className="px-3 pt-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400 mt-1 border-t border-gray-100">
+                Other Portals
+              </div>
+              {roles.filter(r => !['crm', 'pre-production-crm', 'event-coordinator', 'photographer', 'videographer', 'drone', 'data-manager', 'admin', 'post-production-crm', 'operational-manager', 'employee-1', 'employee-2', 'employee-4', 'traditional-video-editor', 'retouch-editor', 'album-designer', 'magazine-designer', 'frame-designer', 'candid-video-editor'].includes(r)).map((role) => (
+                <button
+                  key={role}
+                  onClick={() => handleSwitch(role)}
+                  className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
+                    !isMultiRoleView && role === activeRole
+                      ? 'bg-purple-50 text-purple-700 font-semibold'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {roleLabelMap[role] || role}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

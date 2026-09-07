@@ -21,7 +21,7 @@ import { Toaster } from 'sonner'
 const nav = [
   { to: '/sales/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/sales/clients', icon: Users, label: 'Clients' },
-  { to: '/sales/employees', icon: Briefcase, label: 'Employees' },
+  { to: '/sales/employees', icon: Briefcase, label: 'Production Staff' },
   { to: '/sales/work-tracker', icon: BarChart3, label: 'Work Tracker' },
   { to: '/sales/invoices', icon: Receipt, label: 'Invoices' },
   { to: '/sales/attendance', icon: CalendarCheck, label: 'Attendance' },

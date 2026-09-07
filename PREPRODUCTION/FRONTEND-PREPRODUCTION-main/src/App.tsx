@@ -102,6 +102,7 @@ import EventDetails from './pages/client/pages/EventDetails'
 import Quotation from './pages/client/pages/Quotation'
 import Invoice from './pages/client/pages/Invoice'
 import ClientNotifications from './pages/client/pages/Notifications'
+import ClientWorkflow from './pages/client/pages/ClientWorkflow'
 
 import AssignEditor from './ClientFlow/AssignEditor'
 import AssignEditingTeamPage from './ClientFlow/AssignEditingTeamPage'
@@ -349,6 +350,16 @@ function App() {
                 />
               }
             />
+            <Route
+              path="event-qc-check"
+              element={
+                <CrmQCCheck
+                  workflowPhase="event"
+                  title="Event QC Checking"
+                  description="Approve data coming from the Event stage only"
+                />
+              }
+            />
             <Route path="attendance" element={<Attendance />} />
             <Route path="my-attendance" element={<Navigate to="/pre-production-crm/attendance?tab=my-attendance" replace />} />
             <Route path="leave-request" element={<Navigate to="/pre-production-crm/attendance?tab=leave-request" replace />} />
@@ -376,6 +387,7 @@ function App() {
                 />
               }
             />
+            <Route path="client-delivery" element={<ClientDelivery />} />
             <Route path="attendance" element={<Attendance />} />
             <Route path="my-attendance" element={<Navigate to="/post-production-crm/attendance?tab=my-attendance" replace />} />
             <Route path="leave-request" element={<Navigate to="/post-production-crm/attendance?tab=leave-request" replace />} />
@@ -556,6 +568,7 @@ function App() {
           <Route path="/client" element={<ClientLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<ClientDashboard />} />
+            <Route path="workflow" element={<ClientWorkflow />} />
             <Route path="tracker" element={<Tracker />} />
             <Route path="quotation" element={<Quotation />} />
             <Route path="invoice" element={<Invoice />} />

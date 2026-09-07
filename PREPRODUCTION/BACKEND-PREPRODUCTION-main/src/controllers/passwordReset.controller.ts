@@ -56,9 +56,9 @@ export const forgotPassword = async (req: Request, res: Response) => {
     // Send OTP email
     const transporter = getTransporter();
     await transporter.sendMail({
-      from: `"Red Angle" <${process.env.SMTP_EMAIL || process.env.EMAIL_USER}>`,
+      from: `"Demo SaaS Platform" <${process.env.SMTP_EMAIL || process.env.EMAIL_USER}>`,
       to: normalizedEmail,
-      subject: "Password Reset OTP — Red Angle",
+      subject: "Password Reset OTP — Demo SaaS Platform",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #faf5ff; border-radius: 16px;">
           <h2 style="color: #7c3aed; margin-bottom: 8px;">Password Reset</h2>
@@ -69,7 +69,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
           </div>
           <p style="color: #94a3b8; font-size: 12px;">If you didn't request this, please ignore this email.</p>
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
-          <p style="color: #94a3b8; font-size: 11px; text-align: center;">Red Angle Studio</p>
+          <p style="color: #94a3b8; font-size: 11px; text-align: center;">Demo SaaS Platform</p>
         </div>
       `,
     });

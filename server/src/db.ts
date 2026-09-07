@@ -277,12 +277,12 @@ export function seedInitialData() {
   memoryStore.studios = [
     {
       id: 'studio_1',
-      name: 'Red Angle Studio',
-      slug: 'red-angle-studio',
+      name: 'Demo Studio Aurora',
+      slug: 'demo-studio-aurora',
       tagline: 'Premier Wedding & Cinematic Storytellers',
       logo: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=150&auto=format&fit=crop&q=80',
       coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&auto=format&fit=crop&q=80',
-      email: 'contact@redanglestudio.com',
+      email: 'contact@demostudio.in',
       phone: '+91 98401 23456',
       city: 'Bangalore',
       state: 'Karnataka',

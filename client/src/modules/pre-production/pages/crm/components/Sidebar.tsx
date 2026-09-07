@@ -28,26 +28,26 @@ const topItems: LeafItem[] = [
 const splitRoleConfigs: Record<string, { label: string; stageLabel: string; items: LeafItem[] }> = {
     '/pre-production': {
         label: 'Pre-production',
-        stageLabel: 'Pre-production Phase 1',
+        stageLabel: 'Preproduction & Event',
         items: [
             { to: '/pre-production/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-            { to: '/pre-production/client', icon: Users, label: 'Assign Client' },
-            { to: '/pre-production/raw-data', icon: Database, label: 'Raw Data' },
-            { to: '/pre-production/qc-check', icon: ShieldCheck, label: 'QC Checking' },
             { to: '/pre-production/work-tracking', icon: Briefcase, label: 'Work Tracking' },
+            { to: '/pre-production/client', icon: Users, label: 'Assign Client' },
+            { to: '/pre-production/raw-data', icon: Database, label: 'Pre-production Raw Data' },
+            { to: '/pre-production/qc-check', icon: ShieldCheck, label: 'QC Checking' },
             { to: '/pre-production/attendance', icon: CalendarCheck, label: 'Attendance' },
             { to: '/pre-production/notifications', icon: Bell, label: 'Notifications' },
         ],
     },
     '/pre-production-crm': {
         label: 'Pre-production CRM',
-        stageLabel: 'Pre-production',
+        stageLabel: 'Preproduction & Event',
         items: [
             { to: '/pre-production-crm/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+            { to: '/pre-production-crm/work-tracking', icon: Briefcase, label: 'Work Tracking' },
             { to: '/pre-production-crm/client', icon: Users, label: 'Assign Client' },
             { to: '/pre-production-crm/raw-data', icon: Database, label: 'Raw Data' },
             { to: '/pre-production-crm/qc-check', icon: ShieldCheck, label: 'QC Checking' },
-            { to: '/pre-production-crm/work-tracking', icon: Briefcase, label: 'Work Tracking' },
             { to: '/pre-production-crm/attendance', icon: CalendarCheck, label: 'Attendance' },
             { to: '/pre-production-crm/notifications', icon: Bell, label: 'Notifications' },
         ],
@@ -70,16 +70,6 @@ const groups: GroupItem[] = [
             { to: '/crm/pre-production/client', icon: Users, label: 'Client' },
             { to: '/crm/pre-production/raw-data', icon: Database, label: 'Raw Data' },
             { to: '/crm/pre-production/qc-check', icon: ShieldCheck, label: 'QC Checking' },
-        ],
-    },
-    {
-        key: 'post-production',
-        icon: Wand2,
-        label: 'Post-production',
-        color: '#d97706',
-        basePath: '/crm/post-production',
-        children: [
-            { to: '/crm/post-production/qc-check', icon: ShieldCheck, label: 'QC Checking' },
         ],
     },
     {

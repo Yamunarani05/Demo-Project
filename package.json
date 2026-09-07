@@ -10,6 +10,13 @@
     "dev:masteradmin": "concurrently \"npm run dev --prefix MasterAdmin/MasterAdmin-Backend-main\" \"npm run dev --prefix MasterAdmin/MasterAdmin-Frontend-main\"",
     "dev:masteradmin:server": "npm run dev --prefix MasterAdmin/MasterAdmin-Backend-main",
     "dev:masteradmin:client": "npm run dev --prefix MasterAdmin/MasterAdmin-Frontend-main",
+    "dev:preproduction": "concurrently \"npm run dev --prefix PREPRODUCTION/BACKEND-PREPRODUCTION-main\" \"npm run dev --prefix PREPRODUCTION/FRONTEND-PREPRODUCTION-main\"",
+    "dev:preproduction:server": "npm run dev --prefix PREPRODUCTION/BACKEND-PREPRODUCTION-main",
+    "dev:preproduction:client": "npm run dev --prefix PREPRODUCTION/FRONTEND-PREPRODUCTION-main",
+    "dev:sales": "concurrently \"npm run dev --prefix SALES/SALES-BACKEND-main\" \"npm run dev --prefix SALES/SALES-FRONTEND-main\"",
+    "dev:sales:server": "npm run dev --prefix SALES/SALES-BACKEND-main",
+    "dev:sales:client": "npm run dev --prefix SALES/SALES-FRONTEND-main",
+    "dev:all": "concurrently -n \"DEMO-API,DEMO-UI,SALES-API,SALES-UI,MASTER-API,MASTER-UI,PREPROD-API,PREPROD-UI\" -c \"blue,cyan,yellow,green,magenta,gray,red,white\" \"npm run dev --prefix server\" \"npm run dev --prefix client\" \"npm run dev --prefix SALES/SALES-BACKEND-main\" \"npm run dev --prefix SALES/SALES-FRONTEND-main\" \"npm run dev --prefix MasterAdmin/MasterAdmin-Backend-main\" \"npm run dev --prefix MasterAdmin/MasterAdmin-Frontend-main\" \"npm run dev --prefix PREPRODUCTION/BACKEND-PREPRODUCTION-main\" \"npm run dev --prefix PREPRODUCTION/FRONTEND-PREPRODUCTION-main\"",
     "build": "npm run build --prefix client && npm run build --prefix server",
     "start": "npm run start --prefix server"
   },

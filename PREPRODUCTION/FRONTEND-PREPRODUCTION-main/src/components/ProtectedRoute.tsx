@@ -61,12 +61,42 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   const location = useLocation();
 
   useEffect(() => {
-    const token = localStorage.getItem('ra_token');
-    const userStr = localStorage.getItem('ra_user');
+    // Check URL parameters for SSO handoff from other portals (e.g. Demo SaaS Platform)
+    const searchParams = new URLSearchParams(window.location.search);
+    const urlToken = searchParams.get('token');
+    const urlUser = searchParams.get('user');
+
+    if (urlToken) {
+      localStorage.setItem('ra_token', urlToken);
+      if (urlUser) {
+        localStorage.setItem('ra_user', urlUser);
+      }
+      // Remove query params from address bar
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, '', cleanUrl);
+    }
+
+    const token = urlToken || localStorage.getItem('ra_token');
+    const userStr = urlUser || localStorage.getItem('ra_user');
 
     if (!token || !userStr) {
       setAuthState('unauthenticated');
       return;
+    }
+
+    // Support client demo, preprod & offline tokens directly
+    if (token.startsWith('demo_') || token.startsWith('client_demo_') || token.startsWith('preprod_')) {
+      try {
+        const user = JSON.parse(userStr);
+        const rawRoles = user?.roles || [user?.role || 'admin'];
+        const roles = Array.from(new Set(rawRoles.map(normalizeRole).filter(Boolean)));
+        setUserRoles(roles as string[]);
+        setRedirectPath(user?.redirectPath || '/admin/dashboard');
+        setAuthState('authenticated');
+        return;
+      } catch (e) {
+        console.error('Failed to parse demo user', e);
+      }
     }
 
     // Verify token with backend

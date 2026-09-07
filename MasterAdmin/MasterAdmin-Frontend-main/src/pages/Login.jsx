@@ -32,7 +32,7 @@ export default function Login() {
       <div className="login-pattern" />
       <div className="login-grid">
         <section className="login-hero">
-          <h1>Red Angle Studio</h1>
+          <h1>Demo Master Admin</h1>
           <p>Manage your workspace and collaborate with your team seamlessly with our intuitive platform.</p>
           <div className="login-art-wrap">
             <div className="login-art-glow" />
@@ -42,8 +42,12 @@ export default function Login() {
 
         <section className="login-card-wrap">
           <form className="login-card" onSubmit={submit}>
-            <div className="login-logo">
-              <img src="/red_angle_logo.png" alt="RED ANGLE STUDIO" />
+            <div className="login-logo" style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 28 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 12, background: '#5E35B1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 16 }}>DP</div>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontWeight: 900, fontSize: 16, letterSpacing: '0.05em', color: '#0f172a' }}>DEMO PROJECT</div>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#5E35B1', textTransform: 'uppercase' }}>Master Admin</div>
+              </div>
             </div>
 
             <h2>Sign in</h2>

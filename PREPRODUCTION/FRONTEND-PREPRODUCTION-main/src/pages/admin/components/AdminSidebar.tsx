@@ -30,7 +30,11 @@ export default function AdminSidebar() {
             {/* Logo area */}
             <div className="p-8 pb-6 border-b border-[#d4c5f0]/50 sticky top-0 bg-[#dfd5f6] rounded-tr-3xl z-10">
                 <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate('/admin/dashboard')}>
-                    <img src="/red_angle_logo.png" alt="RED ANGLE STUDIO" className="h-[40px] w-auto object-contain" />
+                    <div className="w-10 h-10 rounded-xl bg-purple-700 flex items-center justify-center text-white font-black text-sm shadow-sm">DP</div>
+                    <div className="flex flex-col">
+                        <span className="text-sm font-black tracking-wider uppercase font-display text-slate-900">DEMO STUDIO</span>
+                        <span className="text-[9px] uppercase tracking-widest text-purple-800 font-bold">Preproduction Admin</span>
+                    </div>
                 </div>
             </div>
 

@@ -81,7 +81,7 @@ export default function ReportPreviewModal({ isOpen, onClose, data }) {
                 </div>
                 <h1 className="report-cover-title">Master Sales Report</h1>
                 <div className="report-cover-divider" />
-                <div className="report-cover-client-name">Red Angle Studio</div>
+                <div className="report-cover-client-name">Demo SaaS Platform</div>
                 <table className="report-cover-meta">
                   <tbody>
                     <tr><td>Report Type</td><td>Combined Sales Report</td></tr>
@@ -90,7 +90,7 @@ export default function ReportPreviewModal({ isOpen, onClose, data }) {
                   </tbody>
                 </table>
               </div>
-              <div className="report-cover-footer-text">Red Angle Master Admin · Confidential</div>
+              <div className="report-cover-footer-text">Demo Master Admin · Confidential</div>
             </section>
 
             {/* Executive Summary */}
@@ -338,7 +338,7 @@ export default function ReportPreviewModal({ isOpen, onClose, data }) {
                 <div className="report-signoff-box">
                   <h3>Prepared By</h3>
                   <div className="report-signoff-line" />
-                  <p>Master Admin — Red Angle</p>
+                  <p>Demo Master Admin</p>
                   <p className="report-signoff-date">{dateStr}</p>
                 </div>
                 <div className="report-signoff-box">
@@ -348,7 +348,7 @@ export default function ReportPreviewModal({ isOpen, onClose, data }) {
                 </div>
               </div>
               <div className="report-confidentiality">
-                <p><strong>Confidentiality Notice:</strong> This report contains proprietary information belonging to Red Angle and is intended solely for internal management use.</p>
+                <p><strong>Confidentiality Notice:</strong> This report contains proprietary information belonging to Demo SaaS Platform and is intended solely for internal management use.</p>
               </div>
             </section>
 

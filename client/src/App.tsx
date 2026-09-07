@@ -33,6 +33,80 @@ import ClientWorkspace from './modules/studio/pages/ClientWorkspace';
 import StudioWorkflow from './modules/studio/pages/StudioWorkflow';
 import StudioActivity from './modules/studio/pages/StudioActivity';
 
+function ExternalPreproductionAdmin() {
+  React.useEffect(() => {
+    const token = localStorage.getItem('ra_token');
+    const user = localStorage.getItem('ra_user');
+    const targetUrl = new URL('http://localhost:5178/admin');
+    if (token) targetUrl.searchParams.set('token', token);
+    if (user) targetUrl.searchParams.set('user', user);
+    window.location.href = targetUrl.toString();
+  }, []);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-700 text-sm font-medium">
+      <div className="flex flex-col items-center gap-2">
+        <div className="w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full animate-spin" />
+        <span>Redirecting to Preproduction Admin (http://localhost:5178/admin)...</span>
+      </div>
+    </div>
+  );
+}
+
+function ExternalPostproductionPortal() {
+  React.useEffect(() => {
+    const token = localStorage.getItem('ra_token');
+    const user = localStorage.getItem('ra_user');
+    const targetUrl = new URL('http://localhost:5178/post-production-crm');
+    if (token) targetUrl.searchParams.set('token', token);
+    if (user) targetUrl.searchParams.set('user', user);
+    window.location.href = targetUrl.toString();
+  }, []);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-700 text-sm font-medium">
+      <div className="flex flex-col items-center gap-2">
+        <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin" />
+        <span>Redirecting to Postproduction Module (http://localhost:5178/post-production-crm)...</span>
+      </div>
+    </div>
+  );
+}
+
+function ExternalSalesPortal() {
+  React.useEffect(() => {
+    const token = localStorage.getItem('token') || localStorage.getItem('ra_token');
+    const role = localStorage.getItem('role') || 'admin';
+    const userId = localStorage.getItem('userId') || '1';
+    const fullName = localStorage.getItem('fullName') || 'Sales Admin';
+
+    const targetUrl = new URL('http://localhost:5175');
+    if (token) targetUrl.searchParams.set('token', token);
+    if (role) targetUrl.searchParams.set('role', role);
+    if (userId) targetUrl.searchParams.set('userId', userId);
+    if (fullName) targetUrl.searchParams.set('fullName', fullName);
+
+    if (role === 'admin') {
+      targetUrl.searchParams.set('redirect', '/admin/dashboard');
+    } else if (role === 'employee') {
+      targetUrl.searchParams.set('redirect', '/employee/employee-profile');
+    } else if (role === 'partner') {
+      targetUrl.searchParams.set('redirect', '/partner/dashboard');
+    }
+
+    window.location.href = targetUrl.toString();
+  }, []);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-700 text-sm font-medium">
+      <div className="flex flex-col items-center gap-2">
+        <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin" />
+        <span>Redirecting to Sales Portal (http://localhost:5175)...</span>
+      </div>
+    </div>
+  );
+}
+
 export function App() {
   return (
     <AuthProvider>
@@ -79,11 +153,20 @@ export function App() {
             <Route path="*" element={<Navigate to="/studio/dashboard" replace />} />
           </Route>
 
-          {/* Compatibility Aliases */}
-          <Route path="/sales/*" element={<Navigate to="/master/dashboard" replace />} />
+
+          {/* Compatibility Aliases & Direct Redirects */}
+          <Route path="/admin" element={<ExternalPreproductionAdmin />} />
+          <Route path="/admin/*" element={<ExternalPreproductionAdmin />} />
+          <Route path="/pre-production" element={<ExternalPreproductionAdmin />} />
+          <Route path="/pre-production/*" element={<ExternalPreproductionAdmin />} />
+          <Route path="/pre-production-crm/*" element={<ExternalPreproductionAdmin />} />
+          <Route path="/post-production" element={<ExternalPostproductionPortal />} />
+          <Route path="/post-production/*" element={<ExternalPostproductionPortal />} />
+          <Route path="/post-production-crm/*" element={<ExternalPostproductionPortal />} />
+          <Route path="/operational-manager/*" element={<ExternalPostproductionPortal />} />
+          <Route path="/sales" element={<ExternalSalesPortal />} />
+          <Route path="/sales/*" element={<ExternalSalesPortal />} />
           <Route path="/master-admin/*" element={<Navigate to="/master/dashboard" replace />} />
-          <Route path="/pre-production/*" element={<Navigate to="/studio/dashboard" replace />} />
-          <Route path="/pre-production-crm/*" element={<Navigate to="/studio/dashboard" replace />} />
 
           {/* Great Master direct entry point */}
           <Route path="/greatmaster" element={<GreatMasterEntry />} />

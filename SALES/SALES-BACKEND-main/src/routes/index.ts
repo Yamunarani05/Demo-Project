@@ -1,0 +1,37 @@
+import { Router } from "express";
+import adminRoutes from "./adminRoutes";
+import leadRoutes from "./leadsRoutes";
+import quotationRoutes from "./quotationRoutes";
+import quotationIssueRoutes from "./quotationIssueRoutes";
+import EmployeeRoutes from "./employee.routes";
+import invoiceRoutes from "./invoiceRoutes";
+import attendancerouter from "./attendanceRoutes";
+import loginAuthRoutes from "./loginAuthRoutes";
+import dashboardRoutes from "./dashboardRoutes";
+import notificationRoutes from "./notificationRoutes";
+import authRoutes from "./authRoutes";
+import callRoutes from "./callRoutes";
+import adminAttendanceRouter from "./adminAttendanceRoutes";
+import Paymentrouter from "./paymentRoutes";
+import packageRoutes from "./package.routes";
+import reportRoutes from "./reportRoutes";
+const router = Router();
+
+// API routes
+router.use("/api/admin", adminRoutes);
+router.use("/api/leads", leadRoutes);
+router.use("/api/quotations", quotationRoutes);
+router.use("/api/quotation-issues", quotationIssueRoutes);
+router.use("/api/employees", EmployeeRoutes);
+router.use("/api/invoices", invoiceRoutes);
+router.use("/api/attendance", attendancerouter);
+router.use("/api/login", loginAuthRoutes);
+router.use("/api/dashboard", dashboardRoutes);
+router.use("/api/notifications", notificationRoutes);
+router.use("/api/auth", authRoutes);
+router.use("/api/calls", callRoutes);
+router.use("/api/admin-attendance", adminAttendanceRouter);
+router.use("/api/payments", Paymentrouter);
+router.use("/api/invoices", packageRoutes);
+router.use("/api/reports", reportRoutes);
+export default router;

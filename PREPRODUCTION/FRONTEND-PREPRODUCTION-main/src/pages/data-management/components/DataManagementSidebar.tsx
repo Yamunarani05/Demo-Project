@@ -85,9 +85,12 @@ export default function DataManagementSidebar() {
         <aside className="w-[280px] bg-[#dfd5f6] flex flex-col h-screen fixed left-0 top-0 overflow-y-auto">
             {/* Logo area */}
             <div className="p-8 pb-10">
-                <div className="flex flex-col items-start gap-1">
-                    <img src="/red_angle_logo.png" alt="RED ANGLE STUDIO" className="h-[36px] w-auto object-contain" />
-                    <div className="text-[10px] tracking-[0.3em] text-gray-800 font-semibold mt-0.5 ml-1">DATA MANAGEMENT</div>
+                <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-purple-700 flex items-center justify-center text-white font-black text-xs shadow-sm">DP</div>
+                    <div className="flex flex-col">
+                        <span className="text-xs font-black tracking-wider uppercase font-display text-slate-900">DEMO STUDIO</span>
+                        <span className="text-[9px] uppercase tracking-widest text-purple-800 font-bold">Data Management</span>
+                    </div>
                 </div>
             </div>
 
