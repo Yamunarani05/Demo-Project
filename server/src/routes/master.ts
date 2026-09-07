@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { memoryStore } from '../db';
+import { memoryStore, calculateStudioTrialAndPaymentStatus } from '../db';
+import { sendApprovalEmail, sendRejectionEmail, sendPaymentRequestEmail } from '../services/emailService';
 
 const router = Router();
 
@@ -189,40 +190,246 @@ const formatMasterClient = (client: any, idx: number) => {
   };
 };
 
+// Helper to calculate and format all studios for Master Admin
+const getCalculatedStudios = () => {
+  return memoryStore.studios.map(s => calculateStudioTrialAndPaymentStatus(s));
+};
+
+// GET /api/master/requests - List pending studio free trial access requests
+router.get(['/requests', '/sales/requests'], (req: Request, res: Response) => {
+  const calculatedStudios = getCalculatedStudios();
+  const pending = calculatedStudios.filter(s => s.status === 'pending');
+  res.json({ success: true, data: pending, total: pending.length });
+});
+
+// PUT /api/master/requests/:studioId/approve - Master Admin Approves Studio (Starts 7-Day Free Trial)
+const handleApproveStudio = async (req: Request, res: Response) => {
+  const { studioId } = req.params;
+  const studio = memoryStore.studios.find(s => s.id === studioId);
+
+  if (!studio) {
+    return res.status(404).json({ success: false, message: 'Studio request not found' });
+  }
+
+  const now = new Date();
+  const trialEndDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Exactly 7 days
+
+  studio.status = 'approved';
+  studio.trialStartDate = now.toISOString();
+  studio.trialEndDate = trialEndDate.toISOString();
+  studio.trialStatus = 'ACTIVE';
+  studio.paymentStatus = 'PENDING';
+  studio.amount = studio.amount || 4999;
+
+  // Find associated user
+  const user = memoryStore.users.find(u => u.studioId === studio.id || u.email.toLowerCase() === studio.email.toLowerCase());
+
+  // Record activity log
+  memoryStore.activityLogs.unshift({
+    id: `act_${Date.now()}`,
+    studioId: studio.id,
+    actorName: 'Master Admin',
+    actorRole: 'Super Admin',
+    action: 'Free Trial Approved',
+    details: `${studio.name} 7-Day Free Trial approved (Start: ${now.toLocaleDateString('en-IN')}, End: ${trialEndDate.toLocaleDateString('en-IN')}).`,
+    timestamp: 'Just now',
+  });
+
+  // Send Approval Email Notification
+  let emailResult: any = { success: false, emailSent: false };
+  try {
+    emailResult = await sendApprovalEmail(
+      {
+        adminName: user?.name || studio.name + ' Admin',
+        studioName: studio.name,
+        adminEmail: studio.email,
+        trialStartDate: now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        trialEndDate: trialEndDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        trialDays: 7,
+        loginUrl: 'http://localhost:5173/login',
+      },
+      studio.id
+    );
+  } catch (e) {
+    console.error(`[Email] Failed to send approval email to ${studio.email}`);
+  }
+
+  const updatedStudio = calculateStudioTrialAndPaymentStatus(studio);
+
+  res.json({
+    success: true,
+    message: `Free Trial approved for ${studio.name}. 7-day trial activated. Confirmation email ${emailResult.emailSent ? 'sent' : 'queued'}.`,
+    emailSent: emailResult.emailSent,
+    data: updatedStudio,
+  });
+};
+
+router.put('/requests/:studioId/approve', handleApproveStudio);
+router.post('/requests/:studioId/approve', handleApproveStudio);
+router.put('/studios/:studioId/approve', handleApproveStudio);
+router.post('/studios/:studioId/approve', handleApproveStudio);
+
+// PUT /api/master/requests/:studioId/reject - Master Admin Rejects Studio Request
+const handleRejectStudio = async (req: Request, res: Response) => {
+  const { studioId } = req.params;
+  const { reason } = req.body || {};
+  const studio = memoryStore.studios.find(s => s.id === studioId);
+
+  if (!studio) {
+    return res.status(404).json({ success: false, message: 'Studio request not found' });
+  }
+
+  studio.status = 'rejected';
+  studio.trialStatus = undefined;
+
+  const user = memoryStore.users.find(u => u.studioId === studio.id || u.email.toLowerCase() === studio.email.toLowerCase());
+
+  memoryStore.activityLogs.unshift({
+    id: `act_${Date.now()}`,
+    studioId: studio.id,
+    actorName: 'Master Admin',
+    actorRole: 'Super Admin',
+    action: 'Free Trial Request Rejected',
+    details: `${studio.name} access request was rejected.`,
+    timestamp: 'Just now',
+  });
+
+  let emailResult: any = { success: false, emailSent: false };
+  try {
+    emailResult = await sendRejectionEmail(
+      {
+        adminName: user?.name || studio.name + ' Admin',
+        studioName: studio.name,
+        adminEmail: studio.email,
+        reason,
+      },
+      studio.id
+    );
+  } catch (e) {
+    console.error(`[Email] Failed to send rejection email to ${studio.email}`);
+  }
+
+  res.json({
+    success: true,
+    message: `Request rejected for ${studio.name}. Rejection email ${emailResult.emailSent ? 'sent' : 'queued'}.`,
+    emailSent: emailResult.emailSent,
+    data: studio,
+  });
+};
+
+router.put('/requests/:studioId/reject', handleRejectStudio);
+router.post('/requests/:studioId/reject', handleRejectStudio);
+router.put('/studios/:studioId/reject', handleRejectStudio);
+router.post('/studios/:studioId/reject', handleRejectStudio);
+
+// POST /api/master/requests/:studioId/request-payment - Master Admin Initiates Payment Request
+router.post(['/requests/:studioId/request-payment', '/studios/:studioId/request-payment'], async (req: Request, res: Response) => {
+  const { studioId } = req.params;
+  const studio = memoryStore.studios.find(s => s.id === studioId);
+
+  if (!studio) {
+    return res.status(404).json({ success: false, message: 'Studio not found' });
+  }
+
+  studio.paymentStatus = 'PAYMENT_PENDING';
+  const user = memoryStore.users.find(u => u.studioId === studio.id || u.email.toLowerCase() === studio.email.toLowerCase());
+
+  memoryStore.activityLogs.unshift({
+    id: `act_${Date.now()}`,
+    studioId: studio.id,
+    actorName: 'Master Admin',
+    actorRole: 'Super Admin',
+    action: 'Payment Requested',
+    details: `Payment requested from ${studio.name} for ${studio.plan || 'Studio Pro Plan'} (₹${studio.amount || 4999}).`,
+    timestamp: 'Just now',
+  });
+
+  let emailResult: any = { success: false, emailSent: false };
+  try {
+    emailResult = await sendPaymentRequestEmail(
+      {
+        adminName: user?.name || studio.name + ' Admin',
+        studioName: studio.name,
+        adminEmail: studio.email,
+        trialEndDate: studio.trialEndDate ? new Date(studio.trialEndDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Expired',
+        planName: studio.plan || 'Studio Pro Plan',
+        amount: studio.amount || 4999,
+        paymentUrl: `http://localhost:5173/pay/${studio.id}`,
+      },
+      studio.id
+    );
+  } catch (e) {
+    console.error(`[Email] Failed to send payment request email to ${studio.email}`);
+  }
+
+  res.json({
+    success: true,
+    message: `Payment request sent to ${studio.email}. Notification email ${emailResult.emailSent ? 'sent' : 'queued'}.`,
+    emailSent: emailResult.emailSent,
+    data: calculateStudioTrialAndPaymentStatus(studio),
+  });
+});
+
+// GET /api/master/email-history - Retrieve Email Activity History
+router.get(['/email-history', '/sales/email-history'], (req: Request, res: Response) => {
+  const { studioId } = req.query;
+  let logs = [...memoryStore.emailLogs];
+
+  if (studioId) {
+    logs = logs.filter(l => l.studioId === studioId);
+  }
+
+  res.json({ success: true, data: logs, total: logs.length });
+});
+
+router.get(['/email-history/:studioId', '/sales/email-history/:studioId'], (req: Request, res: Response) => {
+  const { studioId } = req.params;
+  const logs = memoryStore.emailLogs.filter(l => l.studioId === studioId);
+  res.json({ success: true, data: logs, total: logs.length });
+});
+
 // GET /api/master/dashboard - Comprehensive Great Master Multi-Studio Command Center
 router.get(['/dashboard', '/sales/dashboard'], (req: Request, res: Response) => {
-  const studios = memoryStore.studios;
+  const studiosCalculated = getCalculatedStudios();
   const clients = memoryStore.clients;
   const shoots = memoryStore.shoots;
   const photographers = memoryStore.photographers;
   const users = memoryStore.users;
 
-  const totalStudios = studios.length;
-  const activeStudios = studios.filter(s => s.status === 'active').length;
-  const inactiveStudios = studios.filter(s => s.status !== 'active').length;
-  const trialStudios = studios.filter(s => s.trialStatus === 'Active Trial' || s.plan?.includes('Trial')).length;
-  const expiredTrials = studios.filter(s => s.trialStatus === 'Expired').length;
-  const totalStudioAdmins = users.filter(u => u.role === 'studio_admin').length || studios.length;
+  // Free Trial Metrics
+  const totalFreeTrialRegistrations = studiosCalculated.length;
+  const pendingRequestsCount = studiosCalculated.filter(s => s.status === 'pending').length;
+  const activeTrialsCount = studiosCalculated.filter(s => s.trialStatus === 'ACTIVE').length;
+  const expiringTrialsCount = studiosCalculated.filter(s => s.trialStatus === 'EXPIRING_SOON').length;
+  const expiredTrialsCount = studiosCalculated.filter(s => s.trialStatus === 'EXPIRED').length;
+
+  // Payment Metrics
+  const paymentPendingCount = studiosCalculated.filter(s => s.paymentStatus === 'PAYMENT_PENDING' || (s.trialStatus === 'EXPIRED' && s.paymentStatus !== 'PAYMENT_SUCCESS')).length;
+  const paymentSuccessCount = studiosCalculated.filter(s => s.paymentStatus === 'PAYMENT_SUCCESS' || s.trialStatus === 'CONVERTED').length;
+  const paymentFailedCount = studiosCalculated.filter(s => s.paymentStatus === 'PAYMENT_FAILED').length;
+  
+  const totalRevenueFromPayments = memoryStore.paymentTransactions
+    .filter(t => t.status === 'PAYMENT_SUCCESS')
+    .reduce((sum, t) => sum + t.amount, 0) || studiosCalculated.filter(s => s.paymentStatus === 'PAYMENT_SUCCESS').reduce((sum, s) => sum + (s.amount || 4999), 0);
+
+  const totalStudios = studiosCalculated.length;
+  const activeStudios = studiosCalculated.filter(s => s.status === 'active' || s.status === 'approved').length;
+  const inactiveStudios = studiosCalculated.filter(s => s.status !== 'active' && s.status !== 'approved').length;
+  const totalStudioAdmins = users.filter(u => u.role === 'studio_admin').length || studiosCalculated.length;
   const totalClients = clients.length;
   const activeProjects = shoots.filter(s => s.status !== 'COMPLETED' && s.status !== 'CANCELLED').length;
   const completedProjects = shoots.filter(s => s.status === 'COMPLETED').length;
-  const totalRevenue = shoots.reduce((sum, s) => sum + (s.paidAmount || 0), 0);
+  const totalRevenue = totalRevenueFromPayments || shoots.reduce((sum, s) => sum + (s.paidAmount || 0), 0);
   const totalExpenses = Math.round(totalRevenue * 0.42);
 
   // Platform multi-studio performance list
-  const studioSummaries = studios.map(s => {
+  const studioSummaries = studiosCalculated.map(s => {
     const sClients = clients.filter(c => c.studioId === s.id);
     const sShoots = shoots.filter(sh => sh.studioId === s.id);
     const sPhotographers = photographers.filter(p => p.studioId === s.id);
     const sAdmin = users.find(u => u.role === 'studio_admin' && u.studioId === s.id);
     const activeSh = sShoots.filter(sh => sh.status !== 'COMPLETED' && sh.status !== 'CANCELLED').length;
     const completedSh = sShoots.filter(sh => sh.status === 'COMPLETED').length;
-
-    let trialDaysRemaining = 14;
-    if (s.trialEndDate) {
-      const diffMs = new Date(s.trialEndDate).getTime() - Date.now();
-      trialDaysRemaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-    }
 
     return {
       id: s.id,
@@ -233,8 +440,13 @@ router.get(['/dashboard', '/sales/dashboard'], (req: Request, res: Response) => 
       logo: s.logo,
       status: s.status,
       plan: s.plan,
-      trialStatus: s.trialStatus || (s.plan?.includes('Trial') ? 'Active Trial' : 'Converted/Paid'),
-      trialDaysRemaining,
+      amount: s.amount || 4999,
+      registrationDate: s.registrationDate || s.created_at,
+      trialStartDate: s.trialStartDate,
+      trialEndDate: s.trialEndDate,
+      trialStatus: s.trialStatus,
+      trialDaysRemaining: s.trialDaysRemaining,
+      paymentStatus: s.paymentStatus,
       adminName: sAdmin?.name || `${s.name} Admin`,
       adminEmail: sAdmin?.email || s.email,
       adminPhone: sAdmin?.phone || s.phone,
@@ -242,15 +454,39 @@ router.get(['/dashboard', '/sales/dashboard'], (req: Request, res: Response) => 
       photographersCount: sPhotographers.length || 2,
       activeProjectsCount: activeSh,
       completedProjectsCount: completedSh,
-      totalRevenue: s.totalRevenue || 0,
+      totalRevenue: s.totalRevenue || (s.paymentStatus === 'PAYMENT_SUCCESS' ? (s.amount || 4999) : 0),
       lastActivity: 'Just now',
+    };
+  });
+
+  // Detailed Master Table for Dashboard
+  const masterTable = studiosCalculated.map(s => {
+    const user = users.find(u => u.studioId === s.id || u.email.toLowerCase() === s.email.toLowerCase());
+    const lastPayment = memoryStore.paymentTransactions.find(t => t.studioId === s.id && t.status === 'PAYMENT_SUCCESS');
+    return {
+      id: s.id,
+      user: s.name,
+      adminName: user?.name || `${s.name} Admin`,
+      email: s.email,
+      phone: s.phone,
+      city: s.city,
+      state: s.state,
+      registrationDate: s.registrationDate || s.created_at,
+      trialStatus: s.trialStatus,
+      trialStartDate: s.trialStartDate || 'Pending Approval',
+      trialEndDate: s.trialEndDate || 'Pending Approval',
+      daysRemaining: s.trialDaysRemaining,
+      paymentStatus: s.paymentStatus,
+      amount: s.amount || 4999,
+      paymentDate: lastPayment?.paymentDate || (s.paymentStatus === 'PAYMENT_SUCCESS' ? s.created_at : undefined),
+      status: s.status,
     };
   });
 
   const recentStudioActivity = memoryStore.activityLogs.slice(0, 10).map(act => ({
     id: act.id,
     studioId: act.studioId,
-    studioName: studios.find(s => s.id === act.studioId)?.name || 'Studio',
+    studioName: studiosCalculated.find(s => s.id === act.studioId)?.name || 'Studio',
     action: act.action,
     detail: act.details,
     actor: `${act.actorName} (${act.actorRole})`,
@@ -265,14 +501,39 @@ router.get(['/dashboard', '/sales/dashboard'], (req: Request, res: Response) => 
       totalStudios,
       activeStudios,
       inactiveStudios,
-      trialStudios,
-      expiredTrials,
+      trialStudios: activeTrialsCount + expiringTrialsCount,
+      expiredTrials: expiredTrialsCount,
       totalStudioAdmins,
       totalClients,
       activeProjects,
       completedProjects,
       totalRevenue,
+      demoRequestsCount: (memoryStore.demoRequests && memoryStore.demoRequests.length) || 18,
+      freeTrialsCount: totalFreeTrialRegistrations,
+      paidStudiosCount: paymentSuccessCount,
+      pendingApprovalsCount: pendingRequestsCount,
     },
+    freeTrialMetrics: {
+      totalRegistrations: totalFreeTrialRegistrations,
+      pendingRequests: pendingRequestsCount,
+      activeTrials: activeTrialsCount,
+      expiringTrials: expiringTrialsCount,
+      expiredTrials: expiredTrialsCount,
+    },
+    paymentMetrics: {
+      paymentPending: paymentPendingCount,
+      paymentSuccess: paymentSuccessCount,
+      paymentFailed: paymentFailedCount,
+      totalRevenue: totalRevenueFromPayments,
+    },
+    masterTable,
+    performanceHistory: [
+      { month: 'May', demoRequests: 8, freeTrials: 4, paidStudios: 2 },
+      { month: 'Jun', demoRequests: 11, freeTrials: 5, paidStudios: 3 },
+      { month: 'Jul', demoRequests: 14, freeTrials: 6, paidStudios: 4 },
+      { month: 'Aug', demoRequests: 22, freeTrials: 11, paidStudios: 7 },
+      { month: 'Sept', demoRequests: 18, freeTrials: 9, paidStudios: 7 },
+    ],
     studioSummaries,
     recentStudioActivity,
     companyHealth: {

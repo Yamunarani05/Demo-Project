@@ -8,7 +8,7 @@ const router = Router();
 // Demo Personas for Quick Switch
 const DEMO_PERSONAS = [
   {
-    role: 'super_admin',
+    role: 'great_master',
     name: 'Rajesh Malhotra',
     label: 'Great Master (Platform Owner)',
     email: 'master@greatmaster.io',
@@ -96,11 +96,11 @@ router.post('/login', async (req: Request, res: Response) => {
 
 // GET /api/auth/me
 router.get('/me', (req: Request, res: Response) => {
-  const role = (req.query.role as string) || 'super_admin';
+  const role = (req.query.role as string) || 'great_master';
   const studioId = (req.query.studioId as string) || 'studio_1';
   const clientId = (req.query.clientId as string) || 'client_1';
 
-  let user = memoryStore.users.find(u => u.role === role);
+  let user = memoryStore.users.find(u => u.role === role || ((role === 'great_master' || role === 'super_admin') && (u.role === 'great_master' || u.role === 'super_admin')));
   if (role === 'studio_admin' && studioId) {
     user = memoryStore.users.find(u => u.role === 'studio_admin' && u.studioId === studioId) || user;
   }
@@ -162,7 +162,6 @@ router.post('/register-studio', async (req: Request, res: Response) => {
 
     const studioId = `studio_${Date.now()}`;
     const now = new Date();
-    const trialEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000); // 14 days
 
     const newStudio: any = {
       id: studioId,
@@ -178,10 +177,13 @@ router.post('/register-studio', async (req: Request, res: Response) => {
       city: city || 'Bangalore',
       state: state || 'Karnataka',
       status: 'pending',
-      plan: 'Studio Pro (Trial)',
-      trialStartDate: now.toISOString(),
-      trialEndDate: trialEnd.toISOString(),
-      trialStatus: 'Pending Approval',
+      plan: 'Studio Pro Plan',
+      amount: 4999,
+      registrationDate: now.toISOString(),
+      trialStartDate: undefined,
+      trialEndDate: undefined,
+      trialStatus: 'PENDING',
+      paymentStatus: 'PENDING',
       activeShootsCount: 0,
       completedShootsCount: 0,
       totalRevenue: 0,
@@ -211,21 +213,25 @@ router.post('/register-studio', async (req: Request, res: Response) => {
       studioId,
       actorName: newUser.name,
       actorRole: 'Studio Admin',
-      action: 'Studio Access Requested',
-      details: `${newStudio.name} submitted access request (Pending Approval).`,
+      action: 'Free Trial Requested',
+      details: `${newStudio.name} submitted Free Trial request (Status: PENDING).`,
       timestamp: 'Just now',
     });
 
     // Send Registration Success Email Notification
     let emailResult: any = { success: false, emailSent: false };
     try {
-      emailResult = await sendRegistrationEmail({
-        adminName: newUser.name,
-        studioName: newStudio.name,
-        adminEmail: normalizedEmail,
-        referenceEmail: referenceEmail || undefined,
-        city: newStudio.city,
-      });
+      emailResult = await sendRegistrationEmail(
+        {
+          adminName: newUser.name,
+          studioName: newStudio.name,
+          adminEmail: normalizedEmail,
+          referenceEmail: referenceEmail || undefined,
+          city: newStudio.city,
+          registrationDate: now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        },
+        studioId
+      );
     } catch (e) {
       console.error(`[Email] Failed to send registration email to ${normalizedEmail}`);
     }

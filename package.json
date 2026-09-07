@@ -4,14 +4,23 @@
   "private": true,
   "description": "Demo Project - Modern Photography Management Full-Stack SaaS",
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
-    "dev:client": "npm run dev --prefix client",
-    "dev:server": "npm run dev --prefix server",
-    "dev:masteradmin": "concurrently \"npm run dev --prefix MasterAdmin/MasterAdmin-Backend-main\" \"npm run dev --prefix MasterAdmin/MasterAdmin-Frontend-main\"",
-    "dev:masteradmin:server": "npm run dev --prefix MasterAdmin/MasterAdmin-Backend-main",
-    "dev:masteradmin:client": "npm run dev --prefix MasterAdmin/MasterAdmin-Frontend-main",
-    "build": "npm run build --prefix client && npm run build --prefix server",
-    "start": "npm run start --prefix server"
+    "dev": "concurrently -k -p \"[{name}]\" -n \"BACKEND,FRONTEND\" -c \"cyan.bold,magenta.bold\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "dev:all": "concurrently -k -p \"[{name}]\" -n \"BACKEND,FRONTEND,PREPROD\" -c \"cyan.bold,magenta.bold,yellow.bold\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\" \"npm run pre-production:server\"",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "frontend": "npm run dev --prefix frontend",
+    "backend": "npm run dev --prefix backend",
+    "master-admin": "npm run dev --prefix frontend",
+    "pre-production": "npm run dev --prefix frontend",
+    "pre-production:server": "npm run dev --prefix modules/pre-production/BACKEND-PREPRODUCTION-main",
+    "sales": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix backend && npm run build --prefix frontend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:backend": "npm run build --prefix backend",
+    "migrate": "npm run migrate --prefix backend",
+    "seed": "npm run seed --prefix backend",
+    "test": "npm run test --prefix backend",
+    "start": "npm run start --prefix backend"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

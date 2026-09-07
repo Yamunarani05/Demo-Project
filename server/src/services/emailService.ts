@@ -1,9 +1,12 @@
 import nodemailer from 'nodemailer';
+import { memoryStore, EmailLogRecord } from '../db';
 import {
   EmailTemplateData,
   getRegistrationSuccessTemplate,
   getStudioApprovedTemplate,
   getStudioRejectedTemplate,
+  getPaymentRequestTemplate,
+  getPaymentSuccessTemplate,
 } from './emailTemplates';
 
 // Reusable Transporter with env configuration or fallback test account
@@ -58,9 +61,13 @@ export async function sendEmailNotification(
   to: string,
   subject: string,
   html: string,
-  text: string
+  text: string,
+  emailType: EmailLogRecord['emailType'] = 'REGISTRATION_RECEIVED',
+  studioId?: string
 ): Promise<EmailSendResult> {
   const from = process.env.EMAIL_FROM || 'LUMINA Photography Management <noreply@lumina.io>';
+
+  let result: EmailSendResult;
 
   try {
     const transportObj = await getTransporter();
@@ -81,7 +88,7 @@ export async function sendEmailNotification(
         console.log(`[Email Web Preview] View delivered email live at: ${previewUrl}`);
       }
 
-      return {
+      result = {
         success: true,
         emailSent: true,
         message: `Email sent successfully to ${to}`,
@@ -89,38 +96,66 @@ export async function sendEmailNotification(
       };
     } else {
       console.log(`[Email] Notification email simulated to ${to} (Subject: "${subject}")`);
-      return {
+      result = {
         success: true,
         emailSent: true,
         message: `Notification email dispatched to ${to}`,
       };
     }
   } catch (err: any) {
-    // Safe error logging without exposing credentials or passwords
     console.error(`[Email] Failed to send email to ${to}:`, err?.message || err);
-    return {
+    result = {
       success: false,
       emailSent: false,
       message: `Failed to send email to ${to}`,
       error: err?.message || 'SMTP delivery failed',
     };
   }
+
+  // Record in Email Activity History log
+  const newLog: EmailLogRecord = {
+    id: `email_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    studioId,
+    emailType,
+    recipient: to,
+    subject,
+    sentAt: new Date().toISOString(),
+    status: result.success ? 'SENT' : 'FAILED',
+    previewUrl: result.previewUrl,
+    details: result.message,
+  };
+
+  memoryStore.emailLogs.unshift(newLog);
+
+  return result;
 }
 
-export async function sendRegistrationEmail(data: EmailTemplateData): Promise<EmailSendResult> {
+export async function sendRegistrationEmail(data: EmailTemplateData, studioId?: string): Promise<EmailSendResult> {
   const recipient = data.adminEmail;
   const { subject, html, text } = getRegistrationSuccessTemplate(data);
-  return await sendEmailNotification(recipient, subject, html, text);
+  return await sendEmailNotification(recipient, subject, html, text, 'REGISTRATION_RECEIVED', studioId);
 }
 
-export async function sendApprovalEmail(data: EmailTemplateData): Promise<EmailSendResult> {
+export async function sendApprovalEmail(data: EmailTemplateData, studioId?: string): Promise<EmailSendResult> {
   const recipient = data.adminEmail;
   const { subject, html, text } = getStudioApprovedTemplate(data);
-  return await sendEmailNotification(recipient, subject, html, text);
+  return await sendEmailNotification(recipient, subject, html, text, 'TRIAL_APPROVED', studioId);
 }
 
-export async function sendRejectionEmail(data: EmailTemplateData): Promise<EmailSendResult> {
+export async function sendRejectionEmail(data: EmailTemplateData, studioId?: string): Promise<EmailSendResult> {
   const recipient = data.adminEmail;
   const { subject, html, text } = getStudioRejectedTemplate(data);
-  return await sendEmailNotification(recipient, subject, html, text);
+  return await sendEmailNotification(recipient, subject, html, text, 'TRIAL_REJECTED', studioId);
+}
+
+export async function sendPaymentRequestEmail(data: EmailTemplateData, studioId?: string): Promise<EmailSendResult> {
+  const recipient = data.adminEmail;
+  const { subject, html, text } = getPaymentRequestTemplate(data);
+  return await sendEmailNotification(recipient, subject, html, text, 'PAYMENT_REQUESTED', studioId);
+}
+
+export async function sendPaymentSuccessEmail(data: EmailTemplateData, studioId?: string): Promise<EmailSendResult> {
+  const recipient = data.adminEmail;
+  const { subject, html, text } = getPaymentSuccessTemplate(data);
+  return await sendEmailNotification(recipient, subject, html, text, 'PAYMENT_SUCCESS', studioId);
 }

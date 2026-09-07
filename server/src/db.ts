@@ -12,7 +12,7 @@ let useDatabase = false;
 // DATA MODELS & TYPES
 // ==========================================
 
-export type UserRole = 'super_admin' | 'studio_admin' | 'client' | 'photographer';
+export type UserRole = 'great_master' | 'super_admin' | 'studio_admin' | 'client' | 'photographer';
 
 export type ShootStatus =
   | 'LEAD'
@@ -55,12 +55,42 @@ export interface StudioRecord {
   state: string;
   status: 'active' | 'pending' | 'suspended' | 'rejected' | 'approved';
   plan: string;
+  amount?: number;
   activeShootsCount: number;
   completedShootsCount: number;
   totalRevenue: number;
+  registrationDate?: string;
   trialStartDate?: string;
   trialEndDate?: string;
-  trialStatus?: 'Active Trial' | 'Expired' | 'Converted/Paid';
+  trialStatus?: 'PENDING' | 'ACTIVE' | 'EXPIRING_SOON' | 'EXPIRED' | 'CONVERTED' | 'Active Trial' | 'Expired' | 'Converted/Paid';
+  paymentStatus?: 'PENDING' | 'PAYMENT_PENDING' | 'PAYMENT_SUCCESS' | 'PAYMENT_FAILED';
+  created_at: string;
+}
+
+export interface EmailLogRecord {
+  id: string;
+  studioId?: string;
+  emailType: 'REGISTRATION_RECEIVED' | 'TRIAL_APPROVED' | 'TRIAL_REJECTED' | 'TRIAL_EXPIRED' | 'PAYMENT_REQUESTED' | 'PAYMENT_SUCCESS';
+  recipient: string;
+  subject: string;
+  sentAt: string;
+  status: 'SENT' | 'FAILED';
+  previewUrl?: string;
+  details?: string;
+}
+
+export interface PaymentTransactionRecord {
+  id: string;
+  studioId: string;
+  userId?: string;
+  plan: string;
+  amount: number;
+  currency: string;
+  razorpayOrderId: string;
+  razorpayPaymentId?: string;
+  razorpaySignature?: string;
+  status: 'PAYMENT_PENDING' | 'PAYMENT_SUCCESS' | 'PAYMENT_FAILED';
+  paymentDate?: string;
   created_at: string;
 }
 
@@ -267,7 +297,51 @@ export const memoryStore = {
   contacts: [] as ContactRecord[],
   demoRequests: [] as DemoRequestRecord[],
   newsletterSubscribers: [] as NewsletterRecord[],
+  emailLogs: [] as EmailLogRecord[],
+  paymentTransactions: [] as PaymentTransactionRecord[],
 };
+
+export function calculateStudioTrialAndPaymentStatus(studio: StudioRecord) {
+  const now = new Date();
+  let trialStatus = studio.trialStatus || 'PENDING';
+  let trialDaysRemaining = 7;
+  let paymentStatus = studio.paymentStatus || 'PENDING';
+
+  if (studio.status === 'pending') {
+    trialStatus = 'PENDING';
+    trialDaysRemaining = 7;
+  } else if (studio.paymentStatus === 'PAYMENT_SUCCESS' || studio.trialStatus === 'CONVERTED' || studio.trialStatus === 'Converted/Paid') {
+    trialStatus = 'CONVERTED';
+    paymentStatus = 'PAYMENT_SUCCESS';
+    trialDaysRemaining = 0;
+  } else if (studio.trialEndDate) {
+    const endDate = new Date(studio.trialEndDate);
+    const diffMs = endDate.getTime() - now.getTime();
+    trialDaysRemaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+
+    if (diffMs <= 0) {
+      trialStatus = 'EXPIRED';
+      if (paymentStatus === 'PENDING') {
+        paymentStatus = 'PAYMENT_PENDING';
+      }
+    } else if (trialDaysRemaining <= 1) {
+      trialStatus = 'EXPIRING_SOON';
+    } else {
+      trialStatus = 'ACTIVE';
+    }
+  }
+
+  // Update record in memory if changed
+  studio.trialStatus = trialStatus;
+  studio.paymentStatus = paymentStatus;
+
+  return {
+    ...studio,
+    trialStatus,
+    paymentStatus,
+    trialDaysRemaining,
+  };
+}
 
 // ==========================================
 // SEED DATA INITIALIZATION
@@ -396,7 +470,7 @@ export function seedInitialData() {
       id: 'usr_super_admin',
       name: 'Rajesh Malhotra',
       email: 'master@greatmaster.io',
-      role: 'super_admin',
+      role: 'great_master',
       phone: '+91 98000 00001',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
       passwordHash: defaultHash,
