@@ -325,7 +325,7 @@ export const reviewProjectController = async (req: Request, res: Response) => {
               lead_id: leadIdNumber,
               target_roles: ['client'],
               from_role: 'crm',
-              from_name: 'Red Angle Studio'
+              from_name: 'Demo Studio'
           });
       } catch (error) {
           console.error("CLIENT NOTIFICATION ERROR:", error);

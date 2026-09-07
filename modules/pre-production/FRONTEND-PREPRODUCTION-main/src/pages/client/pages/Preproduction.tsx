@@ -1,4 +1,4 @@
-import { MapPin, Calendar, Users, Info, AlertTriangle } from 'lucide-react'
+import { MapPin, Calendar, Users, Info, AlertTriangle, ArrowRight, Sparkles } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 // Dummy Data for Pre-Events
@@ -32,9 +32,18 @@ export default function Preproduction() {
 
     return (
         <div className="max-w-5xl mx-auto space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Pre-Events</h1>
-                <p className="text-slate-500 mt-1">Review the confirmed schedules, locations, and crew details for your pre-wedding events.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Pre-Events & Shoot Planning</h1>
+                    <p className="text-slate-500 mt-1">Review the confirmed schedules, locations, and crew details for your pre-wedding events.</p>
+                </div>
+                <button
+                    onClick={() => navigate('/client/workflow?step=0')}
+                    className="px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+                >
+                    <Sparkles size={14} />
+                    <span>Open Interactive Workflow</span>
+                </button>
             </div>
 
             <div className="space-y-6">
@@ -98,6 +107,28 @@ export default function Preproduction() {
                         <p className="text-sm text-slate-500 mt-1">Your assigned project manager will populate this section as planning progresses.</p>
                     </div>
                 )}
+            </div>
+
+            {/* Workflow Progression Banner */}
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded bg-purple-100 text-purple-700">
+                        Workflow Stage 1 Complete
+                    </span>
+                    <h3 className="text-base font-black text-slate-900 mt-1.5">
+                        Ready for the shoot day execution & raw data ingestion?
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                        Move forward in your client production journey to track live event progress.
+                    </p>
+                </div>
+                <button
+                    onClick={() => navigate('/client/workflow?step=1')}
+                    className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer shrink-0 shadow-md shadow-purple-600/20"
+                >
+                    <span>Continue to Event Shoot Stage</span>
+                    <ArrowRight size={16} />
+                </button>
             </div>
         </div>
     )

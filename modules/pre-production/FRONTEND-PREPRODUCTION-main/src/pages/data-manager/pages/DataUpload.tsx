@@ -9,7 +9,7 @@ const EVENT_TYPES = [
     'Haldi', 'Mehandi', 'Ear Piercing', 'Outdoor Shoot', 'Others'
 ]
 const OUTDOOR_SUBTYPES = ['Pre-wedding Shoot', 'Post-wedding Shoot']
-// Candid is removed as an active workflow role per Red Angle Structure v2. The historical
+// Candid is removed as an active workflow role per Demo Structure v2. The historical
 // "Candid Photo/Video" service labels are kept as legacy-safe aliases mapped to the
 // Retouch / Traditional Video output buckets so older data still reads cleanly. Any new
 // selections should prefer the non-Candid names.

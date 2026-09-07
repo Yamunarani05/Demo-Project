@@ -42,7 +42,7 @@ const preproductionUploads = process.env.PREPRODUCTION_UPLOADS_DIR || path.resol
 
 app.use('/uploads', express.static(preproductionUploads))
 
-app.get('/', (_req, res) => res.send('Red Angle Master Admin Backend Running'))
+app.get('/', (_req, res) => res.send('Demo Master Admin Backend Running'))
 app.post('/api/auth/login', login)
 app.get('/api/auth/verify', requireMasterAdmin, verify)
 app.use('/api/master-admin', requireMasterAdmin, masterAdminRoutes)

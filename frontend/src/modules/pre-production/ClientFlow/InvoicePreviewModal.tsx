@@ -479,7 +479,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
               </div>
               <div className="inv-logo">
                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 5 }}>
-                  <img src="/red_angle_logo.png" alt="Red Angle Studio" style={{ height: 70, objectFit: 'contain' }} />
+                  <div style={{ fontSize: 24, fontWeight: 900, color: '#5E35B1', letterSpacing: 1 }}>DEMO STUDIO</div>
                 </div>
                 <div className="inv-address">
                   AP 742, G-Block, 2nd Street, 11th Main Rd, Anna Nagar, Chennai, Tamil Nadu 600040.
@@ -530,7 +530,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                             }
                           }
                         }
-                        return "RED ANGLE REGULAR PREMIUM PACKAGE DESCRIPTION";
+                        return "DEMO STUDIO REGULAR PREMIUM PACKAGE DESCRIPTION";
                       })()}
                     </th>
                     <th className="th-qty">QTY./Unit</th>
@@ -651,7 +651,7 @@ const InvoicePreviewModal: React.FC<InvoicePreviewModalProps> = ({
                   "5 HOURS PER SESSION (INCLUDING PRE OR POST WEDDING), IN CASE ADDITIONAL DURATION OF TIME HAPPENS IN THE EVENTS, THEN THE COVERAGE COST MAY DIFFER.",
                   "TOKEN ADVANCE IS NON REFUNDABLE.",
                   "IN DELIVERABLES LIKE ALBUMS & VIDEOS, IF ANY CORRECTIONS ARISES REG ALBUM PDF AND VIDEOS THEN ALL THE CORRECTIONS SHOULD BE CONVEYED ONCE OR TWICE BEYOND THAT THIRD OR FOURTH CORRECTIONS OR MORE THAN THAT, EXTRA PAYMENT WILL BE CHARGED ACCORDING TO THE SERVICES.",
-                  "YOU WILL RECEIVE ALL YOUR DELIVERABLES AS PER INVOICE, IF INCASE ANY OTHER SERVICES YOU ARE EXPECTING FROM RED ANGLE WHICH IS NOT MENTIONED IN YOUR INVOICE WILL BE CHARGED AS EXTRA PAYMENT.",
+                  "YOU WILL RECEIVE ALL YOUR DELIVERABLES AS PER INVOICE, IF INCASE ANY OTHER SERVICES YOU ARE EXPECTING FROM DEMO STUDIO WHICH IS NOT MENTIONED IN YOUR INVOICE WILL BE CHARGED AS EXTRA PAYMENT.",
                   "IN INVOICE PRE OR POST WEDDING SHOOT WILL BE PLANNED ACCORDING TO YOU IN SHOOTERS AVAILABLE DATES AND IN MUHURTHAM DATES & IF MUHURTHAM DATES ARE COMING IN WEEKENDS, THEN TEAM WILL NOT BE ABLE TO SHOOT AT THAT TIME.",
                   "IF ADD-ON SESSIONS TAKEN BEFORE YOUR EVENTS, THEN THE PAYMENT OF 80% IN YOUR QUOTATION (EXCLUDING TOKEN ADVANCE) AND ADD ON SESSIONS AMOUNT SHOULD BE PAID AT THE END OF THE SESSION ON THE SAME DAY.",
                   "INCASE YOU ARE OPTING FOR POST WEDDING SHOOT, THEN VALIDITY OF THE COMPLIMENTARY SHOOT WILL BE ONLY FOR 90 DAYS AFTER YOUR WEDDING OR ELSE PAYMENT SHOULD BE MADE FOR POST WEDDING SHOOT, IF THE DURATION OF TIME (5 HOURS) EXCEEDS THEN YOU NEED TO PAY FOR POST WEDDING SHOOT.",

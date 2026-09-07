@@ -10,7 +10,7 @@ export const exportToStyledExcel = async (
     todayDate: string
 ) => {
     const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'RedAngle Studio';
+    workbook.creator = 'Demo Studio';
     workbook.created = new Date();
 
     const styleHeader = (worksheet: ExcelJS.Worksheet) => {

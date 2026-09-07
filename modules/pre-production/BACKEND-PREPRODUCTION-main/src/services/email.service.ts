@@ -14,7 +14,7 @@ export const sendEmailService = async (req: Request) => {
   const files = (req.files as Express.Multer.File[]) || [];
 
   await transporter.sendMail({
-    from: `"Red Angle" <${process.env.EMAIL_USER}>`,
+    from: `"Demo SaaS Platform" <${process.env.EMAIL_USER}>`,
     to: JSON.parse(req.body.to),
     cc: req.body.cc || undefined,
     bcc: req.body.bcc || undefined,

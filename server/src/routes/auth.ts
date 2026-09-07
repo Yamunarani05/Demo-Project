@@ -15,6 +15,21 @@ const DEMO_PERSONAS = [
     description: 'Monitor all studios, live shoot radar, platform metrics',
   },
   {
+    role: 'super_admin',
+    name: 'Master Admin',
+    label: 'Demo Master Admin',
+    email: 'masteradmin@gmail.com',
+    description: 'Master Admin sales overview, client finances, employees',
+  },
+  {
+    role: 'studio_admin',
+    name: 'Preproduction Admin',
+    label: 'Demo Preproduction Admin',
+    email: 'preprodadmin@gmail.com',
+    studioId: 'studio_1',
+    description: 'Preproduction shoots, raw data verification, QC & scheduling',
+  },
+  {
     role: 'studio_admin',
     studioId: 'studio_1',
     name: 'Vikram Sundaram',

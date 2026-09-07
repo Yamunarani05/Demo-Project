@@ -13,10 +13,10 @@ type EmployeeItem = {
 
 export default function Employee() {
     const [employees, setEmployees] = useState<EmployeeItem[]>([
-        { id: 'EMP-01', name: 'John Doe', role: 'Photographer', email: 'john@redangle.com', phone: '+91 9876543210', status: 'Active' },
-        { id: 'EMP-02', name: 'Sarah Smith', role: 'Videographer', email: 'sarah@redangle.com', phone: '+91 9876543211', status: 'Active' },
-        { id: 'EMP-03', name: 'Rahul Kumar', role: 'Editor', email: 'rahul@redangle.com', phone: '+91 9876543212', status: 'On Leave' },
-        { id: 'EMP-04', name: 'Priya Sharma', role: 'Assistant', email: 'priya@redangle.com', phone: '+91 9876543213', status: 'Active' },
+        { id: 'EMP-01', name: 'John Doe', role: 'Photographer', email: 'john@demostudio.com', phone: '+91 9876543210', status: 'Active' },
+        { id: 'EMP-02', name: 'Sarah Smith', role: 'Videographer', email: 'sarah@demostudio.com', phone: '+91 9876543211', status: 'Active' },
+        { id: 'EMP-03', name: 'Rahul Kumar', role: 'Editor', email: 'rahul@demostudio.com', phone: '+91 9876543212', status: 'On Leave' },
+        { id: 'EMP-04', name: 'Priya Sharma', role: 'Assistant', email: 'priya@demostudio.com', phone: '+91 9876543213', status: 'Active' },
     ])
 
     const [search, setSearch] = useState('')

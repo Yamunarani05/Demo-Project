@@ -1,0 +1,1 @@
+import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient(); async function main() { const leads = await prisma.leadsDetail.findMany({ orderBy: { leadId: 'desc' }, take: 20, select: { leadId: true, firstName: true, leadSerialNumber: true, leadType: true } }); console.log(leads); } main().finally(() => prisma.$disconnect());

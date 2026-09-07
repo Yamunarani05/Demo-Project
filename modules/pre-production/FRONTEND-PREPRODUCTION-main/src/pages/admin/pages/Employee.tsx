@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Filter, Download, Plus, Eye, Pencil, Trash2, X, Check } from 'lucide-react'
+import { Filter, Download, Plus, Eye, Pencil, Trash2, X, Check, LogIn, LogOut, Clock } from 'lucide-react'
+import { toast } from 'sonner'
+import axios from 'axios'
 import Breadcrumb from '../../../components/Breadcrumb'
 import AddEmployee, { ROLE_GROUPS } from '../../crm/pages/AddEmployee'
 
@@ -32,38 +34,46 @@ export default function Employee() {
         e.id.toLowerCase().includes(search.toLowerCase())
     )
 
+    const DEFAULT_DEMO_EMPLOYEES: EmployeeItem[] = [
+        { id: 'EMP-001', name: 'Rajesh Kumar', role: 'Photographer', roles: ['Photographer'], email: 'photographer@demo.com', phone: '+91 9876543210', status: 'Active' },
+        { id: 'EMP-002', name: 'Amitabh Sen', role: 'Videographer', roles: ['Videographer'], email: 'videographer@demo.com', phone: '+91 9876543211', status: 'Active' },
+        { id: 'EMP-003', name: 'Karan Joshi', role: 'Drone Operator', roles: ['Drone Operator'], email: 'drone@demo.com', phone: '+91 9876543212', status: 'Active' },
+        { id: 'EMP-004', name: 'Simran Kaur', role: 'Event Coordinator', roles: ['Event Coordinator'], email: 'event-coordinator@demo.com', phone: '+91 9876543213', status: 'Active' },
+        { id: 'EMP-005', name: 'Aarav Mehta', role: 'Pre-production CRM', roles: ['Pre-production CRM'], email: 'pre-production-crm@demo.com', phone: '+91 9876543214', status: 'Active' },
+        { id: 'EMP-006', name: 'Rohan Malhotra', role: 'Post-production CRM', roles: ['Post-production CRM'], email: 'post-production-crm@demo.com', phone: '+91 9876543215', status: 'Active' },
+        { id: 'EMP-007', name: 'Kunal Kapoor', role: 'Candid Video Editor', roles: ['Candid Video Editor'], email: 'candid-video-editor@demo.com', phone: '+91 9876543216', status: 'Active' },
+        { id: 'EMP-008', name: 'Ritu Varma', role: 'Retouch Editor', roles: ['Retouch Editor'], email: 'retouch-editor@demo.com', phone: '+91 9876543217', status: 'Active' },
+        { id: 'EMP-009', name: 'Vikram Patel', role: 'Data Manager', roles: ['Data Manager'], email: 'data-manager@demo.com', phone: '+91 9876543218', status: 'Active' },
+        { id: 'EMP-010', name: 'Priya Verma', role: 'Operational Manager', roles: ['Operational Manager'], email: 'operational-manager@demo.com', phone: '+91 9876543219', status: 'Active' }
+    ]
+
     useEffect(() => {
-
         const loadEmployees = async () => {
-
             try {
-
                 const res = await getEmployees()
-
-                const data = res.data.data
-
-                const formatted = data.map((emp: any) => ({
-                    id: emp.employee_id,
-                    name: emp.first_name + " " + emp.last_name,
-                    role: emp.roles ? emp.roles.join(', ') : emp.role,
-                    roles: emp.roles || (emp.role ? [emp.role] : []),
-                    email: emp.email,
-                    phone: emp.contact_number,
-                    status: emp.status,
-                    profileImage: emp.profile_image || null,
-                    identityDocument: emp.identity_document || null,
-                }))
-
-                setEmployees(formatted)
-
+                const data = res.data?.data || res.data
+                if (Array.isArray(data)) {
+                    const formatted = data.map((emp: any) => ({
+                        id: emp.employee_id || emp.id,
+                        name: (emp.first_name ? `${emp.first_name} ${emp.last_name || ''}`.trim() : emp.name) || 'Employee',
+                        role: Array.isArray(emp.roles) ? emp.roles.join(', ') : (emp.role || 'Staff'),
+                        roles: emp.roles || (emp.role ? [emp.role] : []),
+                        email: emp.email || '',
+                        phone: emp.contact_number || emp.phone || '',
+                        status: emp.status || 'Active',
+                        profileImage: emp.profile_image || null,
+                        identityDocument: emp.identity_document || null,
+                    }))
+                    setEmployees(formatted)
+                    return
+                }
             } catch (error) {
-                console.error("Failed to load employees", error)
+                console.error("Failed to load real employees from API", error)
+                setEmployees([])
             }
-
         }
 
         loadEmployees()
-
     }, [])
 
     const handleDelete = async (id: string) => {

@@ -4,7 +4,7 @@ import { BarChart3, Bell, Briefcase, CalendarCheck, FileText, LayoutDashboard, L
 const navItems = [
   { to: '/master-admin/sales/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/master-admin/sales/clients', icon: Users, label: 'Clients' },
-  { to: '/master-admin/sales/employees', icon: Briefcase, label: 'Employees' },
+  { to: '/master-admin/sales/employees', icon: Briefcase, label: 'Production Staff' },
   { to: '/master-admin/sales/work-tracker', icon: BarChart3, label: 'Work Tracker' },
   { to: '/master-admin/sales/invoices', icon: Receipt, label: 'Invoices' },
   { to: '/master-admin/sales/attendance', icon: CalendarCheck, label: 'Attendance' },
@@ -18,16 +18,19 @@ export default function MasterAdminSidebar() {
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[280px] flex-col overflow-y-auto border-r border-purple-100 bg-[#F8F6FF]">
       <div className="px-5 pb-4 pt-6">
-        <div className="flex flex-col cursor-pointer items-start gap-1" onClick={() => navigate('/master-admin/sales/dashboard')}>
-          <img src="/red_angle_logo.png" alt="RED ANGLE STUDIO" className="h-[36px] w-auto object-contain" />
-          <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold ml-1">Master Admin</div>
+        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/master-admin/sales/dashboard')}>
+          <div className="w-9 h-9 rounded-xl bg-purple-700 flex items-center justify-center text-white font-black text-xs shadow-sm">DP</div>
+          <div className="flex flex-col">
+            <span className="text-xs font-black tracking-wider uppercase font-display text-slate-900">DEMO STUDIO</span>
+            <span className="text-[9px] uppercase tracking-widest text-purple-600 font-bold">Master Admin</span>
+          </div>
         </div>
       </div>
 
       <div className="mx-4 mb-2 h-px bg-purple-200/50" />
 
       <nav className="flex-1 overflow-y-auto px-3" style={{ scrollbarWidth: 'none' }}>
-        <div className="mb-2 px-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Sales</div>
+        <div className="mb-2 px-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Master Operations</div>
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}

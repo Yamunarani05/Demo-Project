@@ -21,7 +21,7 @@ export default function ClientTopbar() {
 
                 {/* QUICK CONTACTS */}
                 <a
-                    href="mailto:hello@redangle.com"
+                    href="mailto:hello@demostudio.com"
                     className="p-2 text-slate-400 hover:text-rose-500 bg-slate-50 hover:bg-rose-50 rounded-full transition-colors hidden sm:block"
                     title="Email Us"
                 >

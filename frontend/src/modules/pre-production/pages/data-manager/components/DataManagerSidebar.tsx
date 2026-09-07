@@ -108,9 +108,14 @@ export default function DataManagerSidebar() {
     return (
         <aside className="fixed left-0 top-0 z-40 flex h-screen w-[280px] flex-col overflow-y-auto border-r border-purple-100 bg-[#F8F6FF]">
             <div className="flex-shrink-0 cursor-pointer px-5 pb-4 pt-6" onClick={() => navigate('/data-manager/dashboard')}>
-                <div className="flex flex-col items-start gap-1">
-                    <img src="/red_angle_logo.png" alt="RED ANGLE STUDIO" className="h-[36px] w-auto object-contain" />
-                    <div className="text-[10px] uppercase tracking-widest text-gray-400 font-bold ml-1">Data Manager</div>
+                <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-purple-600 flex items-center justify-center text-white shadow-sm">
+                        <Camera className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-xs font-black tracking-wider uppercase font-display text-slate-900">DEMO STUDIO</span>
+                        <span className="text-[9px] uppercase tracking-widest text-purple-600 font-bold">Data Manager</span>
+                    </div>
                 </div>
             </div>
 

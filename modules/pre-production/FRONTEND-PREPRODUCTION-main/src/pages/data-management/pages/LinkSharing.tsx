@@ -3,7 +3,7 @@ import { Link as LinkIcon, Copy, Eye, Download, Calendar, Shield, XCircle, Check
 const activeLinks = [
     {
         title: 'Wedding - Smith & Jonas',
-        url: 'https://drive.redangle/s/xyz123',
+        url: 'https://drive.demostudio/s/xyz123',
         access: 'Download',
         created: 'Created Dec 28, 2024',
         expires: 'Expires: Jan 28, 2025',
@@ -13,7 +13,7 @@ const activeLinks = [
     },
     {
         title: 'Corporate - TechCorp',
-        url: 'https://drive.redangle/s/abc908',
+        url: 'https://drive.demostudio/s/abc908',
         access: 'View Only',
         created: 'Created Dec 25, 2024',
         expires: 'Expires: Jan 25, 2025',

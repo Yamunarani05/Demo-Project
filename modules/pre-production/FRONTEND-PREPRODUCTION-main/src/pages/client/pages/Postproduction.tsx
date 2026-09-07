@@ -1,4 +1,4 @@
-import { MapPin, Calendar, Users, Info, AlertTriangle } from 'lucide-react'
+import { MapPin, Calendar, Users, Info, AlertTriangle, ArrowRight, Sparkles } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 // Dummy Data for Main Events
@@ -21,9 +21,18 @@ export default function Postproduction() {
 
     return (
         <div className="max-w-5xl mx-auto space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Main Events</h1>
-                <p className="text-slate-500 mt-1">Review the confirmed schedules, locations, and crew details for your main events.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Main Events & Post-Production</h1>
+                    <p className="text-slate-500 mt-1">Review the confirmed schedules, locations, and crew details for your main events.</p>
+                </div>
+                <button
+                    onClick={() => navigate('/client/workflow?step=2')}
+                    className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+                >
+                    <Sparkles size={14} />
+                    <span>Open Interactive Review Room</span>
+                </button>
             </div>
 
             <div className="space-y-6">
@@ -87,6 +96,28 @@ export default function Postproduction() {
                         <p className="text-sm text-slate-500 mt-1">Your assigned project manager will populate this section as planning progresses.</p>
                     </div>
                 )}
+            </div>
+
+            {/* Workflow Progression Banner */}
+            <div className="bg-gradient-to-r from-amber-50 to-purple-50 border border-amber-200 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded bg-amber-100 text-amber-800">
+                        Workflow Stage 3 Review
+                    </span>
+                    <h3 className="text-base font-black text-slate-900 mt-1.5">
+                        Ready to download your final 4K masters & track delivery?
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                        Move forward to the Final Delivery stage to download master files and track keepsake shipments.
+                    </p>
+                </div>
+                <button
+                    onClick={() => navigate('/client/workflow?step=3')}
+                    className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer shrink-0 shadow-md shadow-amber-600/20"
+                >
+                    <span>Continue to Final Delivery Stage</span>
+                    <ArrowRight size={16} />
+                </button>
             </div>
         </div>
     )

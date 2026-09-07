@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { ChevronDown, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { masterAdminApi } from '../pages/master-admin/api/masterAdmin.api'
+import { getDemoWorkflowState } from '../utils/demoDataSeeder'
 
 const ALL_STEPS = [
     // Phase 1: Onboarding
@@ -72,6 +73,25 @@ export default function MasterAdminTracker({ clientId, onNavigate }: { clientId:
     useEffect(() => {
         const fetchClientData = async () => {
             try {
+                const isDemo = localStorage.getItem('is_demo_mode') === 'true' || localStorage.getItem('demo_sandbox_active') === 'true';
+                if (isDemo) {
+                    const demoSteps = getDemoWorkflowState();
+                    let calculatedStatuses: Record<string, 'waiting'|'in_progress'|'reupload'|'done'> = {};
+                    ALL_STEPS.forEach(s => {
+                        const found = demoSteps.find(ds => ds.step === s.step);
+                        calculatedStatuses[s.label] = found ? found.status : 'waiting';
+                    });
+                    setStepStatuses(calculatedStatuses);
+                    setClientInfo({
+                        name: 'Ananya & Vikram Wedding (Demo)',
+                        event: 'Royal Heritage 4K Cinema Workflow',
+                        eventDate: '2026-09-18',
+                        leadFollowedBy: 'Aarav Mehta (Demo CRM)'
+                    });
+                    setLoading(false);
+                    return;
+                }
+
                 if(!clientId) return;
 
                 const clientMeta = await masterAdminApi.client(clientId);

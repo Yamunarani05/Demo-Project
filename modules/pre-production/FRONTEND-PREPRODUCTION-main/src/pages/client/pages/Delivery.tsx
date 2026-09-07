@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { Download, FolderArchive, Info, Film, Video, CheckCircle2, ArrowRight, XCircle, Send } from 'lucide-react'
+import { Download, FolderArchive, Info, Film, Video, CheckCircle2, ArrowRight, XCircle, Send, Sparkles } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export default function Delivery() {
+    const navigate = useNavigate()
     const [isRejecting, setIsRejecting] = useState(false)
     const [feedback, setFeedback] = useState('')
 
@@ -17,9 +19,18 @@ export default function Delivery() {
 
     return (
         <div className="max-w-5xl mx-auto space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Reviews & Delivery</h1>
-                <p className="text-slate-500 mt-1">Review active edits, submit feedback, and download your final files.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Reviews & Delivery</h1>
+                    <p className="text-slate-500 mt-1">Review active edits, submit feedback, and download your final files.</p>
+                </div>
+                <button
+                    onClick={() => navigate('/client/workflow?step=3')}
+                    className="px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+                >
+                    <Sparkles size={14} />
+                    <span>Open Interactive Workflow</span>
+                </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -147,6 +158,28 @@ export default function Delivery() {
                     </div>
                 </div>
 
+            </div>
+
+            {/* Workflow Progression Banner */}
+            <div className="bg-gradient-to-r from-emerald-50 to-indigo-50 border border-emerald-200 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded bg-emerald-100 text-emerald-800">
+                        Workflow Tour Complete
+                    </span>
+                    <h3 className="text-base font-black text-slate-900 mt-1.5">
+                        Experience the complete end-to-end client journey
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                        Step through Preproduction &rarr; Event Shoot &rarr; Postproduction &rarr; Delivery in sequence.
+                    </p>
+                </div>
+                <button
+                    onClick={() => navigate('/client/workflow?step=0')}
+                    className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer shrink-0 shadow-md shadow-emerald-600/20"
+                >
+                    <span>View Full Client Workflow</span>
+                    <ArrowRight size={16} />
+                </button>
             </div>
         </div>
     )

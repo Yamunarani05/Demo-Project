@@ -14,6 +14,10 @@ import {
   ChevronRight,
   Building2,
   Home,
+  Shield,
+  Clapperboard,
+  ExternalLink,
+  TrendingUp,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -196,7 +200,51 @@ export default function StudioLayout() {
           </div>
 
           {/* Topbar Right Controls */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Ecosystem Portals Quick Switcher */}
+            <div className="hidden lg:flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs">
+              <NavLink
+                to="/master/dashboard"
+                className="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-amber-700 hover:bg-white transition-all flex items-center gap-1"
+                title="Switch to Master Admin Pages"
+              >
+                <Shield className="w-3.5 h-3.5 text-amber-500" />
+                <span>Master Admin</span>
+              </NavLink>
+              <a
+                href="http://127.0.0.1:5176"
+                target="_blank"
+                rel="noreferrer"
+                className="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-amber-700 hover:bg-white transition-all flex items-center gap-1"
+                title="Open Standalone Master Admin Portal on port 5176"
+              >
+                <span>Portal (:5176)</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+              </a>
+              <a
+                href="http://localhost:5175"
+                target="_blank"
+                rel="noreferrer"
+                className="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-amber-700 hover:bg-white transition-all flex items-center gap-1"
+                title="Open Standalone Sales Portal on port 5175"
+              >
+                <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
+                <span>Sales (:5175)</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+              </a>
+              <a
+                href="http://localhost:5178"
+                target="_blank"
+                rel="noreferrer"
+                className="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:text-indigo-700 hover:bg-white transition-all flex items-center gap-1"
+                title="Open Standalone Preproduction Portal on port 5178"
+              >
+                <Clapperboard className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Preproduction (:5178)</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+              </a>
+            </div>
+
             <Link
               to="/studio/clients/onboard"
               className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-sm shadow-purple-900/30 transition-all hover:scale-105 active:scale-95"

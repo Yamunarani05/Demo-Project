@@ -107,7 +107,7 @@ export default function ClientReportPreviewModal({ isOpen, onClose, state }) {
                   </tbody>
                 </table>
               </div>
-              <div className="report-cover-footer-text">Red Angle Master Admin · Confidential</div>
+              <div className="report-cover-footer-text">Demo Master Admin · Confidential</div>
             </section>
 
             {/* EXECUTIVE SUMMARY */}
@@ -328,7 +328,7 @@ export default function ClientReportPreviewModal({ isOpen, onClose, state }) {
               <div className="report-signoff">
                 <div className="report-signoff-box">
                   <h3>Prepared By</h3><div className="report-signoff-line" />
-                  <p>Master Admin — Red Angle</p><p className="report-signoff-date">{dateStr}</p>
+                  <p>Demo Master Admin</p><p className="report-signoff-date">{dateStr}</p>
                 </div>
                 <div className="report-signoff-box">
                   <h3>Reviewed By</h3><div className="report-signoff-line" />
@@ -336,7 +336,7 @@ export default function ClientReportPreviewModal({ isOpen, onClose, state }) {
                 </div>
               </div>
               <div className="report-confidentiality">
-                <p><strong>Confidentiality Notice:</strong> This report contains proprietary information belonging to Red Angle and is intended solely for internal management use.</p>
+                <p><strong>Confidentiality Notice:</strong> This report contains proprietary information belonging to Demo SaaS Platform and is intended solely for internal management use.</p>
               </div>
             </section>
 
