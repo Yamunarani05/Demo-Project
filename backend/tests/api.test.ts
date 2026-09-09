@@ -158,6 +158,20 @@ async function runTests() {
     const logs = await request('/api/activity-logs');
     assert(logs.status === 200 && Array.isArray(logs.json.data), 'GET /api/activity-logs returns audit activity logs');
 
+    // 10. Consolidated Modules (Master-Admin, Production, Post-Production, Finance)
+    console.log('\n🔹 Test Suite 8: Consolidated Architecture Modules');
+    const masterAdmin = await request('/api/master-admin/dashboard');
+    assert(masterAdmin.status === 200 && masterAdmin.json.success, 'GET /api/master-admin/dashboard returns master admin dashboard');
+
+    const prodSchedules = await request('/api/production/schedules');
+    assert(prodSchedules.status === 200 && prodSchedules.json.success, 'GET /api/production/schedules returns production schedules');
+
+    const postProdTasks = await request('/api/post-production/tasks');
+    assert(postProdTasks.status === 200 && postProdTasks.json.success, 'GET /api/post-production/tasks returns post-production tasks');
+
+    const financeInvoices = await request('/api/finance/invoices');
+    assert(financeInvoices.status === 200 && financeInvoices.json.success, 'GET /api/finance/invoices returns finance invoices');
+
   } catch (err) {
     console.error('Test execution error:', err);
     failed++;

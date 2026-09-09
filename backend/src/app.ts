@@ -83,27 +83,40 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
+// Consolidated Domain Modules
+import masterAdminModuleRoutes from './modules/master-admin/masterAdmin.routes';
+import clientModuleRoutes from './modules/client/client.routes';
+import salesModuleRoutes from './modules/sales/sales.routes';
+import preProductionModuleRoutes from './modules/pre-production/preProduction.routes';
+import productionModuleRoutes from './modules/production/production.routes';
+import postProductionModuleRoutes from './modules/post-production/postProduction.routes';
+import financeModuleRoutes from './modules/finance/finance.routes';
+
 // API Routes
 app.use('/api/health', healthRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/masters', mastersRoute);
 app.use('/api/studios', mastersRoute);
-app.use('/api/clients', clientsRoute);
+app.use('/api/clients', clientModuleRoutes);
+app.use('/api/client', clientModuleRoutes);
 app.use('/api/projects', projectsRoute);
 app.use('/api/shoots', shootsRoute);
-app.use('/api/sales', salesRoute);
-app.use('/api/invoices', invoicesRoute);
-app.use('/api/payments', paymentsRoute);
+app.use('/api/sales', salesModuleRoutes);
+app.use('/api/invoices', financeModuleRoutes);
+app.use('/api/payments', financeModuleRoutes);
+app.use('/api/finance', financeModuleRoutes);
 app.use('/api/dashboard', dashboardRoute);
 app.use('/api/notifications', notificationsRoute);
 app.use('/api/activity-logs', activityLogsRoute);
 app.use('/api/great-master', greatMasterRoute);
 app.use('/api/products', productsRoute);
-app.use('/api/pre-production', preProductionRoute);
+app.use('/api/pre-production', preProductionModuleRoutes);
+app.use('/api/production', productionModuleRoutes);
+app.use('/api/post-production', postProductionModuleRoutes);
+app.use('/api/master-admin', masterAdminModuleRoutes);
 
 // Backwards-compatible routes for existing frontend modules
 app.use('/api/master', masterRoute);
-app.use('/api/master-admin', masterRoute);
 app.use('/api/photographers', photographersRoute);
 app.use('/api/galleries', galleriesRoute);
 app.use('/api/deliverables', deliverablesRoute);
