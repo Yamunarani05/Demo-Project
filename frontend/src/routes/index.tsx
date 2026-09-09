@@ -43,13 +43,13 @@ import SalesQuotation from '../modules/sales/pages/SalesQuotation';
 import SalesReports from '../modules/sales/pages/SalesReports';
 
 // Clients / Studio Module
-import StudioLayout from '../modules/clients/StudioLayout';
-import StudioDashboard from '../modules/clients/pages/StudioDashboard';
-import StudioClients from '../modules/clients/pages/StudioClients';
-import ClientOnboarding from '../modules/clients/pages/ClientOnboarding';
-import ClientWorkspace from '../modules/clients/pages/ClientWorkspace';
-import StudioWorkflow from '../modules/clients/pages/StudioWorkflow';
-import StudioActivity from '../modules/clients/pages/StudioActivity';
+import ClientLayout from '../modules/client/ClientLayout';
+import StudioDashboard from '../modules/client/pages/StudioDashboard';
+import StudioClients from '../modules/client/pages/StudioClients';
+import ClientOnboarding from '../modules/client/pages/ClientOnboarding';
+import ClientWorkspace from '../modules/client/pages/ClientWorkspace';
+import StudioWorkflow from '../modules/client/pages/StudioWorkflow';
+import StudioActivity from '../modules/client/pages/StudioActivity';
 
 // Pre-Production Module
 import CRMLayout from '../modules/pre-production/pages/crm/CRMLayout';
@@ -62,6 +62,25 @@ import PreProdClientDelivery from '../modules/pre-production/pages/crm/pages/Cli
 import PreProdWorkTracking from '../modules/pre-production/pages/crm/pages/WorkTracking';
 import PreProdAttendance from '../modules/pre-production/pages/crm/pages/Attendance';
 import PreProdNotifications from '../modules/pre-production/pages/crm/pages/Notifications';
+
+// Production Module
+import ProductionLayout from '../modules/production/ProductionLayout';
+import ProductionDashboard from '../modules/production/ProductionDashboard';
+import ProductionSchedules from '../modules/production/ProductionSchedules';
+import ProductionLiveEvent from '../modules/production/ProductionLiveEvent';
+import ProductionCardCheckIn from '../modules/production/ProductionCardCheckIn';
+
+// Post-Production Module
+import PostProductionLayout from '../modules/post-production/PostProductionLayout';
+import PostProductionTasks from '../modules/post-production/PostProductionTasks';
+import PostProductionQC from '../modules/post-production/PostProductionQC';
+import PostProductionDataManager from '../modules/post-production/PostProductionDataManager';
+
+// Finance Module
+import FinanceLayout from '../modules/finance/FinanceLayout';
+import FinanceInvoices from '../modules/finance/FinanceInvoices';
+import FinancePayments from '../modules/finance/FinancePayments';
+import FinanceApprovals from '../modules/finance/FinanceApprovals';
 
 export function AppRoutes() {
   return (
@@ -136,9 +155,11 @@ export function AppRoutes() {
         <Route path="pre-production/attendance" element={<PreProdAttendance />} />
         <Route path="pre-production/notifications" element={<PreProdNotifications />} />
         <Route path="workflow" element={<StudioWorkflow />} />
-        <Route path="production" element={<StudioWorkflow />} />
+        <Route path="production" element={<ProductionDashboard />} />
+        <Route path="post-production" element={<PostProductionTasks />} />
         <Route path="projects" element={<StudioClients />} />
-        <Route path="payments" element={<SalesInvoice />} />
+        <Route path="payments" element={<FinanceInvoices />} />
+        <Route path="finance" element={<FinanceInvoices />} />
         <Route path="reports" element={<SalesReports />} />
         <Route path="settings" element={<MasterMonitoring />} />
         <Route path="*" element={<Navigate to="/master/dashboard" replace />} />
@@ -168,9 +189,9 @@ export function AppRoutes() {
         <Route path="*" element={<Navigate to="/sales/dashboard" replace />} />
       </Route>
 
-      {/* Studio / Clients Admin Routes */}
-      <Route path="/studio" element={<StudioLayout />}>
-        <Route index element={<Navigate to="/studio/dashboard" replace />} />
+      {/* Client Admin Module Routes */}
+      <Route path="/client" element={<ClientLayout />}>
+        <Route index element={<Navigate to="/client/dashboard" replace />} />
         <Route path="dashboard" element={<StudioDashboard />} />
         <Route path="clients" element={<StudioClients />} />
         <Route path="clients/onboard" element={<ClientOnboarding />} />
@@ -181,17 +202,7 @@ export function AppRoutes() {
         <Route path="workflow" element={<StudioWorkflow />} />
         <Route path="workflow/:type" element={<StudioWorkflow />} />
         <Route path="activity" element={<StudioActivity />} />
-        <Route path="*" element={<Navigate to="/studio/dashboard" replace />} />
-      </Route>
-
-      {/* Client Direct Portal Aliases */}
-      <Route path="/client" element={<StudioLayout />}>
-        <Route index element={<Navigate to="/studio/dashboard" replace />} />
-        <Route path="dashboard" element={<StudioDashboard />} />
-        <Route path="clients" element={<StudioClients />} />
-        <Route path="projects" element={<StudioClients />} />
-        <Route path="workflow" element={<StudioWorkflow />} />
-        <Route path="*" element={<Navigate to="/studio/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/client/dashboard" replace />} />
       </Route>
 
       {/* Pre-Production Module Routes */}
@@ -214,11 +225,39 @@ export function AppRoutes() {
         <Route path="*" element={<Navigate to="/pre-production/dashboard" replace />} />
       </Route>
 
-      {/* CRM and Legacy Pre-Production Aliases */}
+      {/* Production Module Routes */}
+      <Route path="/production" element={<ProductionLayout />}>
+        <Route index element={<Navigate to="/production/dashboard" replace />} />
+        <Route path="dashboard" element={<ProductionDashboard />} />
+        <Route path="schedules" element={<ProductionSchedules />} />
+        <Route path="live-event" element={<ProductionLiveEvent />} />
+        <Route path="cards" element={<ProductionCardCheckIn />} />
+        <Route path="*" element={<Navigate to="/production/dashboard" replace />} />
+      </Route>
+
+      {/* Post-Production Module Routes */}
+      <Route path="/post-production" element={<PostProductionLayout />}>
+        <Route index element={<Navigate to="/post-production/tasks" replace />} />
+        <Route path="tasks" element={<PostProductionTasks />} />
+        <Route path="qc-check" element={<PostProductionQC />} />
+        <Route path="data-manager" element={<PostProductionDataManager />} />
+        <Route path="*" element={<Navigate to="/post-production/tasks" replace />} />
+      </Route>
+
+      {/* Finance Module Routes */}
+      <Route path="/finance" element={<FinanceLayout />}>
+        <Route index element={<Navigate to="/finance/invoices" replace />} />
+        <Route path="invoices" element={<FinanceInvoices />} />
+        <Route path="payments" element={<FinancePayments />} />
+        <Route path="approvals" element={<FinanceApprovals />} />
+        <Route path="*" element={<Navigate to="/finance/invoices" replace />} />
+      </Route>
+
+      {/* Legacy Aliases and Redirects */}
+      <Route path="/studio/*" element={<Navigate to="/client/dashboard" replace />} />
       <Route path="/crm/*" element={<Navigate to="/pre-production/dashboard" replace />} />
       <Route path="/pre-production-crm/*" element={<Navigate to="/pre-production/dashboard" replace />} />
-
-      {/* Great Master direct aliases */}
+      <Route path="/event-crm/*" element={<Navigate to="/production/dashboard" replace />} />
       <Route path="/greatmaster" element={<Navigate to="/great-master/dashboard" replace />} />
       <Route path="/greatmaster/*" element={<Navigate to="/great-master/dashboard" replace />} />
 

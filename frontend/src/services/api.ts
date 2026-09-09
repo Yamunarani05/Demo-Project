@@ -322,6 +322,11 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  bulkCreateSalesLeads: (leads: any[]) =>
+    fetchJson<{ success: boolean; data: any; message: string }>('/sales/leads/bulk', {
+      method: 'POST',
+      body: JSON.stringify({ leads }),
+    }),
   updateSalesLead: (id: string, data: any) =>
     fetchJson<{ success: boolean; data: any; message: string }>(`/sales/leads/${id}`, {
       method: 'PUT',

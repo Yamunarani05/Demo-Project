@@ -124,6 +124,76 @@ export default function ModuleHub() {
         { label: 'QC Approvals', path: '/pre-production/qc-check' },
       ],
     },
+    {
+      id: 'production',
+      title: 'Production & Live Events',
+      badge: 'On-Ground Shoot Ops',
+      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      icon: Camera,
+      iconBg: 'from-emerald-600 to-teal-600',
+      description:
+        'Live shoot coordination: On-ground crew schedules, runtime timer tracking, shot checklists, and SD/CF card check-in.',
+      primaryRoute: '/production/dashboard',
+      primaryAction: 'Open Production Ops',
+      cardBorder: 'hover:border-emerald-400 group-hover:shadow-emerald-500/10',
+      accentColor: 'text-emerald-600',
+      stats: [
+        { label: 'Live Events', value: 'Active Tracking' },
+        { label: 'Card Check-In', value: 'Zero Data Loss' },
+      ],
+      quickLinks: [
+        { label: 'Production Dashboard', path: '/production/dashboard' },
+        { label: 'Shoot Schedules', path: '/production/schedules' },
+        { label: 'Live Event Tracker', path: '/production/live-event' },
+        { label: 'Media Card Check-In', path: '/production/cards' },
+      ],
+    },
+    {
+      id: 'post-production',
+      title: 'Post-Production Studio',
+      badge: '9-Discipline Editing',
+      badgeColor: 'bg-sky-100 text-sky-800 border-sky-200',
+      icon: Layers,
+      iconBg: 'from-sky-600 to-blue-600',
+      description:
+        'Full post-production pipeline: 9 editing disciplines, Pixstudio/Pixoffice local drive management, and multi-tier QC reviews.',
+      primaryRoute: '/post-production/tasks',
+      primaryAction: 'Launch Post-Production',
+      cardBorder: 'hover:border-sky-400 group-hover:shadow-sky-500/10',
+      accentColor: 'text-sky-600',
+      stats: [
+        { label: 'Disciplines', value: '9 Workflows' },
+        { label: 'Storage', value: 'Pixstudio / Drive' },
+      ],
+      quickLinks: [
+        { label: 'Task Management', path: '/post-production/tasks' },
+        { label: 'Quality Control (QC)', path: '/post-production/qc-check' },
+        { label: 'Drive Data Manager', path: '/post-production/data-manager' },
+      ],
+    },
+    {
+      id: 'finance',
+      title: 'Finance & Invoicing',
+      badge: 'Billing & Payments',
+      badgeColor: 'bg-rose-100 text-rose-800 border-rose-200',
+      icon: DollarSign,
+      iconBg: 'from-rose-600 to-pink-600',
+      description:
+        'Studio financial control: Dynamic GST invoices, Razorpay checkout, quotation approvals, and client payment tracking.',
+      primaryRoute: '/finance/invoices',
+      primaryAction: 'Manage Studio Finance',
+      cardBorder: 'hover:border-rose-400 group-hover:shadow-rose-500/10',
+      accentColor: 'text-rose-600',
+      stats: [
+        { label: 'Gateway', value: 'Razorpay + UPI' },
+        { label: 'Invoicing', value: 'GST Compliant' },
+      ],
+      quickLinks: [
+        { label: 'All Invoices', path: '/finance/invoices' },
+        { label: 'Payment Transactions', path: '/finance/payments' },
+        { label: 'Finance Approvals', path: '/finance/approvals' },
+      ],
+    },
   ];
 
   return (

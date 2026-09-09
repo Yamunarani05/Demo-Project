@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -16,6 +16,9 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
+import { api } from '../../../services/api';
+import { parseCsvText } from '../../../utils/csvParser';
 
 export interface LeadItem {
   id: string;
@@ -82,6 +85,48 @@ export default function SalesViewLeads() {
   const [selectedLead, setSelectedLead] = useState<LeadItem | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const text = event.target?.result as string;
+        const parsedRows = parseCsvText(text);
+
+        if (parsedRows.length === 0) {
+          toast.error('No valid leads found in CSV file. Format: Client Name, Phone, Email, Event Type');
+          return;
+        }
+
+        const newItems: LeadItem[] = parsedRows.map((r, idx) => ({
+          id: `imp_${Date.now()}_${idx}`,
+          leadCode: `LD-${String(leads.length + idx + 1).padStart(2, '0')}`,
+          leadName: r.clientName,
+          contactNumber: r.phone,
+          email: r.email || `${r.clientName.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+          assignedEmployee: 'Unassigned',
+          createdTime: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+          leadSource: 'Bulk Upload',
+          status: 'To Do',
+        }));
+
+        setLeads(prev => [...newItems, ...prev]);
+        toast.success(`Successfully imported ${newItems.length} leads!`);
+
+        // Send to backend in background
+        api.bulkCreateSalesLeads(parsedRows).catch(() => {});
+      } catch (err: any) {
+        toast.error('Failed to parse file: ' + err.message);
+      } finally {
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    };
+    reader.readAsText(file);
+  };
 
   // Form for new lead
   const [newLeadForm, setNewLeadForm] = useState({
@@ -143,8 +188,15 @@ export default function SalesViewLeads() {
         </div>
 
         <div className="flex items-center gap-3">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept=".csv,.txt"
+            className="hidden"
+          />
           <button
-            onClick={() => alert('Bulk Upload CSV/Excel initialized')}
+            onClick={() => fileInputRef.current?.click()}
             className="px-4 py-2 rounded-xl text-xs font-bold text-[#5B42F3] bg-white border border-[#5B42F3] hover:bg-purple-50 transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
           >
             <Upload size={14} />
